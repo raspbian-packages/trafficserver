@@ -1348,10 +1348,13 @@ CFLAGS="${__saved_CFLAGS}"
 AC_LANG_POP
 AC_SUBST(has_128bit_cas)
 
+case "$host_cpu" in
+    amd64|x86_64|i*86)
 AS_IF([test "x$has_128bit_cas" = "x1"], [
   TS_ADDTO(CFLAGS, [-mcx16])
   TS_ADDTO(CXXFLAGS, [-mcx16])
 ])
+esac
 
 # Check for POSIX capabilities library.
 # If we don't find it, disable checking for header.
