@@ -1,0 +1,57 @@
+Source: trafficserver
+Section: web
+Priority: optional
+Maintainer: Arno Töll <arno@debian.org>
+Uploaders: Aron Xu <aron@debian.org>, Jean Baptiste Favre <debian@jbfavre.org>
+Build-Depends: debhelper (>= 9), libssl-dev, tcl-dev, libexpat1-dev,
+  libpcre3-dev, libtool, libaio-dev [linux-any], libcap-dev [linux-any],
+  bison [linux-any], flex [linux-any], dpkg-dev (>= 1.16.1~), pkg-config,
+  libgeoip-dev, liblua5.1-0-dev, dh-autoreconf, libboost-dev, python-sphinx,
+  libhwloc-dev, libmysqlclient-dev | libmariadbclient-dev, libxml2-dev, libunwind8-dev [i386 amd64 ppc64el armhf arm64]
+Standards-Version: 3.9.8
+Homepage: http://trafficserver.apache.org/
+Vcs-Git: git://anonscm.debian.org/collab-maint/trafficserver.git
+Vcs-Browser: http://anonscm.debian.org/gitweb/?p=collab-maint/trafficserver.git;a=summary
+
+Package: trafficserver
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, lsb-base (>= 3.2-14), adduser,
+  ${perl:Depends}
+Provides: trafficserver-plugin-conf-remap
+Replaces: trafficserver-plugin-conf-remap (<< 3.2~)
+Suggests: trafficserver-experimental-plugins (= ${binary:Version})
+Breaks: trafficserver-plugin-conf-remap (<< 3.2~)
+Description: fast, scalable and extensible HTTP/1.1 compliant caching proxy server
+ This package provides the Apache Traffic Server. A fast, scalable reverse
+ proxy server which may operate as forward proxy as well. Apache Traffic Server
+ supports:
+ .
+   * Caching: Improves response time by caching and reusing frequently-
+     requested web content.
+   * Proxying: Supports filtering, anonymization, load balancing and more.
+   * Scaling: Scales well on modern SMP hardware.
+   * Extensions: Use the API to modify anything from the HTTP headers to your
+     own cache algorithm.
+
+Package: trafficserver-experimental-plugins
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Pre-Depends: trafficserver (= ${binary:Version})
+Breaks: trafficserver (<< 5.0.1-2~)
+Description: experimental plugins for Apache Traffic Server
+ This package provides the Apache Traffic Server. A fast, scalable reverse
+ proxy server which may operate as forward proxy as well.
+ .
+ This package provides experimental plugins: authproxy, channel stats,
+ combo handler, custom_redirect, esi, geoip acl, healthchecks, lua, metalink,
+ rfc5861, spdy and tcp info.
+
+Package: trafficserver-dev
+Architecture: any
+Depends: ${misc:Depends}
+Suggests: trafficserver (= ${binary:Version})
+Description: Apache Traffic Server Software Developers Kit (SDK)
+ This package provides the Apache Traffic Server Software  Developers Kit.
+ This is a collection of development header and bindings for the C programming
+ language, the tsxs linking helper and examples to write your own plug-ins for
+ the Apache Traffic Server.
