@@ -29,7 +29,7 @@ AM_CPPFLAGS = \
   -I$(top_srcdir)/mgmt/cluster \
   -I$(top_srcdir)/mgmt/utils \
   -I$(top_srcdir)/lib \
-  -I$(top_srcdir)/lib/luajit/src
+  -I/usr/include/luajit-2.0
 
 AM_LDFLAGS = \
   @EXTRA_CXX_LDFLAGS@ \
@@ -61,13 +61,12 @@ traffic_manager_SOURCES += \
   metrics.cc
 
 traffic_manager_LDADD += \
-  $(top_builddir)/lib/bindings/libbindings.la \
-  $(top_builddir)/lib/luajit/src/libluajit.a
+  $(top_builddir)/lib/bindings/libbindings.la
 
 traffic_manager_LDADD +=\
   $(LIBUNWIND_LIBS) \
   @LIBRESOLV@ @LIBPCRE@ @LIBTCL@ @LIBCAP@ @HWLOC_LIBS@ \
-  -lm
+  -lm -lluajit-5.1
 
 # Must do it this way or the dependencies aren't detected.
 if BUILD_WCCP
