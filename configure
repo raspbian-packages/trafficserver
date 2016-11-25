@@ -26747,7 +26747,7 @@ esac
 
 # Flags for building and linking against our internal copy of LuaJIT.
 
-LUAJIT_CPPFLAGS='-I$(top_srcdir)/lib/luajit/src'
+LUAJIT_CPPFLAGS='-I/usr/include/luajit-2.0'
 
 
 # We should be able to build http_load if epoll(2) is available.
