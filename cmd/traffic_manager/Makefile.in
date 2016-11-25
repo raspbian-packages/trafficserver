@@ -171,7 +171,6 @@ test_metrics_OBJECTS = $(am_test_metrics_OBJECTS)
 test_metrics_DEPENDENCIES = $(top_builddir)/mgmt/libmgmt_lm.la \
 	$(top_builddir)/lib/records/librecords_lm.a \
 	$(top_builddir)/lib/bindings/libbindings.la \
-	$(top_builddir)/lib/luajit/src/libluajit.a \
 	$(top_builddir)/lib/ts/libtsutil.la \
 	$(top_builddir)/iocore/eventsystem/libinkevent.a \
 	$(am__DEPENDENCIES_1)
@@ -193,7 +192,6 @@ traffic_manager_DEPENDENCIES =  \
 	$(top_builddir)/lib/records/librecords_lm.a \
 	$(top_builddir)/proxy/shared/libdiagsconfig.a \
 	$(top_builddir)/lib/bindings/libbindings.la \
-	$(top_builddir)/lib/luajit/src/libluajit.a \
 	$(am__DEPENDENCIES_2) $(am__DEPENDENCIES_1)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -489,17 +487,16 @@ pkglibexecdir = @pkglibexecdir@
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
 AM_CFLAGS = @AM_CFLAGS@
-AM_CPPFLAGS = @AM_CPPFLAGS@ $(LUAJIT_CPPFLAGS) $(iocore_include_dirs) \
+AM_CPPFLAGS = @AM_CPPFLAGS@ $(LUA_CPPFLAGS) $(iocore_include_dirs) \
 	-I$(abs_top_srcdir)/lib/records -I$(abs_top_srcdir)/proxy/hdrs \
 	-I$(abs_top_srcdir)/proxy/shared -I$(abs_top_srcdir)/mgmt \
 	-I$(abs_top_srcdir)/mgmt/api \
 	-I$(abs_top_srcdir)/mgmt/api/include \
 	-I$(abs_top_srcdir)/mgmt/cluster \
-	-I$(abs_top_srcdir)/mgmt/utils -I$(abs_top_srcdir)/lib \
-	-I$(abs_top_srcdir)/lib/luajit/src
+	-I$(abs_top_srcdir)/mgmt/utils -I$(abs_top_srcdir)/lib
 AM_CXXFLAGS = @AM_CXXFLAGS@
 AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
-AM_LDFLAGS = @AM_LDFLAGS@ @OPENSSL_LDFLAGS@ $(LUAJIT_LDFLAGS)
+AM_LDFLAGS = @AM_LDFLAGS@ @OPENSSL_LDFLAGS@ $(LUA_LDFLAGS)
 AR = @AR@
 ASCPP = @ASCPP@
 AUTOCONF = @AUTOCONF@
@@ -579,9 +576,9 @@ LIPO = @LIPO@
 LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
 LT_SYS_LIBRARY_PATH = @LT_SYS_LIBRARY_PATH@
-LUAJIT_CFLAGS = @LUAJIT_CFLAGS@
-LUAJIT_CPPFLAGS = @LUAJIT_CPPFLAGS@
-LUAJIT_LDFLAGS = @LUAJIT_LDFLAGS@
+LUA_CFLAGS = @LUA_CFLAGS@
+LUA_CPPFLAGS = @LUA_CPPFLAGS@
+LUA_LDFLAGS = @LUA_LDFLAGS@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 MANIFEST_TOOL = @MANIFEST_TOOL@
@@ -856,18 +853,16 @@ traffic_manager_LDADD = $(top_builddir)/mgmt/api/libmgmtapilocal.la \
 	$(top_builddir)/iocore/eventsystem/libinkevent.a \
 	$(top_builddir)/lib/records/librecords_lm.a \
 	$(top_builddir)/proxy/shared/libdiagsconfig.a \
-	$(top_builddir)/lib/bindings/libbindings.la \
-	$(top_builddir)/lib/luajit/src/libluajit.a $(LIBUNWIND_LIBS) \
-	@LIBRESOLV@ @LIBPCRE@ @LIBTCL@ @LIBCAP@ @HWLOC_LIBS@ -lm \
+	$(top_builddir)/lib/bindings/libbindings.la $(LIBUNWIND_LIBS) \
+	@LIBRESOLV@ @LIBPCRE@ @LIBTCL@ @LIBCAP@ @HWLOC_LIBS@ $(LUA_LIBS) -lm \
 	$(am__append_1)
 test_metrics_SOURCES = test_metrics.cc metrics.cc WebOverview.cc
 test_metrics_LDADD = $(top_builddir)/mgmt/libmgmt_lm.la \
 	$(top_builddir)/lib/records/librecords_lm.a \
 	$(top_builddir)/lib/bindings/libbindings.la \
-	$(top_builddir)/lib/luajit/src/libluajit.a \
 	$(top_builddir)/lib/ts/libtsutil.la \
-	$(top_builddir)/iocore/eventsystem/libinkevent.a @LIBTCL@ \
-	@LIBPCRE@ $(am__append_2)
+	$(top_builddir)/iocore/eventsystem/libinkevent.a $(LUA_CPPFLAGS) \
+ 	@LIBTCL@ @LIBPCRE@ $(am__append_2)
 Clang_Tidy_Options = -fix -fix-errors
 
 # Sort the filenames to remove duplicates, then filter to retain
