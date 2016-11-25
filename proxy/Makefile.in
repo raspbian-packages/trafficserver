@@ -168,8 +168,7 @@ traffic_logcat_DEPENDENCIES = logging/liblogging.a \
 	$(top_builddir)/lib/records/librecords_p.a \
 	$(top_builddir)/iocore/eventsystem/libinkevent.a \
 	$(top_builddir)/lib/ts/libtsutil.la \
-	$(top_builddir)/lib/bindings/libbindings.la \
-	$(top_builddir)/lib/luajit/src/libluajit.a
+	$(top_builddir)/lib/bindings/libbindings.la
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
@@ -182,8 +181,7 @@ traffic_logstats_DEPENDENCIES = logging/liblogging.a \
 	$(top_builddir)/lib/records/librecords_p.a \
 	$(top_builddir)/iocore/eventsystem/libinkevent.a \
 	$(top_builddir)/lib/ts/libtsutil.la \
-	$(top_builddir)/lib/bindings/libbindings.la \
-	$(top_builddir)/lib/luajit/src/libluajit.a
+	$(top_builddir)/lib/bindings/libbindings.la
 am__traffic_server_SOURCES_DIST = AbstractBuffer.cc AbstractBuffer.h \
 	CacheControl.cc CacheControl.h ControlBase.cc ControlBase.h \
 	ControlMatcher.cc ControlMatcher.h CoreUtils.cc CoreUtils.h \
@@ -230,12 +228,11 @@ traffic_server_DEPENDENCIES = http/libhttp.a http2/libhttp2.a \
 	$(top_builddir)/iocore/aio/libinkaio.a \
 	$(top_builddir)/lib/ts/libtsutil.la \
 	$(top_builddir)/lib/bindings/libbindings.la \
-	$(top_builddir)/lib/luajit/src/libluajit.a \
 	$(top_builddir)/iocore/net/libinknet.a \
 	$(top_builddir)/iocore/eventsystem/libinkevent.a \
 	$(top_builddir)/lib/records/librecords_p.a \
 	$(top_builddir)/iocore/eventsystem/libinkevent.a \
-	$(LUAJIT:%=$(top_builddir)/lib/luajit/src/%)
+	$(LUAJIT:%=/usr/include/luajit-2.0%)
 traffic_server_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
 	$(AM_CXXFLAGS) $(CXXFLAGS) $(traffic_server_LDFLAGS) \
@@ -978,75 +975,6 @@ noinst_HEADERS = \
   Show.h
 
 
-# These are currently built separate, as part of building the lib/ tree, using
-# the normal LuaJIT build system. We are using the .o's directly, instead of the
-# luajit.a to avoid the linker from optimizing symbols away. We could maybe
-# switch to using the luajit.so, but that involves making sure it installs safely
-# and cleanly.
-LUAJIT = \
-  lib_aux.o \
-  lib_base.o \
-  lib_bit.o \
-  lib_debug.o \
-  lib_ffi.o \
-  lib_init.o \
-  lib_io.o \
-  lib_jit.o \
-  lib_math.o \
-  lib_os.o \
-  lib_package.o \
-  lib_string.o \
-  lib_table.o \
-  lj_alloc.o \
-  lj_api.o \
-  lj_asm.o \
-  lj_bc.o \
-  lj_bcread.o \
-  lj_bcwrite.o \
-  lj_carith.o \
-  lj_ccall.o \
-  lj_ccallback.o \
-  lj_cconv.o \
-  lj_cdata.o \
-  lj_char.o \
-  lj_clib.o \
-  lj_cparse.o \
-  lj_crecord.o \
-  lj_ctype.o \
-  lj_debug.o \
-  lj_dispatch.o \
-  lj_err.o \
-  lj_ffrecord.o \
-  lj_func.o \
-  lj_gc.o \
-  lj_gdbjit.o \
-  lj_ir.o \
-  lj_lex.o \
-  lj_lib.o \
-  lj_load.o \
-  lj_mcode.o \
-  lj_meta.o \
-  lj_obj.o \
-  lj_opt_dce.o \
-  lj_opt_fold.o \
-  lj_opt_loop.o \
-  lj_opt_mem.o \
-  lj_opt_narrow.o \
-  lj_opt_sink.o \
-  lj_opt_split.o \
-  lj_parse.o \
-  lj_record.o \
-  lj_snap.o \
-  lj_state.o \
-  lj_str.o \
-  lj_strscan.o \
-  lj_tab.o \
-  lj_trace.o \
-  lj_udata.o \
-  lj_vm.o \
-  lj_vmevent.o \
-  lj_vmmath.o
-
 EXTRA_DIST = InkAPITestTool.cc example_alarm_bin.sh example_prep.sh
 traffic_server_SOURCES = AbstractBuffer.cc AbstractBuffer.h \
 	CacheControl.cc CacheControl.h ControlBase.cc ControlBase.h \
@@ -1085,8 +1013,8 @@ traffic_server_LDADD = http/libhttp.a http2/libhttp2.a \
 	$(top_builddir)/lib/records/librecords_p.a \
 	$(top_builddir)/iocore/eventsystem/libinkevent.a @HWLOC_LIBS@ \
 	@LIBPCRE@ @LIBTCL@ @LIBCAP@ @LIBRESOLV@ @LIBZ@ @LIBLZMA@ \
-	@LIBPROFILER@ @OPENSSL_LIBS@ -lm \
-	$(LUAJIT:%=$(top_builddir)/lib/luajit/src/%)
+	@LIBPROFILER@ @OPENSSL_LIBS@ -lluajit-5.1 -lm \
+	$(LUAJIT:%=/usr/include/luajit-2.0%)
 traffic_logcat_SOURCES = logcat.cc
 traffic_logcat_LDADD = \
   logging/liblogging.a \
@@ -1099,7 +1027,7 @@ traffic_logcat_LDADD = \
   $(top_builddir)/lib/bindings/libbindings.la \
   $(top_builddir)/lib/luajit/src/libluajit.a \
   @LIBRESOLV@ @LIBPCRE@ @LIBTCL@ @HWLOC_LIBS@\
-  @LIBPROFILER@ -lm
+  @LIBPROFILER@ -lm -lluajit-5.1
 
 traffic_logstats_SOURCES = logstats.cc
 traffic_logstats_LDADD = \
@@ -1113,7 +1041,7 @@ traffic_logstats_LDADD = \
   $(top_builddir)/lib/bindings/libbindings.la \
   $(top_builddir)/lib/luajit/src/libluajit.a \
   @LIBRESOLV@ @LIBPCRE@ @LIBTCL@ @HWLOC_LIBS@ \
-  @LIBPROFILER@ -lm
+  @LIBPROFILER@ -lm -lluajit-5.1
 
 versiondir = $(pkgsysconfdir)
 all: all-recursive
