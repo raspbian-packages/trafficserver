@@ -587,7 +587,7 @@ case $host_os in
       *amd64*)
         TS_ADDTO(CFLAGS, [-m64])
         TS_ADDTO(CXXFLAGS, [-m64])
-        TS_ADDTO(LUAJIT_LDFLAGS, [-m64])
+        TS_ADDTO(LUA_LDFLAGS, [-m64])
         ;;
     esac
     ;;
@@ -768,7 +768,6 @@ case $host_os_def in
       debug_opt="-ggdb3 $common_opt -Qunused-arguments"
       release_opt="-g $common_opt $optimizing_flags -fno-strict-aliasing -Qunused-arguments"
       cxx_opt="-Wno-invalid-offsetof"
-      luajit_cflags="-Wno-parentheses-equality -Wno-tautological-compare -analyzer-disable-all-checks"
     ])
 
     AS_IF([test "x$ax_cv_c_compiler_vendor" = "xgnu"], [
@@ -790,7 +789,6 @@ case $host_os_def in
       debug_opt="-g $common_opt"
       release_opt="-g $common_opt $optimizing_flags -fno-strict-aliasing"
       cxx_opt="-Wno-invalid-offsetof"
-      luajit_cflags="-Wno-parentheses-equality -Wno-tautological-compare"
     ], [
       AC_MSG_WARN([clang is the only supported compiler on Darwin])
     ])
@@ -811,7 +809,6 @@ case $host_os_def in
       debug_opt="-ggdb3 $common_opt"
       release_opt="-g $common_opt $optimizing_flags -fno-strict-aliasing"
       cxx_opt="-Wno-invalid-offsetof"
-      luajit_cflags="-Wno-parentheses-equality -Wno-tautological-compare"
     ])
 
     AS_IF([test "x$ax_cv_c_compiler_vendor" = "xgnu"], [
@@ -1090,6 +1087,11 @@ TS_CHECK_ZLIB
 #
 # Check for lzma presence and usability
 TS_CHECK_LZMA
+
+#
+# Check for luajit presence and usability
+TS_CHECK_LUA
+TS_ADDTO(CPPFLAGS, [$LUA_CFLAGS])
 
 #
 # Tcl macros provided by build/tcl.m4
@@ -1390,18 +1392,6 @@ TS_CHECK_TCMALLOC
 #
 # Check for libreadline/libedit
 AX_LIB_READLINE
-
-# On Darwin LuaJIT requires magic link options, otherwise it will crash in luaL_openlibs() at startup. See
-# http://luajit.org/install.html.
-case $host_os_def in
-  darwin)
-    LUAJIT_LDFLAGS="-Wl,-pagezero_size,10000 -Wl,-image_base,100000000"
-    ;;
-esac
-
-# Flags for building and linking against our internal copy of LuaJIT.
-AC_SUBST([LUAJIT_LDFLAGS])
-AC_SUBST([LUAJIT_CPPFLAGS], ['-I$(top_srcdir)/lib/luajit/src'])
 
 # We should be able to build http_load if epoll(2) is available.
 AM_CONDITIONAL([BUILD_HTTP_LOAD], [test x"$ac_cv_func_epoll_ctl" = x"yes"])
@@ -1807,20 +1797,6 @@ iocore_include_dirs="\
 -I\$(top_srcdir)/iocore/utils \
 -I\$(top_srcdir)/iocore/dns"
 
-# Flags for buildit LuaJIT itself. We take the latest version
-# of the generic flags, plus any Lua-specific flags so that we
-# can strip the coverage flags from Lua while keeping them by
-# default everywhere else.
-TS_ADDTO(LUAJIT_CFLAGS, [$CFLAGS $luajit_cflags])
-AC_SUBST([LUAJIT_CFLAGS])
-
-TS_REMOVEFROM(LUAJIT_CFLAGS, "-fsanitize=address")
-TS_REMOVEFROM(LUAJIT_CFLAGS, "-fsanitize=thread")
-TS_REMOVEFROM(LUAJIT_CFLAGS, "-fsanitize=memory")
-TS_REMOVEFROM(LUAJIT_CFLAGS, "-fprofile-instr-generate")
-TS_REMOVEFROM(LUAJIT_CFLAGS, "-fcoverage-mapping")
-TS_REMOVEFROM(LUAJIT_CFLAGS, "--coverage")
-
 AC_SUBST([CC])
 AC_SUBST([CFLAGS])
 AC_SUBST([CXX])
@@ -1975,9 +1951,10 @@ AC_MSG_NOTICE([Build option summary:
     SHARED_LDFLAGS:     $SHARED_LDFLAGS
     OPENSSL_LDFLAGS:    $OPENSSL_LDFLAGS
     OPENSSL_INCLUDES:   $OPENSSL_INCLUDES
-    LUAJIT_CFLAGS:      $LUAJIT_CFLAGS
-    LUAJIT_CPPFLAGS:	$LUAJIT_CPPFLAGS
-    LUAJIT_LDFLAGS:     $LUAJIT_LDFLAGS
+    LUA_LIBS:           $LUA_LIBS
+    LUA_CFLAGS:         $LUA_CFLAGS
+    LUA_CPPFLAGS:	$LUA_CPPFLAGS
+    LUA_LDFLAGS:        $LUA_LDFLAGS
     EXTRA_CC_LDFLAGS:   $EXTRA_CC_LDFLAGS
     EXTRA_CXX_LDFLAGS:  $EXTRA_CXX_LDFLAGS
     LIBTOOL_LINK_FLAGS: $LIBTOOL_LINK_FLAGS
