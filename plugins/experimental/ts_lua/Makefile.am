@@ -18,7 +18,7 @@ include $(top_srcdir)/build/plugins.mk
 
 tslua_la_CPPFLAGS = \
   $(AM_CPPFLAGS) \
-  $(LUAJIT_CPPFLAGS)
+  $(LUA_CPPFLAGS)
 
 pkglib_LTLIBRARIES = tslua.la
 
