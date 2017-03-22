@@ -25,26 +25,3 @@ endif
 if BUILD_WCCP
 SUBDIRS += wccp
 endif
-
-# Some special hacks around building the luajit.
-#
-#  - Copy the luajit source tree if we're doing out-of-source builds
-#  - Upon clean, remove the luajit tree from the out-of-source build tree
-#
-# Note: The LUAJIT_LDFLAGS is a bit of a hack, since LuaJIT on OmniOS needs
-#       the -m64 flag. See configure.ac.
-#
-all-local:
-	@echo "Making all in luajit"
-	test -d "$(top_builddir)/$(subdir)/luajit/src" || cp -rf "$(srcdir)/luajit" "$(top_builddir)/$(subdir)/"
-	cd luajit && $(MAKE) $(AM_MAKEFLAGS) \
-		BUILDMODE="static" \
-		PREFIX="$(prefix)" \
-		CC="$(CC)" \
-		CFLAGS="$(LUAJIT_CFLAGS)" \
-		XCFLAGS="" \
-		LDFLAGS="$(LUAJIT_LDFLAGS)"
-
-clean-local:
-	test "$(top_srcdir)" != "$(top_builddir)" || (cd "$(top_builddir)/$(subdir)/luajit" && $(MAKE) clean)
-	test "$(top_srcdir)" = "$(top_builddir)" || rm -rf "$(top_builddir)/$(subdir)/luajit"
