@@ -18,7 +18,7 @@
 bin_PROGRAMS = traffic_manager
 
 AM_CPPFLAGS = \
-  $(LUAJIT_CPPFLAGS) \
+  $(LUA_CPPFLAGS) \
   $(iocore_include_dirs) \
   -I$(top_srcdir)/lib/records \
   -I$(top_srcdir)/proxy/hdrs \
@@ -29,7 +29,7 @@ AM_CPPFLAGS = \
   -I$(top_srcdir)/mgmt/cluster \
   -I$(top_srcdir)/mgmt/utils \
   -I$(top_srcdir)/lib \
-  -I$(top_srcdir)/lib/luajit/src
+  $(LUA_CPPFLAGS)
 
 AM_LDFLAGS = \
   @EXTRA_CXX_LDFLAGS@ \
@@ -55,17 +55,16 @@ traffic_manager_LDADD = \
   $(top_builddir)/proxy/shared/libdiagsconfig.a
 
 AM_LDFLAGS += \
-  $(LUAJIT_LDFLAGS)
+  $(LUA_LDFLAGS)
 
 traffic_manager_SOURCES += \
   metrics.cc
 
 traffic_manager_LDADD += \
-  $(top_builddir)/lib/bindings/libbindings.la \
-  $(top_builddir)/lib/luajit/src/libluajit.a
+  $(top_builddir)/lib/bindings/libbindings.la
 
 traffic_manager_LDADD +=\
-  $(LIBUNWIND_LIBS) \
+  $(LIBUNWIND_LIBS) $(LUA_LIBS) \
   @LIBRESOLV@ @LIBPCRE@ @LIBTCL@ @LIBCAP@ @HWLOC_LIBS@ \
   -lm
 
