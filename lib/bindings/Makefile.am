@@ -19,9 +19,10 @@
 include $(top_srcdir)/build/tidy.mk
 
 AM_CPPFLAGS = \
-  $(LUAJIT_CPPFLAGS) \
+  $(LUA_CPPFLAGS) \
   -I$(top_srcdir)/lib \
-  -I$(top_srcdir)/lib/records
+  -I$(top_srcdir)/lib/records \
+  $(LUA_CPPFLAGS)
 
 noinst_LTLIBRARIES = libbindings.la
 
