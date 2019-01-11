@@ -18,7 +18,7 @@
 
 if BUILD_DOCS
 images := $(patsubst %.uml,images/%.svg,$(wildcard *.uml))
-PLANTUML_JAR := $(shell ../plantuml_fetch.sh | tail -1)
+PLANTUML_JAR := /usr/share/plantuml/plantuml.jar
 
 all-am: jar-check $(images)
 endif
@@ -39,7 +39,7 @@ latex: all-am
 man: all-am
 
 images/%.svg : %.uml
-	$(JAVA) -jar $(PLANTUML_JAR) -o images -tsvg $<
+	$(JAVA) -jar $(PLANTUML_JAR) -graphvizdot /usr/bin/dot -o images -tsvg $<
 
 clean-local:
 	rm -f images/*.svg
