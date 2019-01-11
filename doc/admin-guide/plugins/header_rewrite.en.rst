@@ -330,7 +330,7 @@ The data that can be checked is ::
    %{INBOUND:REMOTE-PORT}     The client port for the connection.
    %{INBOUND:TLS}             The TLS protocol if the connection is over TLS, otherwise the empty string.
    %{INBOUND:H2}              The string "h2" if the connection is HTTP/2, otherwise the empty string.
-   %{INBOUND:IPV4}            The string "ipv4" if the connection is IPv4, otherwise the emtpy string.
+   %{INBOUND:IPV4}            The string "ipv4" if the connection is IPv4, otherwise the empty string.
    %{INBOUND:IPV6}            The string "ipv6" if the connection is IPv6, otherwise the empty string.
    %{INBOUND:IP-FAMILY}       The IP family, either "ipv4" or "ipv6".
    %{INBOUND:STACK}           The full protocol stack separated by ','.
@@ -827,7 +827,7 @@ Variable                Description
 %<INBOUND:TLS>          The TLS protocol for the inbound connection if it is over TLS, otherwise the
                         empty string.
 %<INBOUND:H2>           The string "h2" if the inbound connection is HTTP/2, otherwise the empty string.
-%<INBOUND:IPV4>         The string "ipv4" if the inbound connection is IPv4, otherwise the emtpy string.
+%<INBOUND:IPV4>         The string "ipv4" if the inbound connection is IPv4, otherwise the empty string.
 %<INBOUND:IPV6>         The string "ipv6" if the inbound connection is IPv6, otherwise the empty string.
 %<INBOUND:IP-FAMILY>    The IP family of the inbound connection (either "ipv4" or "ipv6").
 %<INBOUND:STACK>        The full protocol stack of the inbound connection separated by ','.
