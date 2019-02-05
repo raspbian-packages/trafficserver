@@ -1,8 +1,23 @@
-trafficserver (8.0.1-4+rpi1) buster-staging; urgency=medium
+trafficserver (8.0.2+ds-1+rpi1) buster-staging; urgency=medium
 
+  [changes brought forward from 8.0.1-4+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Sat, 19 Jan 2019 12:42:48 +0000]
   * Use -latomic on raspbian too.
 
- -- Peter Michael Green <plugwash@raspbian.org>  Sat, 19 Jan 2019 12:42:48 +0000
+ -- Raspbian forward porter <root@raspbian.org>  Tue, 05 Feb 2019 16:20:20 +0000
+
+trafficserver (8.0.2+ds-1) unstable; urgency=medium
+
+  * Disable testing build in d/gitlab-ci.yml
+  * Update d/copyright to remove unneeded files when importing upstream release
+  * Update upstream GPG keys list
+  * New upstream version 8.0.2+ds
+  * Patches refresh for 8.0.2
+  * Update patch. Add dep3 headers
+  * Update d/control. Mark trafficserver-dev architecture all
+  * Remove signature from upstream keys. Fix lintian info
+  * Move dpkg-maintscript-helper commands to d/trafficserver.maintscript
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Wed, 30 Jan 2019 14:45:09 +0100
 
 trafficserver (8.0.1-4) unstable; urgency=medium
 
