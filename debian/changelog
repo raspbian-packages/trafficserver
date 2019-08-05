@@ -1,9 +1,19 @@
-trafficserver (8.0.3+ds-2+rpi1) bullseye-staging; urgency=medium
+trafficserver (8.0.3+ds-3+rpi1) bullseye-staging; urgency=medium
 
   [changes brought forward from 8.0.1-4+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Sat, 19 Jan 2019 12:42:48 +0000]
   * Use -latomic on raspbian too.
 
- -- Raspbian forward porter <root@raspbian.org>  Tue, 09 Jul 2019 16:46:56 +0000
+ -- Raspbian forward porter <root@raspbian.org>  Mon, 05 Aug 2019 19:46:02 +0000
+
+trafficserver (8.0.3+ds-3) unstable; urgency=medium
+
+  * Run upstream testsuite with autopkgtest.
+  * Enable CI tests on salsa (see debian/salsa-ci.yml).
+  * Set debhelper compatibility level to 12.
+  * Add myself to the Uploaders field.
+  * Set Standards-Version to 4.4.0.
+
+ -- Emanuele Rocca <ema@debian.org>  Wed, 31 Jul 2019 11:11:59 +0200
 
 trafficserver (8.0.3+ds-2) unstable; urgency=medium
 
