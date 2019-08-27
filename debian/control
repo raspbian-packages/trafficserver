@@ -3,7 +3,7 @@ Section: web
 Priority: optional
 Maintainer: Jean Baptiste Favre <debian@jbfavre.org>
 Uploaders: Aron Xu <aron@debian.org>, Emanuele Rocca <ema@debian.org>
-Build-Depends: debhelper (>= 12), libssl-dev, tcl-dev, libexpat1-dev,
+Build-Depends: debhelper-compat (= 12), libssl-dev, tcl-dev, libexpat1-dev,
   libpcre3-dev, libtool, libcap-dev [linux-any], graphviz,
   bison [linux-any], flex [linux-any], dpkg-dev (>= 1.16.1~), pkg-config, libgeoip-dev,
   libluajit-5.1-dev, libboost-dev, libhwloc-dev, default-libmysqlclient-dev,
@@ -22,6 +22,7 @@ Package: trafficserver
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, lsb-base (>= 3.2-14), adduser,
   ${perl:Depends}
+Pre-Depends: ${misc:Pre-Depends}
 Provides: trafficserver-plugin-conf-remap
 Replaces: trafficserver-plugin-conf-remap (<< 3.2~),
  trafficserver-experimental-plugins (<< 8.0.0~)

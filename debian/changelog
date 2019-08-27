@@ -1,9 +1,25 @@
-trafficserver (8.0.3+ds-3+rpi1) bullseye-staging; urgency=medium
+trafficserver (8.0.5+ds-1+rpi1) bullseye-staging; urgency=medium
 
   [changes brought forward from 8.0.1-4+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Sat, 19 Jan 2019 12:42:48 +0000]
   * Use -latomic on raspbian too.
 
- -- Raspbian forward porter <root@raspbian.org>  Mon, 05 Aug 2019 19:46:02 +0000
+ -- Raspbian forward porter <root@raspbian.org>  Tue, 27 Aug 2019 10:23:16 +0000
+
+trafficserver (8.0.5+ds-1) unstable; urgency=medium
+
+  * New upstream release
+    - Changes introduced with 8.0.4 include fixes for CVE-2019-9512,
+      CVE-2019-9514, and CVE-2019-9515. (Closes: #934887)
+    - 8.0.5 fixes CVE-2019-9518 (Closes: #935314)
+
+ -- Emanuele Rocca <ema@debian.org>  Sat, 24 Aug 2019 09:00:22 +0200
+
+trafficserver (8.0.3+ds-4) unstable; urgency=medium
+
+  * Fix lintian warning 'skip-systemd-native-flag-missing-pre-depends'
+  * Use debhelper-compat instead of debian/compat
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Fri, 02 Aug 2019 09:07:31 +0200
 
 trafficserver (8.0.3+ds-3) unstable; urgency=medium
 
