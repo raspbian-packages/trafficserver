@@ -7,3 +7,5 @@
 0012-fix-spelling-checks.patch
 0013-fix-perl-interpreter-path.patch
 0014-use_system_yaml-cpp.patch
+0015-8.0.4-CVE-backport.patch
+0015-8.0.5-CVE-backport.patch

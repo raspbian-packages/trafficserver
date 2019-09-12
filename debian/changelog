@@ -1,9 +1,18 @@
-trafficserver (8.0.2+ds-1+rpi1) buster-staging; urgency=medium
+trafficserver (8.0.2+ds-1+rpi1+deb10u1) buster-staging; urgency=medium
 
   [changes brought forward from 8.0.1-4+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Sat, 19 Jan 2019 12:42:48 +0000]
   * Use -latomic on raspbian too.
 
- -- Raspbian forward porter <root@raspbian.org>  Tue, 05 Feb 2019 16:20:20 +0000
+ -- Raspbian forward porter <root@raspbian.org>  Thu, 12 Sep 2019 17:22:26 +0000
+
+trafficserver (8.0.2+ds-1+deb10u1) buster-security; urgency=high
+
+  * Add patch for security backport from 8.0.4 for CVE-2019-9512,
+       CVE-2019-9514, and CVE-2019-9515. (Closes: #934887)
+  * Add patch for security backport from 8.0.5 for fixes
+       CVE-2019-9518 (Closes: #935314)
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Mon, 26 Aug 2019 13:55:33 +0200
 
 trafficserver (8.0.2+ds-1) unstable; urgency=medium
 
