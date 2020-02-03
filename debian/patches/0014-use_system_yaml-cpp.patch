@@ -1,0 +1,42 @@
+Description: Update compilation chain after embedded libyamlcpp removal
+Author: Jean Baptiste Favre <debian@jbfavre.org>
+Origin: other
+Reviewed-by: Jean Baptiste Favre <debian@jbfavre.org>
+Last-Update: 2019-01-30
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -41,7 +41,6 @@ include_directories(lib
+         proxy/shared
+         lib/records
+         include/wccp
+-        lib/yamlcpp/include
+         iocore/eventsystem
+         iocore/net
+         iocore/dns
+--- a/configure.ac
++++ b/configure.ac
+@@ -2041,7 +2041,6 @@ AC_CONFIG_FILES([
+   include/tscore/ink_config.h
+   lib/tsconfig/Makefile
+   src/wccp/Makefile
+-  lib/yamlcpp/Makefile
+   mgmt/Makefile
+   mgmt/api/Makefile
+   mgmt/api/include/Makefile
+--- a/lib/Makefile.am
++++ b/lib/Makefile.am
+@@ -25,12 +25,6 @@ endif
+ # to prevent Clang Analyzer warning
+ LOCAL =
+ 
+-if BUILD_YAML_CPP
+-LOCAL += yamlcpp
+-endif
+-
+ all-local:	$(LOCAL)
+-	$(MAKE) -C yamlcpp
+ 
+ clean-local:
+-	$(MAKE) -C yamlcpp clean
