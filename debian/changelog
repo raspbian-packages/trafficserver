@@ -1,9 +1,19 @@
-trafficserver (8.0.5+ds-3+rpi1) bullseye-staging; urgency=medium
+trafficserver (8.0.6+ds-1+rpi1) bullseye-staging; urgency=medium
 
   [changes brought forward from 8.0.1-4+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Sat, 19 Jan 2019 12:42:48 +0000]
   * Use -latomic on raspbian too.
 
- -- Raspbian forward porter <root@raspbian.org>  Tue, 18 Feb 2020 15:32:22 +0000
+ -- Raspbian forward porter <root@raspbian.org>  Sun, 08 Mar 2020 10:35:02 +0000
+
+trafficserver (8.0.6+ds-1) unstable; urgency=medium
+
+  * Update d/watch after upstream changes
+  * Update d/gbp.conf
+  * Update d/gbp.conf
+  * New upstream version 8.0.6+ds
+  * Patches refresh for 8.0.6
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Tue, 03 Mar 2020 09:06:18 +0100
 
 trafficserver (8.0.5+ds-3) unstable; urgency=medium
 

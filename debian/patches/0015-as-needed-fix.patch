@@ -4,8 +4,8 @@ Author: Gianfranco Costamagna <locutusofborg@debian.org>
 Forwarded: https://github.com/apache/trafficserver/pull/4793
 Last-Update: 2019-01-12
 
---- trafficserver-8.0.1.orig/build/common.m4
-+++ trafficserver-8.0.1/build/common.m4
+--- a/build/common.m4
++++ b/build/common.m4
 @@ -196,17 +196,17 @@ AC_DEFUN([TS_TRY_COMPILE_NO_WARNING],
  ])
  

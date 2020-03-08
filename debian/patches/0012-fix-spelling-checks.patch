@@ -65,7 +65,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
           then send the request to the origin server.
     ``1`` Immediately return a ``100 Continue`` from |TS| without waiting for
           the post body.
-@@ -1603,7 +1603,7 @@ Proxy User Variables
+@@ -1599,7 +1599,7 @@ Proxy User Variables
     connection=full     Full user agent connection :ref:`protocol tags <protocol_tags>`
     ==================  ===============================================================
  
@@ -74,7 +74,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
     a valid value for this variable.  Note that the ``connection`` parameter is a non-standard extension to
     RFC 7239.  Also note that, while Traffic Server allows multiple ``by`` parameters for the same proxy, this
     is prohibited by RFC 7239. Currently, for the ``host`` parameter to provide the original host from the
-@@ -1631,7 +1631,7 @@ Proxy User Variables
+@@ -1627,7 +1627,7 @@ Proxy User Variables
         information.
         See :ts:cv:`proxy.config.http.server_ports` for information on how to enable Proxy Protocol on a port.
  
@@ -83,7 +83,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
  
  .. ts:cv:: CONFIG proxy.config.http.normalize_ae INT 1
     :reloadable:
-@@ -2332,7 +2332,7 @@ DNS
+@@ -2328,7 +2328,7 @@ DNS
  
  .. ts:cv:: CONFIG proxy.config.dns.resolv_conf STRING /etc/resolv.conf
  
@@ -92,16 +92,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
     standard ``resolv.conf`` file, this option allows an administrator to manage the set of resolvers in an external configuration file,
     without affecting how the rest of the operating system uses DNS.
  
-@@ -2350,7 +2350,7 @@ DNS
-    :reloadable:
-    :overridable:
- 
--   Indicates whether to use SRV records for orgin server lookup.
-+   Indicates whether to use SRV records for origin server lookup.
- 
- .. ts:cv:: CONFIG proxy.config.dns.dedicated_thread INT 0
- 
-@@ -2583,7 +2583,7 @@ HostDB
+@@ -2586,7 +2586,7 @@ HostDB
     Set the frequency (in seconds) to sync hostdb to disk.
  
     Note: hostdb is syncd to disk on a per-partition basis (of which there are 64).
@@ -110,7 +101,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
  
  Logging Configuration
  =====================
-@@ -2897,7 +2897,7 @@ Diagnostic Logging Configuration
+@@ -2900,7 +2900,7 @@ Diagnostic Logging Configuration
  
  .. ts:cv:: CONFIG proxy.config.diags.debug.tags STRING http|dns
  
@@ -119,7 +110,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
     contains an anchored regular expression that filters the messages based on the tag. The
     expressions are prefix matched which creates an implicit ``.*`` at the end. Therefore the default
     value ``http|dns`` will match tags such as ``http``, ``http_hdrs``, ``dns``, and ``dns_recv``.
-@@ -2905,7 +2905,7 @@ Diagnostic Logging Configuration
+@@ -2908,7 +2908,7 @@ Diagnostic Logging Configuration
     Some commonly used debug tags are:
  
     ============  =====================================================
@@ -128,7 +119,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
     ============  =====================================================
     dns           DNS query resolution
     http_hdrs     Logs the headers for HTTP requests and responses
-@@ -3061,7 +3061,7 @@ SSL Termination
+@@ -3064,7 +3064,7 @@ SSL Termination
  .. ts:cv:: CONFIG proxy.config.ssl.client.groups_list STRING <See notes under proxy.config.ssl.server.groups_list.>
  
     Configures the list of supported groups provided by OpenSSL which
@@ -137,7 +128,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
     of TLSv1.3 connections. The value is a colon separated list of
     group NIDs or names, for example "P-521:P-384:P-256". For
     instructions, see "Groups" section of `TLS1.3 - OpenSSLWiki <https://wiki.openssl.org/index.php/TLS1.3#Groups>`_.
-@@ -3204,7 +3204,7 @@ SSL Termination
+@@ -3207,7 +3207,7 @@ SSL Termination
     ``0`` Disables the session cache entirely.
     ``1`` Enables the session cache using OpenSSL's implementation.
     ``2`` Default. Enables the session cache using |TS|'s implementation. This
