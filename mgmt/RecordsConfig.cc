@@ -1330,6 +1330,14 @@ static const RecordElement RecordsConfig[] =
   ,
   {RECT_LOCAL, "proxy.local.log.collation_mode", RECD_INT, "0", RECU_DYNAMIC, RR_NULL, RECC_INT, "[0-4]", RECA_NULL}
   ,
+  {RECT_CONFIG, "proxy.config.http2.max_settings_frames_per_minute", RECD_INT, "14", RECU_DYNAMIC, RR_NULL, RECC_STR, "^[0-9]+$", RECA_NULL}
+  ,
+  {RECT_CONFIG, "proxy.config.http2.max_ping_frames_per_minute", RECD_INT, "60", RECU_DYNAMIC, RR_NULL, RECC_STR, "^[0-9]+$", RECA_NULL}
+  ,
+  {RECT_CONFIG, "proxy.config.http2.max_priority_frames_per_minute", RECD_INT, "120", RECU_DYNAMIC, RR_NULL, RECC_STR, "^[0-9]+$", RECA_NULL}
+  ,
+  {RECT_CONFIG, "proxy.config.http2.min_avg_window_update", RECD_FLOAT, "2560.0", RECU_DYNAMIC, RR_NULL, RECC_NULL, nullptr, RECA_NULL}
+  ,
 
   //# Librecords based stats system (new as of v2.1.3)
   {RECT_CONFIG, "proxy.config.stat_api.max_stats_allowed", RECD_INT, "256", RECU_RESTART_TS, RR_NULL, RECC_INT, "[256-1000]", RECA_NULL}
