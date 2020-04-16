@@ -1,0 +1,66 @@
+Source: trafficserver
+Section: web
+Priority: optional
+Maintainer: Jean Baptiste Favre <debian@jbfavre.org>
+Uploaders: Aron Xu <aron@debian.org>, Emanuele Rocca <ema@debian.org>
+Build-Depends: debhelper-compat (= 12), libssl-dev, tcl-dev, libexpat1-dev,
+  libpcre3-dev, libtool, libcap-dev [linux-any], graphviz,
+  bison [linux-any], flex [linux-any], dpkg-dev (>= 1.16.1~), pkg-config, libgeoip-dev,
+  libluajit-5.1-dev, libboost-dev, libhwloc-dev, default-libmysqlclient-dev,
+  python3-distro, python3-sphinx, plantuml, python3-sphinxcontrib.plantuml,
+  libxml2-dev, libncurses-dev, libcurl4-openssl-dev,
+  libkyotocabinet-dev, libmemcached-dev, libbrotli-dev,
+  libcrypto++-dev, libjansson-dev, libcjose-dev, libyaml-cpp-dev (>= 0.6.2~),
+  libunwind-dev [i386 amd64 ppc64el armhf arm64 mipsel mips64el mips]
+Standards-Version: 4.5.0
+Homepage: https://trafficserver.apache.org/
+Vcs-Git: https://salsa.debian.org/debian/trafficserver.git
+Vcs-Browser: https://salsa.debian.org/debian/trafficserver
+
+Package: trafficserver
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, lsb-base (>= 3.2-14), adduser,
+  ${perl:Depends}
+Pre-Depends: ${misc:Pre-Depends}
+Provides: trafficserver-plugin-conf-remap
+Replaces: trafficserver-plugin-conf-remap (<< 3.2~),
+ trafficserver-experimental-plugins (<< 8.0.0~)
+Suggests: trafficserver-experimental-plugins (= ${binary:Version})
+Breaks: trafficserver-plugin-conf-remap (<< 3.2~),
+ trafficserver-experimental-plugins (<< 8.0.0~)
+Description: fast, scalable and extensible HTTP/1.1 and HTTP/2.0 caching proxy server
+ This package provides the Apache Traffic Server, a fast, scalable reverse
+ proxy server which may operate as forward proxy as well. Apache Traffic Server
+ supports:
+ .
+   * Caching: improve response time while reducing server load and bandwidth
+     needs by caching and reusing frequently-requested web pages, images, and
+     web service calls.
+   * Proxying: add keep-alive, filter or anonymize content requests, or add
+     load balancing by adding a proxy layer.
+   * Scaling: handle 10s of thousands of requests per second on modern SMP
+     hardware.
+   * Extensions: use the API to do anything from modifying HTTP headers to
+     handling ESI requests to writing your own cache algorithm.
+
+Package: trafficserver-experimental-plugins
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Pre-Depends: trafficserver (= ${binary:Version})
+Breaks: trafficserver (<< 8.0.0~)
+Description: experimental plugins for Apache Traffic Server
+ This package provides the Apache Traffic Server plugins marked as
+ experimental.
+ .
+ Please note that these plugins can be removed without priori notice, or
+ promoted as stable plugin. In the last case, they'll be moved from
+ trafficserver-experimental-plugins to trafficserver package.
+
+Package: trafficserver-dev
+Architecture: any
+Depends: ${misc:Depends}, trafficserver (= ${binary:Version})
+Description: Apache Traffic Server Software Developers Kit (SDK)
+ This package provides the Apache Traffic Server Software Developers Kit, which
+ consists of: a collection of development header and bindings for the C
+ programming language, the tsxs linking helper and examples to write your own
+ plug-ins for the Apache Traffic Server.
