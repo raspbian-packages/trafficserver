@@ -9,3 +9,7 @@
 0014-use_system_yaml-cpp.patch
 0015-8.0.4-CVE-backport.patch
 0015-8.0.5-CVE-backport.patch
+0016-CVE-2019-17559.patch
+0016-CVE-2019-17565.patch
+0016-CVE-2020-1944.patch
+0016-CVE-2020-9481.patch

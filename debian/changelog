@@ -1,9 +1,18 @@
-trafficserver (8.0.2+ds-1+rpi1+deb10u1) buster-staging; urgency=medium
+trafficserver (8.0.2+ds-1+rpi1+deb10u2) buster-staging; urgency=medium
 
   [changes brought forward from 8.0.1-4+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Sat, 19 Jan 2019 12:42:48 +0000]
   * Use -latomic on raspbian too.
 
- -- Raspbian forward porter <root@raspbian.org>  Thu, 12 Sep 2019 17:22:26 +0000
+ -- Raspbian forward porter <root@raspbian.org>  Thu, 07 May 2020 16:24:36 +0000
+
+trafficserver (8.0.2+ds-1+deb10u2) buster-security; urgency=medium
+
+  * Add fix from upstream for CVE-2019-17559
+  * Add fix from upstream for CVE-2019-17565
+  * Add fix from upstream for CVE-2020-1944
+  * Add fix from upstream for CVE-2020-9481
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Thu, 16 Apr 2020 21:36:40 +0200
 
 trafficserver (8.0.2+ds-1+deb10u1) buster-security; urgency=high
 
