@@ -1,0 +1,18 @@
+Description: Fix test for python 3.8
+Author: Matthias Klose <doko@ubuntu.com>
+Reviewed-by: Jean Baptiste Favre <jbfavre@debian.org>
+Last-Update: 2020-02-03
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+--- a/tests/bootstrap.py
++++ b/tests/bootstrap.py
+@@ -81,7 +81,8 @@ def command_output(cmd_str):
+ 
+ 
+ def get_distro():
+-    return platform.linux_distribution()
++    import distro
++    return distro.linux_distribution()
+ 
+ 
+ def distro_version():
