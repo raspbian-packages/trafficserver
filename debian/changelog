@@ -1,9 +1,15 @@
-trafficserver (8.0.8+ds-1+rpi1) bullseye-staging; urgency=medium
+trafficserver (8.0.8+ds-2+rpi1) bullseye-staging; urgency=medium
 
   [changes brought forward from 8.0.1-4+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Sat, 19 Jan 2019 12:42:48 +0000]
   * Use -latomic on raspbian too.
 
- -- Raspbian forward porter <root@raspbian.org>  Thu, 02 Jul 2020 17:11:32 +0000
+ -- Raspbian forward porter <root@raspbian.org>  Wed, 12 Aug 2020 22:26:34 +0000
+
+trafficserver (8.0.8+ds-2) unstable; urgency=medium
+
+  * Backport upstream patch to fix FTBFS with Sphinx >= 3.0 (Closes: #963664)
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Wed, 29 Jul 2020 08:40:43 +0200
 
 trafficserver (8.0.8+ds-1) unstable; urgency=medium
 
