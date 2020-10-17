@@ -30,6 +30,7 @@
 #include "ts/ts.h"
 
 #include "conditions.h"
+#include "expander.h"
 #include "lulu.h"
 
 // ConditionStatus
@@ -422,11 +423,14 @@ ConditionUrl::append_value(std::string &s, const Resources &res)
     TSDebug(PLUGIN_NAME, "   Scheme to match is: %.*s", i, q_str);
     break;
   case URL_QUAL_URL:
-  case URL_QUAL_NONE:
-    q_str = TSUrlStringGet(bufp, url, &i);
-    s.append(q_str, i);
-    TSDebug(PLUGIN_NAME, "   URL to match is: %.*s", i, q_str);
+  case URL_QUAL_NONE: {
+    // TSUrlStringGet returns an allocated char * we must free
+    char *non_const_q_str = TSUrlStringGet(bufp, url, &i);
+    s.append(non_const_q_str, i);
+    TSDebug(PLUGIN_NAME, "   URL to match is: %.*s", i, non_const_q_str);
+    TSfree(non_const_q_str);
     break;
+  }
   }
 }
 
@@ -1382,4 +1386,49 @@ ConditionInbound::append_value(std::string &s, const Resources &res, NetworkSess
   if (zret) {
     s += zret;
   }
+}
+
+ConditionStringLiteral::ConditionStringLiteral(const std::string &v)
+{
+  TSDebug(PLUGIN_NAME_DBG, "Calling CTOR for ConditionStringLiteral");
+  _literal = v;
+}
+
+void
+ConditionStringLiteral::append_value(std::string &s, const Resources &res)
+{
+  s += _literal;
+  TSDebug(PLUGIN_NAME, "Appending '%s' to evaluation value", _literal.c_str());
+}
+
+bool
+ConditionStringLiteral::eval(const Resources &res)
+{
+  TSDebug(PLUGIN_NAME, "Evaluating StringLiteral");
+
+  return static_cast<const MatcherType *>(_matcher)->test(_literal);
+}
+
+ConditionExpandableString::ConditionExpandableString(const std::string &v)
+{
+  TSDebug(PLUGIN_NAME_DBG, "Calling CTOR for ConditionExpandableString");
+  _value = v;
+}
+
+bool
+ConditionExpandableString::eval(const Resources &res)
+{
+  std::string s;
+
+  append_value(s, res);
+
+  return static_cast<const MatcherType *>(_matcher)->test(s);
+}
+
+void
+ConditionExpandableString::append_value(std::string &s, const Resources &res)
+{
+  VariableExpander ve(_value);
+  s += ve.expand(res);
+  TSDebug(PLUGIN_NAME, "Appending to evaluation value -> %s", s.c_str());
 }

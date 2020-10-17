@@ -122,10 +122,8 @@ host_triplet = @host@
 @BUILD_TESTS_TRUE@am__append_1 = \
 @BUILD_TESTS_TRUE@	RegressionHPACK.cc
 
-check_PROGRAMS = test_Huffmancode$(EXEEXT) \
+check_PROGRAMS = test_libhttp2$(EXEEXT) \
 	test_Http2DependencyTree$(EXEEXT) \
-	test_Http2FrequencyCounter$(EXEEXT) test_HPACK$(EXEEXT)
-TESTS = test_Huffmancode$(EXEEXT) test_Http2DependencyTree$(EXEEXT) \
 	test_Http2FrequencyCounter$(EXEEXT) test_HPACK$(EXEEXT)
 subdir = proxy/http2
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -138,8 +136,9 @@ am__aclocal_m4_deps = $(top_srcdir)/build/ax_check_openssl.m4 \
 	$(top_srcdir)/build/ax_perl_modules.m4 \
 	$(top_srcdir)/build/ax_require_defined.m4 \
 	$(top_srcdir)/build/ax_with_curses.m4 \
-	$(top_srcdir)/build/brotli.m4 $(top_srcdir)/build/common.m4 \
-	$(top_srcdir)/build/crypto.m4 $(top_srcdir)/build/jemalloc.m4 \
+	$(top_srcdir)/build/brotli.m4 $(top_srcdir)/build/cjose.m4 \
+	$(top_srcdir)/build/common.m4 $(top_srcdir)/build/crypto.m4 \
+	$(top_srcdir)/build/jansson.m4 $(top_srcdir)/build/jemalloc.m4 \
 	$(top_srcdir)/build/libtool.m4 \
 	$(top_srcdir)/build/ltoptions.m4 \
 	$(top_srcdir)/build/ltsugar.m4 \
@@ -167,22 +166,20 @@ am__v_AR_1 =
 libhttp2_a_AR = $(AR) $(ARFLAGS)
 libhttp2_a_LIBADD =
 am__libhttp2_a_SOURCES_DIST = HPACK.cc HPACK.h HTTP2.cc HTTP2.h \
-	Http2ClientSession.cc Http2ClientSession.h \
-	Http2ConnectionState.cc Http2ConnectionState.h \
-	Http2DebugNames.cc Http2DebugNames.h Http2DependencyTree.h \
-	Http2FrequencyCounter.h Http2FrequencyCounter.cc \
-	Http2Stream.cc Http2Stream.h Http2SessionAccept.cc \
-	Http2SessionAccept.h HuffmanCodec.cc HuffmanCodec.h \
-	RegressionHPACK.cc
+	Http2Frame.cc Http2Frame.h Http2ClientSession.cc \
+	Http2ClientSession.h Http2ConnectionState.cc \
+	Http2ConnectionState.h Http2DebugNames.cc Http2DebugNames.h \
+	Http2DependencyTree.h Http2FrequencyCounter.h \
+	Http2FrequencyCounter.cc Http2Stream.cc Http2Stream.h \
+	Http2SessionAccept.cc Http2SessionAccept.h RegressionHPACK.cc
 @BUILD_TESTS_TRUE@am__objects_1 = RegressionHPACK.$(OBJEXT)
 am_libhttp2_a_OBJECTS = HPACK.$(OBJEXT) HTTP2.$(OBJEXT) \
-	Http2ClientSession.$(OBJEXT) Http2ConnectionState.$(OBJEXT) \
-	Http2DebugNames.$(OBJEXT) Http2FrequencyCounter.$(OBJEXT) \
-	Http2Stream.$(OBJEXT) Http2SessionAccept.$(OBJEXT) \
-	HuffmanCodec.$(OBJEXT) $(am__objects_1)
+	Http2Frame.$(OBJEXT) Http2ClientSession.$(OBJEXT) \
+	Http2ConnectionState.$(OBJEXT) Http2DebugNames.$(OBJEXT) \
+	Http2FrequencyCounter.$(OBJEXT) Http2Stream.$(OBJEXT) \
+	Http2SessionAccept.$(OBJEXT) $(am__objects_1)
 libhttp2_a_OBJECTS = $(am_libhttp2_a_OBJECTS)
-am_test_HPACK_OBJECTS = test_HPACK.$(OBJEXT) HuffmanCodec.$(OBJEXT) \
-	HPACK.$(OBJEXT)
+am_test_HPACK_OBJECTS = test_HPACK.$(OBJEXT) HPACK.$(OBJEXT)
 test_HPACK_OBJECTS = $(am_test_HPACK_OBJECTS)
 test_HPACK_DEPENDENCIES = $(top_builddir)/proxy/hdrs/libhdrs.a \
 	$(top_builddir)/src/tscore/libtscore.la \
@@ -210,12 +207,18 @@ test_Http2FrequencyCounter_DEPENDENCIES =  \
 	$(top_builddir)/iocore/eventsystem/libinkevent.a \
 	$(top_builddir)/src/tscore/libtscore.la \
 	$(top_builddir)/src/tscpp/util/libtscpputil.la
-am_test_Huffmancode_OBJECTS = test_Huffmancode.$(OBJEXT) \
-	HuffmanCodec.$(OBJEXT)
-test_Huffmancode_OBJECTS = $(am_test_Huffmancode_OBJECTS)
-test_Huffmancode_DEPENDENCIES =  \
+am_test_libhttp2_OBJECTS =  \
+	unit_tests/test_libhttp2-test_Http2Frame.$(OBJEXT) \
+	unit_tests/test_libhttp2-main.$(OBJEXT)
+test_libhttp2_OBJECTS = $(am_test_libhttp2_OBJECTS)
+test_libhttp2_DEPENDENCIES = libhttp2.a \
+	$(top_builddir)/iocore/eventsystem/libinkevent.a \
+	$(top_builddir)/proxy/hdrs/libhdrs.a \
 	$(top_builddir)/src/tscore/libtscore.la \
-	$(top_builddir)/src/tscpp/util/libtscpputil.la
+	$(top_builddir)/src/tscpp/util/libtscpputil.la \
+	$(top_builddir)/lib/records/librecords_p.a \
+	$(top_builddir)/mgmt/libmgmt_p.la \
+	$(top_builddir)/proxy/shared/libUglyLogStubs.a
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -234,15 +237,15 @@ am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = ./$(DEPDIR)/HPACK.Po ./$(DEPDIR)/HTTP2.Po \
 	./$(DEPDIR)/Http2ClientSession.Po \
 	./$(DEPDIR)/Http2ConnectionState.Po \
-	./$(DEPDIR)/Http2DebugNames.Po \
+	./$(DEPDIR)/Http2DebugNames.Po ./$(DEPDIR)/Http2Frame.Po \
 	./$(DEPDIR)/Http2FrequencyCounter.Po \
 	./$(DEPDIR)/Http2SessionAccept.Po ./$(DEPDIR)/Http2Stream.Po \
-	./$(DEPDIR)/HuffmanCodec.Po ./$(DEPDIR)/RegressionHPACK.Po \
-	./$(DEPDIR)/test_HPACK.Po \
+	./$(DEPDIR)/RegressionHPACK.Po ./$(DEPDIR)/test_HPACK.Po \
 	./$(DEPDIR)/test_Http2FrequencyCounter-Http2FrequencyCounter.Po \
-	./$(DEPDIR)/test_Huffmancode.Po \
 	unit_tests/$(DEPDIR)/test_Http2DependencyTree-test_Http2DependencyTree.Po \
-	unit_tests/$(DEPDIR)/test_Http2FrequencyCounter-test_Http2FrequencyCounter.Po
+	unit_tests/$(DEPDIR)/test_Http2FrequencyCounter-test_Http2FrequencyCounter.Po \
+	unit_tests/$(DEPDIR)/test_libhttp2-main.Po \
+	unit_tests/$(DEPDIR)/test_libhttp2-test_Http2Frame.Po
 am__mv = mv -f
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -282,12 +285,10 @@ am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
 SOURCES = $(libhttp2_a_SOURCES) $(test_HPACK_SOURCES) \
 	$(test_Http2DependencyTree_SOURCES) \
-	$(test_Http2FrequencyCounter_SOURCES) \
-	$(test_Huffmancode_SOURCES)
+	$(test_Http2FrequencyCounter_SOURCES) $(test_libhttp2_SOURCES)
 DIST_SOURCES = $(am__libhttp2_a_SOURCES_DIST) $(test_HPACK_SOURCES) \
 	$(test_Http2DependencyTree_SOURCES) \
-	$(test_Http2FrequencyCounter_SOURCES) \
-	$(test_Huffmancode_SOURCES)
+	$(test_Http2FrequencyCounter_SOURCES) $(test_libhttp2_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -833,6 +834,7 @@ use_dh_get_2048_256 = @use_dh_get_2048_256@
 use_diags = @use_diags@
 use_epoll = @use_epoll@
 use_fast_sdk = @use_fast_sdk@
+use_hello_cb = @use_hello_cb@
 use_hwloc = @use_hwloc@
 use_kqueue = @use_kqueue@
 use_linux_native_aio = @use_linux_native_aio@
@@ -865,22 +867,35 @@ Clang_Tidy_CXX_Files = $(filter %.cc, $(sort $(1)))
 CXX_Clang_Tidy = $(CLANG_TIDY) $(Clang_Tidy_Options) $(call Clang_Tidy_CXX_Files,$^) -- $(CXXCOMPILE) -x c++
 CC_Clang_Tidy = $(CLANG_TIDY) $(Clang_Tidy_Options) $(call Clang_Tidy_CC_Files,$^) -- $(COMPILE) -x c
 noinst_LIBRARIES = libhttp2.a
-libhttp2_a_SOURCES = HPACK.cc HPACK.h HTTP2.cc HTTP2.h \
-	Http2ClientSession.cc Http2ClientSession.h \
+libhttp2_a_SOURCES = HPACK.cc HPACK.h HTTP2.cc HTTP2.h Http2Frame.cc \
+	Http2Frame.h Http2ClientSession.cc Http2ClientSession.h \
 	Http2ConnectionState.cc Http2ConnectionState.h \
 	Http2DebugNames.cc Http2DebugNames.h Http2DependencyTree.h \
 	Http2FrequencyCounter.h Http2FrequencyCounter.cc \
 	Http2Stream.cc Http2Stream.h Http2SessionAccept.cc \
-	Http2SessionAccept.h HuffmanCodec.cc HuffmanCodec.h \
-	$(am__append_1)
-test_Huffmancode_LDADD = \
-	$(top_builddir)/src/tscore/libtscore.la \
-	$(top_builddir)/src/tscpp/util/libtscpputil.la
+	Http2SessionAccept.h $(am__append_1)
+TESTS = $(check_PROGRAMS)
 
-test_Huffmancode_SOURCES = \
-	test_Huffmancode.cc \
-	HuffmanCodec.cc \
-	HuffmanCodec.h
+# The order of libinkevent.a and libhdrs.a is sensitive for LLD on debug build.
+# Be careful if you change the order. Details in GitHub #6666
+test_libhttp2_LDADD = \
+	libhttp2.a \
+	$(top_builddir)/iocore/eventsystem/libinkevent.a \
+	$(top_builddir)/proxy/hdrs/libhdrs.a \
+	$(top_builddir)/src/tscore/libtscore.la \
+	$(top_builddir)/src/tscpp/util/libtscpputil.la \
+	$(top_builddir)/lib/records/librecords_p.a \
+	$(top_builddir)/mgmt/libmgmt_p.la \
+	$(top_builddir)/proxy/shared/libUglyLogStubs.a \
+	@LIBTCL@ \
+	@HWLOC_LIBS@
+
+test_libhttp2_CPPFLAGS = $(AM_CPPFLAGS)\
+	-I$(abs_top_srcdir)/tests/include
+
+test_libhttp2_SOURCES = \
+	unit_tests/test_Http2Frame.cc \
+	unit_tests/main.cc
 
 test_Http2DependencyTree_LDADD = \
 	$(top_builddir)/src/tscore/libtscore.la \
@@ -919,8 +934,6 @@ test_HPACK_LDADD = \
 
 test_HPACK_SOURCES = \
 	test_HPACK.cc \
-	HuffmanCodec.cc \
-	HuffmanCodec.h \
 	HPACK.cc \
 	HPACK.h
 
@@ -999,10 +1012,15 @@ unit_tests/test_Http2FrequencyCounter-test_Http2FrequencyCounter.$(OBJEXT):  \
 test_Http2FrequencyCounter$(EXEEXT): $(test_Http2FrequencyCounter_OBJECTS) $(test_Http2FrequencyCounter_DEPENDENCIES) $(EXTRA_test_Http2FrequencyCounter_DEPENDENCIES) 
 	@rm -f test_Http2FrequencyCounter$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(test_Http2FrequencyCounter_OBJECTS) $(test_Http2FrequencyCounter_LDADD) $(LIBS)
+unit_tests/test_libhttp2-test_Http2Frame.$(OBJEXT):  \
+	unit_tests/$(am__dirstamp) \
+	unit_tests/$(DEPDIR)/$(am__dirstamp)
+unit_tests/test_libhttp2-main.$(OBJEXT): unit_tests/$(am__dirstamp) \
+	unit_tests/$(DEPDIR)/$(am__dirstamp)
 
-test_Huffmancode$(EXEEXT): $(test_Huffmancode_OBJECTS) $(test_Huffmancode_DEPENDENCIES) $(EXTRA_test_Huffmancode_DEPENDENCIES) 
-	@rm -f test_Huffmancode$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(test_Huffmancode_OBJECTS) $(test_Huffmancode_LDADD) $(LIBS)
+test_libhttp2$(EXEEXT): $(test_libhttp2_OBJECTS) $(test_libhttp2_DEPENDENCIES) $(EXTRA_test_libhttp2_DEPENDENCIES) 
+	@rm -f test_libhttp2$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(test_libhttp2_OBJECTS) $(test_libhttp2_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -1016,16 +1034,17 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Http2ClientSession.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Http2ConnectionState.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Http2DebugNames.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Http2Frame.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Http2FrequencyCounter.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Http2SessionAccept.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Http2Stream.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/HuffmanCodec.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RegressionHPACK.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_HPACK.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_Http2FrequencyCounter-Http2FrequencyCounter.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_Huffmancode.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@unit_tests/$(DEPDIR)/test_Http2DependencyTree-test_Http2DependencyTree.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@unit_tests/$(DEPDIR)/test_Http2FrequencyCounter-test_Http2FrequencyCounter.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@unit_tests/$(DEPDIR)/test_libhttp2-main.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@unit_tests/$(DEPDIR)/test_libhttp2-test_Http2Frame.Po@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -1098,6 +1117,34 @@ test_Http2FrequencyCounter-Http2FrequencyCounter.obj: Http2FrequencyCounter.cc
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Http2FrequencyCounter.cc' object='test_Http2FrequencyCounter-Http2FrequencyCounter.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_Http2FrequencyCounter_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test_Http2FrequencyCounter-Http2FrequencyCounter.obj `if test -f 'Http2FrequencyCounter.cc'; then $(CYGPATH_W) 'Http2FrequencyCounter.cc'; else $(CYGPATH_W) '$(srcdir)/Http2FrequencyCounter.cc'; fi`
+
+unit_tests/test_libhttp2-test_Http2Frame.o: unit_tests/test_Http2Frame.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_libhttp2_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT unit_tests/test_libhttp2-test_Http2Frame.o -MD -MP -MF unit_tests/$(DEPDIR)/test_libhttp2-test_Http2Frame.Tpo -c -o unit_tests/test_libhttp2-test_Http2Frame.o `test -f 'unit_tests/test_Http2Frame.cc' || echo '$(srcdir)/'`unit_tests/test_Http2Frame.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) unit_tests/$(DEPDIR)/test_libhttp2-test_Http2Frame.Tpo unit_tests/$(DEPDIR)/test_libhttp2-test_Http2Frame.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='unit_tests/test_Http2Frame.cc' object='unit_tests/test_libhttp2-test_Http2Frame.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_libhttp2_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o unit_tests/test_libhttp2-test_Http2Frame.o `test -f 'unit_tests/test_Http2Frame.cc' || echo '$(srcdir)/'`unit_tests/test_Http2Frame.cc
+
+unit_tests/test_libhttp2-test_Http2Frame.obj: unit_tests/test_Http2Frame.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_libhttp2_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT unit_tests/test_libhttp2-test_Http2Frame.obj -MD -MP -MF unit_tests/$(DEPDIR)/test_libhttp2-test_Http2Frame.Tpo -c -o unit_tests/test_libhttp2-test_Http2Frame.obj `if test -f 'unit_tests/test_Http2Frame.cc'; then $(CYGPATH_W) 'unit_tests/test_Http2Frame.cc'; else $(CYGPATH_W) '$(srcdir)/unit_tests/test_Http2Frame.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) unit_tests/$(DEPDIR)/test_libhttp2-test_Http2Frame.Tpo unit_tests/$(DEPDIR)/test_libhttp2-test_Http2Frame.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='unit_tests/test_Http2Frame.cc' object='unit_tests/test_libhttp2-test_Http2Frame.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_libhttp2_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o unit_tests/test_libhttp2-test_Http2Frame.obj `if test -f 'unit_tests/test_Http2Frame.cc'; then $(CYGPATH_W) 'unit_tests/test_Http2Frame.cc'; else $(CYGPATH_W) '$(srcdir)/unit_tests/test_Http2Frame.cc'; fi`
+
+unit_tests/test_libhttp2-main.o: unit_tests/main.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_libhttp2_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT unit_tests/test_libhttp2-main.o -MD -MP -MF unit_tests/$(DEPDIR)/test_libhttp2-main.Tpo -c -o unit_tests/test_libhttp2-main.o `test -f 'unit_tests/main.cc' || echo '$(srcdir)/'`unit_tests/main.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) unit_tests/$(DEPDIR)/test_libhttp2-main.Tpo unit_tests/$(DEPDIR)/test_libhttp2-main.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='unit_tests/main.cc' object='unit_tests/test_libhttp2-main.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_libhttp2_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o unit_tests/test_libhttp2-main.o `test -f 'unit_tests/main.cc' || echo '$(srcdir)/'`unit_tests/main.cc
+
+unit_tests/test_libhttp2-main.obj: unit_tests/main.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_libhttp2_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT unit_tests/test_libhttp2-main.obj -MD -MP -MF unit_tests/$(DEPDIR)/test_libhttp2-main.Tpo -c -o unit_tests/test_libhttp2-main.obj `if test -f 'unit_tests/main.cc'; then $(CYGPATH_W) 'unit_tests/main.cc'; else $(CYGPATH_W) '$(srcdir)/unit_tests/main.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) unit_tests/$(DEPDIR)/test_libhttp2-main.Tpo unit_tests/$(DEPDIR)/test_libhttp2-main.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='unit_tests/main.cc' object='unit_tests/test_libhttp2-main.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_libhttp2_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o unit_tests/test_libhttp2-main.obj `if test -f 'unit_tests/main.cc'; then $(CYGPATH_W) 'unit_tests/main.cc'; else $(CYGPATH_W) '$(srcdir)/unit_tests/main.cc'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -1299,9 +1346,9 @@ recheck: all $(check_PROGRAMS)
 	        am__force_recheck=am--force-recheck \
 	        TEST_LOGS="$$log_list"; \
 	exit $$?
-test_Huffmancode.log: test_Huffmancode$(EXEEXT)
-	@p='test_Huffmancode$(EXEEXT)'; \
-	b='test_Huffmancode'; \
+test_libhttp2.log: test_libhttp2$(EXEEXT)
+	@p='test_libhttp2$(EXEEXT)'; \
+	b='test_libhttp2'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -1431,16 +1478,17 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/Http2ClientSession.Po
 	-rm -f ./$(DEPDIR)/Http2ConnectionState.Po
 	-rm -f ./$(DEPDIR)/Http2DebugNames.Po
+	-rm -f ./$(DEPDIR)/Http2Frame.Po
 	-rm -f ./$(DEPDIR)/Http2FrequencyCounter.Po
 	-rm -f ./$(DEPDIR)/Http2SessionAccept.Po
 	-rm -f ./$(DEPDIR)/Http2Stream.Po
-	-rm -f ./$(DEPDIR)/HuffmanCodec.Po
 	-rm -f ./$(DEPDIR)/RegressionHPACK.Po
 	-rm -f ./$(DEPDIR)/test_HPACK.Po
 	-rm -f ./$(DEPDIR)/test_Http2FrequencyCounter-Http2FrequencyCounter.Po
-	-rm -f ./$(DEPDIR)/test_Huffmancode.Po
 	-rm -f unit_tests/$(DEPDIR)/test_Http2DependencyTree-test_Http2DependencyTree.Po
 	-rm -f unit_tests/$(DEPDIR)/test_Http2FrequencyCounter-test_Http2FrequencyCounter.Po
+	-rm -f unit_tests/$(DEPDIR)/test_libhttp2-main.Po
+	-rm -f unit_tests/$(DEPDIR)/test_libhttp2-test_Http2Frame.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -1491,16 +1539,17 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/Http2ClientSession.Po
 	-rm -f ./$(DEPDIR)/Http2ConnectionState.Po
 	-rm -f ./$(DEPDIR)/Http2DebugNames.Po
+	-rm -f ./$(DEPDIR)/Http2Frame.Po
 	-rm -f ./$(DEPDIR)/Http2FrequencyCounter.Po
 	-rm -f ./$(DEPDIR)/Http2SessionAccept.Po
 	-rm -f ./$(DEPDIR)/Http2Stream.Po
-	-rm -f ./$(DEPDIR)/HuffmanCodec.Po
 	-rm -f ./$(DEPDIR)/RegressionHPACK.Po
 	-rm -f ./$(DEPDIR)/test_HPACK.Po
 	-rm -f ./$(DEPDIR)/test_Http2FrequencyCounter-Http2FrequencyCounter.Po
-	-rm -f ./$(DEPDIR)/test_Huffmancode.Po
 	-rm -f unit_tests/$(DEPDIR)/test_Http2DependencyTree-test_Http2DependencyTree.Po
 	-rm -f unit_tests/$(DEPDIR)/test_Http2FrequencyCounter-test_Http2FrequencyCounter.Po
+	-rm -f unit_tests/$(DEPDIR)/test_libhttp2-main.Po
+	-rm -f unit_tests/$(DEPDIR)/test_libhttp2-test_Http2Frame.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

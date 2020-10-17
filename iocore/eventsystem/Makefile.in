@@ -119,7 +119,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-check_PROGRAMS = test_Buffer$(EXEEXT) test_Event$(EXEEXT) \
+check_PROGRAMS = test_IOBuffer$(EXEEXT) test_EventSystem$(EXEEXT) \
 	test_MIOBufferWriter$(EXEEXT)
 subdir = iocore/eventsystem
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -132,8 +132,9 @@ am__aclocal_m4_deps = $(top_srcdir)/build/ax_check_openssl.m4 \
 	$(top_srcdir)/build/ax_perl_modules.m4 \
 	$(top_srcdir)/build/ax_require_defined.m4 \
 	$(top_srcdir)/build/ax_with_curses.m4 \
-	$(top_srcdir)/build/brotli.m4 $(top_srcdir)/build/common.m4 \
-	$(top_srcdir)/build/crypto.m4 $(top_srcdir)/build/jemalloc.m4 \
+	$(top_srcdir)/build/brotli.m4 $(top_srcdir)/build/cjose.m4 \
+	$(top_srcdir)/build/common.m4 $(top_srcdir)/build/crypto.m4 \
+	$(top_srcdir)/build/jansson.m4 $(top_srcdir)/build/jemalloc.m4 \
 	$(top_srcdir)/build/libtool.m4 \
 	$(top_srcdir)/build/ltoptions.m4 \
 	$(top_srcdir)/build/ltsugar.m4 \
@@ -167,8 +168,10 @@ am_libinkevent_a_OBJECTS = EventSystem.$(OBJEXT) IOBuffer.$(OBJEXT) \
 	Tasks.$(OBJEXT) Thread.$(OBJEXT) UnixEThread.$(OBJEXT) \
 	UnixEvent.$(OBJEXT) UnixEventProcessor.$(OBJEXT)
 libinkevent_a_OBJECTS = $(am_libinkevent_a_OBJECTS)
-am_test_Buffer_OBJECTS = test_Buffer-test_Buffer.$(OBJEXT)
-test_Buffer_OBJECTS = $(am_test_Buffer_OBJECTS)
+am__dirstamp = $(am__leading_dot)dirstamp
+am_test_EventSystem_OBJECTS =  \
+	unit_tests/test_EventSystem-test_EventSystem.$(OBJEXT)
+test_EventSystem_OBJECTS = $(am_test_EventSystem_OBJECTS)
 am__DEPENDENCIES_1 = libinkevent.a \
 	$(top_builddir)/lib/records/librecords_p.a \
 	$(top_builddir)/mgmt/libmgmt_p.la \
@@ -176,21 +179,23 @@ am__DEPENDENCIES_1 = libinkevent.a \
 	$(top_builddir)/src/tscore/libtscore.la \
 	$(top_builddir)/src/tscpp/util/libtscpputil.la \
 	$(top_builddir)/proxy/shared/libUglyLogStubs.a
-test_Buffer_DEPENDENCIES = $(am__DEPENDENCIES_1)
+test_EventSystem_DEPENDENCIES = $(am__DEPENDENCIES_1)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
-test_Buffer_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
-	$(CXXFLAGS) $(test_Buffer_LDFLAGS) $(LDFLAGS) -o $@
-am_test_Event_OBJECTS = test_Event-test_Event.$(OBJEXT)
-test_Event_OBJECTS = $(am_test_Event_OBJECTS)
-test_Event_DEPENDENCIES = $(am__DEPENDENCIES_1)
-test_Event_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
-	$(CXXFLAGS) $(test_Event_LDFLAGS) $(LDFLAGS) -o $@
-am__dirstamp = $(am__leading_dot)dirstamp
+test_EventSystem_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
+	$(AM_CXXFLAGS) $(CXXFLAGS) $(test_EventSystem_LDFLAGS) \
+	$(LDFLAGS) -o $@
+am_test_IOBuffer_OBJECTS =  \
+	unit_tests/test_IOBuffer-test_IOBuffer.$(OBJEXT)
+test_IOBuffer_OBJECTS = $(am_test_IOBuffer_OBJECTS)
+test_IOBuffer_DEPENDENCIES = $(am__DEPENDENCIES_1)
+test_IOBuffer_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
+	$(AM_CXXFLAGS) $(CXXFLAGS) $(test_IOBuffer_LDFLAGS) $(LDFLAGS) \
+	-o $@
 am_test_MIOBufferWriter_OBJECTS = unit_tests/test_MIOBufferWriter-test_MIOBufferWriter.$(OBJEXT)
 test_MIOBufferWriter_OBJECTS = $(am_test_MIOBufferWriter_OBJECTS)
 test_MIOBufferWriter_DEPENDENCIES = $(am__DEPENDENCIES_1)
@@ -221,8 +226,8 @@ am__depfiles_remade = ./$(DEPDIR)/EventSystem.Po \
 	./$(DEPDIR)/Tasks.Po ./$(DEPDIR)/Thread.Po \
 	./$(DEPDIR)/UnixEThread.Po ./$(DEPDIR)/UnixEvent.Po \
 	./$(DEPDIR)/UnixEventProcessor.Po \
-	./$(DEPDIR)/test_Buffer-test_Buffer.Po \
-	./$(DEPDIR)/test_Event-test_Event.Po \
+	unit_tests/$(DEPDIR)/test_EventSystem-test_EventSystem.Po \
+	unit_tests/$(DEPDIR)/test_IOBuffer-test_IOBuffer.Po \
 	unit_tests/$(DEPDIR)/test_MIOBufferWriter-test_MIOBufferWriter.Po
 am__mv = mv -f
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
@@ -261,10 +266,10 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libinkevent_a_SOURCES) $(test_Buffer_SOURCES) \
-	$(test_Event_SOURCES) $(test_MIOBufferWriter_SOURCES)
-DIST_SOURCES = $(libinkevent_a_SOURCES) $(test_Buffer_SOURCES) \
-	$(test_Event_SOURCES) $(test_MIOBufferWriter_SOURCES)
+SOURCES = $(libinkevent_a_SOURCES) $(test_EventSystem_SOURCES) \
+	$(test_IOBuffer_SOURCES) $(test_MIOBufferWriter_SOURCES)
+DIST_SOURCES = $(libinkevent_a_SOURCES) $(test_EventSystem_SOURCES) \
+	$(test_IOBuffer_SOURCES) $(test_MIOBufferWriter_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -805,6 +810,7 @@ use_dh_get_2048_256 = @use_dh_get_2048_256@
 use_diags = @use_diags@
 use_epoll = @use_epoll@
 use_fast_sdk = @use_fast_sdk@
+use_hello_cb = @use_hello_cb@
 use_hwloc = @use_hwloc@
 use_kqueue = @use_kqueue@
 use_linux_native_aio = @use_linux_native_aio@
@@ -879,6 +885,7 @@ test_CPP_FLAGS = \
 	-I$(abs_top_srcdir)/proxy/logging \
 	-I$(abs_top_srcdir)/mgmt \
 	-I$(abs_top_srcdir)/mgmt/utils \
+	-I$(abs_top_srcdir)/tests/include \
 	@OPENSSL_INCLUDES@
 
 test_LD_ADD = \
@@ -886,32 +893,21 @@ test_LD_ADD = \
 	$(top_builddir)/lib/records/librecords_p.a \
 	$(top_builddir)/mgmt/libmgmt_p.la \
 	$(top_builddir)/iocore/eventsystem/libinkevent.a \
-	$(top_builddir)/src/tscore/libtscore.la $(top_builddir)/src/tscpp/util/libtscpputil.la \
+	$(top_builddir)/src/tscore/libtscore.la \
+	$(top_builddir)/src/tscpp/util/libtscpputil.la \
 	$(top_builddir)/proxy/shared/libUglyLogStubs.a \
 	@LIBTCL@ @HWLOC_LIBS@
 
-test_Buffer_SOURCES = \
-	test_Buffer.cc
-
-
-#test_UNUSED_SOURCES = \
-#  test_I_Buffer.cc \
-#  test_P_Buffer.cc
-test_Event_SOURCES = \
-	test_Event.cc
-
-
-#test_UNUSED_SOURCES = \
-#  test_I_Event.cc \
-#  test_P_Event.cc
-test_Buffer_CPPFLAGS = $(test_CPP_FLAGS)
-test_Event_CPPFLAGS = $(test_CPP_FLAGS)
-test_Buffer_LDFLAGS = $(test_LD_FLAGS)
-test_Event_LDFLAGS = $(test_LD_FLAGS)
-test_Buffer_LDADD = $(test_LD_ADD)
-test_Event_LDADD = $(test_LD_ADD)
+test_EventSystem_SOURCES = unit_tests/test_EventSystem.cc
+test_EventSystem_CPPFLAGS = $(test_CPP_FLAGS)
+test_EventSystem_LDFLAGS = $(test_LD_FLAGS)
+test_EventSystem_LDADD = $(test_LD_ADD)
+test_IOBuffer_SOURCES = unit_tests/test_IOBuffer.cc
+test_IOBuffer_CPPFLAGS = $(test_CPP_FLAGS)
+test_IOBuffer_LDFLAGS = $(test_LD_FLAGS)
+test_IOBuffer_LDADD = $(test_LD_ADD)
 test_MIOBufferWriter_SOURCES = unit_tests/test_MIOBufferWriter.cc
-test_MIOBufferWriter_CPPFLAGS = $(test_CPP_FLAGS) -I$(abs_top_srcdir)/tests/include
+test_MIOBufferWriter_CPPFLAGS = $(test_CPP_FLAGS)
 test_MIOBufferWriter_LDFLAGS = $(test_LD_FLAGS)
 test_MIOBufferWriter_LDADD = $(test_LD_ADD)
 Clang_Tidy_Options = -fix -fix-errors -header-filter=.*
@@ -981,20 +977,26 @@ libinkevent.a: $(libinkevent_a_OBJECTS) $(libinkevent_a_DEPENDENCIES) $(EXTRA_li
 	$(AM_V_at)-rm -f libinkevent.a
 	$(AM_V_AR)$(libinkevent_a_AR) libinkevent.a $(libinkevent_a_OBJECTS) $(libinkevent_a_LIBADD)
 	$(AM_V_at)$(RANLIB) libinkevent.a
-
-test_Buffer$(EXEEXT): $(test_Buffer_OBJECTS) $(test_Buffer_DEPENDENCIES) $(EXTRA_test_Buffer_DEPENDENCIES) 
-	@rm -f test_Buffer$(EXEEXT)
-	$(AM_V_CXXLD)$(test_Buffer_LINK) $(test_Buffer_OBJECTS) $(test_Buffer_LDADD) $(LIBS)
-
-test_Event$(EXEEXT): $(test_Event_OBJECTS) $(test_Event_DEPENDENCIES) $(EXTRA_test_Event_DEPENDENCIES) 
-	@rm -f test_Event$(EXEEXT)
-	$(AM_V_CXXLD)$(test_Event_LINK) $(test_Event_OBJECTS) $(test_Event_LDADD) $(LIBS)
 unit_tests/$(am__dirstamp):
 	@$(MKDIR_P) unit_tests
 	@: > unit_tests/$(am__dirstamp)
 unit_tests/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) unit_tests/$(DEPDIR)
 	@: > unit_tests/$(DEPDIR)/$(am__dirstamp)
+unit_tests/test_EventSystem-test_EventSystem.$(OBJEXT):  \
+	unit_tests/$(am__dirstamp) \
+	unit_tests/$(DEPDIR)/$(am__dirstamp)
+
+test_EventSystem$(EXEEXT): $(test_EventSystem_OBJECTS) $(test_EventSystem_DEPENDENCIES) $(EXTRA_test_EventSystem_DEPENDENCIES) 
+	@rm -f test_EventSystem$(EXEEXT)
+	$(AM_V_CXXLD)$(test_EventSystem_LINK) $(test_EventSystem_OBJECTS) $(test_EventSystem_LDADD) $(LIBS)
+unit_tests/test_IOBuffer-test_IOBuffer.$(OBJEXT):  \
+	unit_tests/$(am__dirstamp) \
+	unit_tests/$(DEPDIR)/$(am__dirstamp)
+
+test_IOBuffer$(EXEEXT): $(test_IOBuffer_OBJECTS) $(test_IOBuffer_DEPENDENCIES) $(EXTRA_test_IOBuffer_DEPENDENCIES) 
+	@rm -f test_IOBuffer$(EXEEXT)
+	$(AM_V_CXXLD)$(test_IOBuffer_LINK) $(test_IOBuffer_OBJECTS) $(test_IOBuffer_LDADD) $(LIBS)
 unit_tests/test_MIOBufferWriter-test_MIOBufferWriter.$(OBJEXT):  \
 	unit_tests/$(am__dirstamp) \
 	unit_tests/$(DEPDIR)/$(am__dirstamp)
@@ -1024,8 +1026,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UnixEThread.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UnixEvent.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UnixEventProcessor.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_Buffer-test_Buffer.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_Event-test_Event.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@unit_tests/$(DEPDIR)/test_EventSystem-test_EventSystem.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@unit_tests/$(DEPDIR)/test_IOBuffer-test_IOBuffer.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@unit_tests/$(DEPDIR)/test_MIOBufferWriter-test_MIOBufferWriter.Po@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
@@ -1058,33 +1060,33 @@ am--depfiles: $(am__depfiles_remade)
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LTCXXCOMPILE) -c -o $@ $<
 
-test_Buffer-test_Buffer.o: test_Buffer.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_Buffer_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test_Buffer-test_Buffer.o -MD -MP -MF $(DEPDIR)/test_Buffer-test_Buffer.Tpo -c -o test_Buffer-test_Buffer.o `test -f 'test_Buffer.cc' || echo '$(srcdir)/'`test_Buffer.cc
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_Buffer-test_Buffer.Tpo $(DEPDIR)/test_Buffer-test_Buffer.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='test_Buffer.cc' object='test_Buffer-test_Buffer.o' libtool=no @AMDEPBACKSLASH@
+unit_tests/test_EventSystem-test_EventSystem.o: unit_tests/test_EventSystem.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_EventSystem_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT unit_tests/test_EventSystem-test_EventSystem.o -MD -MP -MF unit_tests/$(DEPDIR)/test_EventSystem-test_EventSystem.Tpo -c -o unit_tests/test_EventSystem-test_EventSystem.o `test -f 'unit_tests/test_EventSystem.cc' || echo '$(srcdir)/'`unit_tests/test_EventSystem.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) unit_tests/$(DEPDIR)/test_EventSystem-test_EventSystem.Tpo unit_tests/$(DEPDIR)/test_EventSystem-test_EventSystem.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='unit_tests/test_EventSystem.cc' object='unit_tests/test_EventSystem-test_EventSystem.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_Buffer_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test_Buffer-test_Buffer.o `test -f 'test_Buffer.cc' || echo '$(srcdir)/'`test_Buffer.cc
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_EventSystem_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o unit_tests/test_EventSystem-test_EventSystem.o `test -f 'unit_tests/test_EventSystem.cc' || echo '$(srcdir)/'`unit_tests/test_EventSystem.cc
 
-test_Buffer-test_Buffer.obj: test_Buffer.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_Buffer_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test_Buffer-test_Buffer.obj -MD -MP -MF $(DEPDIR)/test_Buffer-test_Buffer.Tpo -c -o test_Buffer-test_Buffer.obj `if test -f 'test_Buffer.cc'; then $(CYGPATH_W) 'test_Buffer.cc'; else $(CYGPATH_W) '$(srcdir)/test_Buffer.cc'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_Buffer-test_Buffer.Tpo $(DEPDIR)/test_Buffer-test_Buffer.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='test_Buffer.cc' object='test_Buffer-test_Buffer.obj' libtool=no @AMDEPBACKSLASH@
+unit_tests/test_EventSystem-test_EventSystem.obj: unit_tests/test_EventSystem.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_EventSystem_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT unit_tests/test_EventSystem-test_EventSystem.obj -MD -MP -MF unit_tests/$(DEPDIR)/test_EventSystem-test_EventSystem.Tpo -c -o unit_tests/test_EventSystem-test_EventSystem.obj `if test -f 'unit_tests/test_EventSystem.cc'; then $(CYGPATH_W) 'unit_tests/test_EventSystem.cc'; else $(CYGPATH_W) '$(srcdir)/unit_tests/test_EventSystem.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) unit_tests/$(DEPDIR)/test_EventSystem-test_EventSystem.Tpo unit_tests/$(DEPDIR)/test_EventSystem-test_EventSystem.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='unit_tests/test_EventSystem.cc' object='unit_tests/test_EventSystem-test_EventSystem.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_Buffer_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test_Buffer-test_Buffer.obj `if test -f 'test_Buffer.cc'; then $(CYGPATH_W) 'test_Buffer.cc'; else $(CYGPATH_W) '$(srcdir)/test_Buffer.cc'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_EventSystem_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o unit_tests/test_EventSystem-test_EventSystem.obj `if test -f 'unit_tests/test_EventSystem.cc'; then $(CYGPATH_W) 'unit_tests/test_EventSystem.cc'; else $(CYGPATH_W) '$(srcdir)/unit_tests/test_EventSystem.cc'; fi`
 
-test_Event-test_Event.o: test_Event.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_Event_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test_Event-test_Event.o -MD -MP -MF $(DEPDIR)/test_Event-test_Event.Tpo -c -o test_Event-test_Event.o `test -f 'test_Event.cc' || echo '$(srcdir)/'`test_Event.cc
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_Event-test_Event.Tpo $(DEPDIR)/test_Event-test_Event.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='test_Event.cc' object='test_Event-test_Event.o' libtool=no @AMDEPBACKSLASH@
+unit_tests/test_IOBuffer-test_IOBuffer.o: unit_tests/test_IOBuffer.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_IOBuffer_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT unit_tests/test_IOBuffer-test_IOBuffer.o -MD -MP -MF unit_tests/$(DEPDIR)/test_IOBuffer-test_IOBuffer.Tpo -c -o unit_tests/test_IOBuffer-test_IOBuffer.o `test -f 'unit_tests/test_IOBuffer.cc' || echo '$(srcdir)/'`unit_tests/test_IOBuffer.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) unit_tests/$(DEPDIR)/test_IOBuffer-test_IOBuffer.Tpo unit_tests/$(DEPDIR)/test_IOBuffer-test_IOBuffer.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='unit_tests/test_IOBuffer.cc' object='unit_tests/test_IOBuffer-test_IOBuffer.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_Event_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test_Event-test_Event.o `test -f 'test_Event.cc' || echo '$(srcdir)/'`test_Event.cc
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_IOBuffer_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o unit_tests/test_IOBuffer-test_IOBuffer.o `test -f 'unit_tests/test_IOBuffer.cc' || echo '$(srcdir)/'`unit_tests/test_IOBuffer.cc
 
-test_Event-test_Event.obj: test_Event.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_Event_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test_Event-test_Event.obj -MD -MP -MF $(DEPDIR)/test_Event-test_Event.Tpo -c -o test_Event-test_Event.obj `if test -f 'test_Event.cc'; then $(CYGPATH_W) 'test_Event.cc'; else $(CYGPATH_W) '$(srcdir)/test_Event.cc'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_Event-test_Event.Tpo $(DEPDIR)/test_Event-test_Event.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='test_Event.cc' object='test_Event-test_Event.obj' libtool=no @AMDEPBACKSLASH@
+unit_tests/test_IOBuffer-test_IOBuffer.obj: unit_tests/test_IOBuffer.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_IOBuffer_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT unit_tests/test_IOBuffer-test_IOBuffer.obj -MD -MP -MF unit_tests/$(DEPDIR)/test_IOBuffer-test_IOBuffer.Tpo -c -o unit_tests/test_IOBuffer-test_IOBuffer.obj `if test -f 'unit_tests/test_IOBuffer.cc'; then $(CYGPATH_W) 'unit_tests/test_IOBuffer.cc'; else $(CYGPATH_W) '$(srcdir)/unit_tests/test_IOBuffer.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) unit_tests/$(DEPDIR)/test_IOBuffer-test_IOBuffer.Tpo unit_tests/$(DEPDIR)/test_IOBuffer-test_IOBuffer.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='unit_tests/test_IOBuffer.cc' object='unit_tests/test_IOBuffer-test_IOBuffer.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_Event_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test_Event-test_Event.obj `if test -f 'test_Event.cc'; then $(CYGPATH_W) 'test_Event.cc'; else $(CYGPATH_W) '$(srcdir)/test_Event.cc'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_IOBuffer_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o unit_tests/test_IOBuffer-test_IOBuffer.obj `if test -f 'unit_tests/test_IOBuffer.cc'; then $(CYGPATH_W) 'unit_tests/test_IOBuffer.cc'; else $(CYGPATH_W) '$(srcdir)/unit_tests/test_IOBuffer.cc'; fi`
 
 unit_tests/test_MIOBufferWriter-test_MIOBufferWriter.o: unit_tests/test_MIOBufferWriter.cc
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_MIOBufferWriter_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT unit_tests/test_MIOBufferWriter-test_MIOBufferWriter.o -MD -MP -MF unit_tests/$(DEPDIR)/test_MIOBufferWriter-test_MIOBufferWriter.Tpo -c -o unit_tests/test_MIOBufferWriter-test_MIOBufferWriter.o `test -f 'unit_tests/test_MIOBufferWriter.cc' || echo '$(srcdir)/'`unit_tests/test_MIOBufferWriter.cc
@@ -1300,16 +1302,16 @@ recheck: all $(check_PROGRAMS)
 	        am__force_recheck=am--force-recheck \
 	        TEST_LOGS="$$log_list"; \
 	exit $$?
-test_Buffer.log: test_Buffer$(EXEEXT)
-	@p='test_Buffer$(EXEEXT)'; \
-	b='test_Buffer'; \
+test_IOBuffer.log: test_IOBuffer$(EXEEXT)
+	@p='test_IOBuffer$(EXEEXT)'; \
+	b='test_IOBuffer'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-test_Event.log: test_Event$(EXEEXT)
-	@p='test_Event$(EXEEXT)'; \
-	b='test_Event'; \
+test_EventSystem.log: test_EventSystem$(EXEEXT)
+	@p='test_EventSystem$(EXEEXT)'; \
+	b='test_EventSystem'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -1434,8 +1436,8 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/UnixEThread.Po
 	-rm -f ./$(DEPDIR)/UnixEvent.Po
 	-rm -f ./$(DEPDIR)/UnixEventProcessor.Po
-	-rm -f ./$(DEPDIR)/test_Buffer-test_Buffer.Po
-	-rm -f ./$(DEPDIR)/test_Event-test_Event.Po
+	-rm -f unit_tests/$(DEPDIR)/test_EventSystem-test_EventSystem.Po
+	-rm -f unit_tests/$(DEPDIR)/test_IOBuffer-test_IOBuffer.Po
 	-rm -f unit_tests/$(DEPDIR)/test_MIOBufferWriter-test_MIOBufferWriter.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
@@ -1496,8 +1498,8 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/UnixEThread.Po
 	-rm -f ./$(DEPDIR)/UnixEvent.Po
 	-rm -f ./$(DEPDIR)/UnixEventProcessor.Po
-	-rm -f ./$(DEPDIR)/test_Buffer-test_Buffer.Po
-	-rm -f ./$(DEPDIR)/test_Event-test_Event.Po
+	-rm -f unit_tests/$(DEPDIR)/test_EventSystem-test_EventSystem.Po
+	-rm -f unit_tests/$(DEPDIR)/test_IOBuffer-test_IOBuffer.Po
 	-rm -f unit_tests/$(DEPDIR)/test_MIOBufferWriter-test_MIOBufferWriter.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic

@@ -103,6 +103,7 @@ struct pRecord : ATSConsistentHashNode {
   const char *scheme; // for which parent matches (if any)
   int idx;
   float weight;
+  char hash_string[MAXDNAME + 1];
 };
 
 typedef ControlMatcher<ParentRecord, ParentResult> P_table;
@@ -146,6 +147,7 @@ public:
   int max_simple_retries                                             = 1;
   int max_unavailable_server_retries                                 = 1;
   int secondary_mode                                                 = 1;
+  bool ignore_self_detect                                            = false;
 };
 
 // If the parent was set by the external customer api,

@@ -1,9 +1,26 @@
-trafficserver (8.0.8+ds-2+rpi1) bullseye-staging; urgency=medium
+trafficserver (8.1.0+ds-1+rpi1) bullseye-staging; urgency=medium
 
   [changes brought forward from 8.0.1-4+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Sat, 19 Jan 2019 12:42:48 +0000]
   * Use -latomic on raspbian too.
 
- -- Raspbian forward porter <root@raspbian.org>  Wed, 12 Aug 2020 22:26:34 +0000
+ -- Raspbian forward porter <root@raspbian.org>  Sat, 17 Oct 2020 14:02:59 +0000
+
+trafficserver (8.1.0+ds-1) unstable; urgency=medium
+
+  * Remove lintian-overrides for trafficserver-experimental-plugins
+  * Fix Salsa CI
+  * Update d/upstream/signing-key.asc
+  * New upstream version 8.1.0+ds
+  * d/patches refresh for 8.1.0
+  * Update experimental plugins list
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Tue, 01 Sep 2020 19:55:21 +0200
+
+trafficserver (8.0.8+ds-3) UNRELEASED; urgency=low
+
+  * Fix day-of-week for changelog entry 2.1.5-unstable-1.
+
+ -- Debian Janitor <janitor@jelmer.uk>  Sat, 22 Aug 2020 17:48:33 -0000
 
 trafficserver (8.0.8+ds-2) unstable; urgency=medium
 
@@ -865,4 +882,4 @@ trafficserver (2.1.5-unstable-1) unstable; urgency=low
     + Split source into three packages (core, plug-in, SDK)
     + Ship our own init script
 
- -- Arno Toell <debian@toell.net>  Tue, 13 Jan 2011 11:49:18 +0100
+ -- Arno Toell <debian@toell.net>  Thu, 13 Jan 2011 11:49:18 +0100

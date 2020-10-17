@@ -432,17 +432,25 @@ HttpSM::attach_client_session(ProxyClientTransaction *client_vc, IOBufferReader 
   // It seems to be possible that the ua_txn pointer will go stale before log entries for this HTTP transaction are
   // generated.  Therefore, collect information that may be needed for logging from the ua_txn object at this point.
   //
-  _client_transaction_id = ua_txn->get_transaction_id();
+  _client_transaction_id                  = ua_txn->get_transaction_id();
+  _client_transaction_priority_weight     = ua_txn->get_transaction_priority_weight();
+  _client_transaction_priority_dependence = ua_txn->get_transaction_priority_dependence();
   {
     auto p = ua_txn->get_parent();
+
     if (p) {
       _client_connection_id = p->connection_id();
     }
   }
 
-  // Collect log & stats information
-  client_tcp_reused         = !(ua_txn->is_first_transaction());
+  // Collect log & stats information. We've already verified that the netvc is !nullptr above,
+  // and netvc == ua_txn->get_netvc().
   SSLNetVConnection *ssl_vc = dynamic_cast<SSLNetVConnection *>(netvc);
+
+  is_internal       = netvc->get_is_internal_request();
+  mptcp_state       = netvc->get_mptcp_state();
+  client_tcp_reused = !(ua_txn->is_first_transaction());
+
   if (ssl_vc != nullptr) {
     client_connection_is_ssl = true;
     client_ssl_reused        = ssl_vc->getSSLSessionCacheHit();
@@ -2392,6 +2400,15 @@ HttpSM::state_cache_open_write(int event, void *data)
   // INTENTIONAL FALL THROUGH
   // Allow for stale object to be served
   case CACHE_EVENT_OPEN_READ:
+    if (!t_state.cache_info.object_read) {
+      t_state.cache_open_write_fail_action = t_state.txn_conf->cache_open_write_fail_action;
+      // Note that CACHE_LOOKUP_COMPLETE may be invoked more than once
+      // if CACHE_WL_FAIL_ACTION_READ_RETRY is configured
+      ink_assert(t_state.cache_open_write_fail_action == HttpTransact::CACHE_WL_FAIL_ACTION_READ_RETRY);
+      t_state.cache_lookup_result         = HttpTransact::CACHE_LOOKUP_NONE;
+      t_state.cache_info.write_lock_state = HttpTransact::CACHE_WL_READ_RETRY;
+      break;
+    }
     // The write vector was locked and the cache_sm retried
     // and got the read vector again.
     cache_sm.cache_read_vc->get_http_info(&t_state.cache_info.object_read);
@@ -2682,6 +2699,8 @@ HttpSM::tunnel_handler_post(int event, void *data)
     handle_post_failure();
     break;
   case HTTP_SM_POST_UA_FAIL:
+    // Client side failed.  Shutdown and go home.  No need to communicate back to UA
+    terminate_sm = true;
     break;
   case HTTP_SM_POST_SUCCESS:
     // It's time to start reading the response
@@ -3230,13 +3249,8 @@ HttpSM::tunnel_handler_ua(int event, HttpTunnelConsumer *c)
     //   set the ua_txn into half close mode
 
     // only external POSTs should be subject to this logic; ruling out internal POSTs here
-    bool is_eligible_post_request = (t_state.method == HTTP_WKSIDX_POST);
-    if (is_eligible_post_request) {
-      NetVConnection *vc = ua_txn->get_netvc();
-      if (vc) {
-        is_eligible_post_request &= !vc->get_is_internal_request();
-      }
-    }
+    bool is_eligible_post_request = ((t_state.method == HTTP_WKSIDX_POST) && !is_internal);
+
     if ((is_eligible_post_request || t_state.client_info.pipeline_possible == true) && c->producer->vc_type != HT_STATIC &&
         event == VC_EVENT_WRITE_COMPLETE) {
       ua_txn->set_half_close_flag(true);
@@ -3432,9 +3446,7 @@ HttpSM::tunnel_handler_post_ua(int event, HttpTunnelProducer *p)
     hsm_release_assert(ua_entry->in_tunnel == true);
     if (p->consumer_list.head && p->consumer_list.head->vc_type == HT_TRANSFORM) {
       hsm_release_assert(post_transform_info.entry->in_tunnel == true);
-    } else if (server_entry != nullptr) {
-      hsm_release_assert(server_entry->in_tunnel == true);
-    }
+    } // server side may have completed before the user agent side, so it may no longer be in tunnel
     break;
 
   case VC_EVENT_READ_COMPLETE:
@@ -3571,7 +3583,8 @@ HttpSM::tunnel_handler_post_server(int event, HttpTunnelConsumer *c)
 
   case VC_EVENT_WRITE_COMPLETE:
     // Completed successfully
-    c->write_success = true;
+    c->write_success        = true;
+    server_entry->in_tunnel = false;
     break;
   default:
     ink_release_assert(0);
@@ -5361,12 +5374,10 @@ HttpSM::handle_http_server_open()
     NetVConnection *vc = server_session->get_netvc();
     if (vc != nullptr && (vc->options.sockopt_flags != t_state.txn_conf->sock_option_flag_out ||
                           vc->options.packet_mark != t_state.txn_conf->sock_packet_mark_out ||
-                          vc->options.packet_tos != t_state.txn_conf->sock_packet_tos_out ||
-                          vc->options.clientVerificationFlag != t_state.txn_conf->ssl_client_verify_server)) {
-      vc->options.sockopt_flags          = t_state.txn_conf->sock_option_flag_out;
-      vc->options.packet_mark            = t_state.txn_conf->sock_packet_mark_out;
-      vc->options.packet_tos             = t_state.txn_conf->sock_packet_tos_out;
-      vc->options.clientVerificationFlag = t_state.txn_conf->ssl_client_verify_server;
+                          vc->options.packet_tos != t_state.txn_conf->sock_packet_tos_out)) {
+      vc->options.sockopt_flags = t_state.txn_conf->sock_option_flag_out;
+      vc->options.packet_mark   = t_state.txn_conf->sock_packet_mark_out;
+      vc->options.packet_tos    = t_state.txn_conf->sock_packet_tos_out;
       vc->apply_options();
     }
   }
@@ -5954,6 +5965,8 @@ HttpSM::attach_server_session(HttpServerSession *s)
 void
 HttpSM::setup_server_send_request_api()
 {
+  // Make sure the VC is on the correct timeout
+  server_session->get_netvc()->set_inactivity_timeout(HRTIME_SECONDS(t_state.txn_conf->transaction_no_activity_timeout_out));
   t_state.api_next_action = HttpTransact::SM_ACTION_API_SEND_REQUEST_HDR;
   do_api_callout();
 }
@@ -5993,6 +6006,13 @@ HttpSM::setup_server_send_request()
 
   milestones[TS_MILESTONE_SERVER_BEGIN_WRITE] = Thread::get_hrtime();
   server_entry->write_vio                     = server_entry->vc->do_io_write(this, hdr_length, buf_start);
+
+  // Make sure the VC is using correct timeouts.  We may be reusing a previously used server session
+  if (t_state.api_txn_no_activity_timeout_value != -1) {
+    server_session->get_netvc()->set_inactivity_timeout(HRTIME_MSECONDS(t_state.api_txn_no_activity_timeout_value));
+  } else {
+    server_session->get_netvc()->set_inactivity_timeout(HRTIME_SECONDS(t_state.txn_conf->transaction_no_activity_timeout_out));
+  }
 }
 
 void
@@ -7755,10 +7775,9 @@ HttpSM::redirect_request(const char *redirect_url, const int redirect_len)
   // will do that in handle_api_return under the
   // HttpTransact::SM_ACTION_REDIRECT_READ state
   t_state.parent_result.reset();
-  t_state.request_sent_time           = 0;
-  t_state.response_received_time      = 0;
-  t_state.cache_info.write_lock_state = HttpTransact::CACHE_WL_INIT;
-  t_state.next_action                 = HttpTransact::SM_ACTION_REDIRECT_READ;
+  t_state.request_sent_time      = 0;
+  t_state.response_received_time = 0;
+  t_state.next_action            = HttpTransact::SM_ACTION_REDIRECT_READ;
   // we have a new OS and need to have DNS lookup the new OS
   t_state.dns_info.lookup_success = false;
   t_state.force_dns               = false;

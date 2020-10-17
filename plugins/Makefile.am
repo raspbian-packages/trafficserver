@@ -25,7 +25,7 @@ pkglib_LTLIBRARIES =
 
 SUBDIRS =
 
-AM_LDFLAGS = $(TS_PLUGIN_LD_FLAGS)
+AM_LDFLAGS += $(TS_PLUGIN_LD_FLAGS)
 
 include authproxy/Makefile.inc
 include background_fetch/Makefile.inc
@@ -74,6 +74,7 @@ include experimental/mp4/Makefile.inc
 include experimental/multiplexer/Makefile.inc
 include experimental/remap_purge/Makefile.inc
 include experimental/server_push_preload/Makefile.inc
+include experimental/slice/Makefile.inc
 include experimental/ssl_cert_loader/Makefile.inc
 include experimental/sslheaders/Makefile.inc
 include experimental/stale_while_revalidate/Makefile.inc

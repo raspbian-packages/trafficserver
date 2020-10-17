@@ -28,9 +28,10 @@
 
 #include "parser.h"
 
-enum ParserState { PARSER_DEFAULT, PARSER_IN_QUOTE, PARSER_IN_REGEX };
+enum ParserState { PARSER_DEFAULT, PARSER_IN_QUOTE, PARSER_IN_REGEX, PARSER_IN_EXPANSION };
 
-Parser::Parser(const std::string &original_line) : _cond(false), _empty(false)
+bool
+Parser::parse_line(const std::string &original_line)
 {
   std::string line        = original_line;
   ParserState state       = PARSER_DEFAULT;
@@ -39,7 +40,7 @@ Parser::Parser(const std::string &original_line) : _cond(false), _empty(false)
   size_t cur_token_length = 0;
 
   for (size_t i = 0; i < line.size(); ++i) {
-    if ((state == PARSER_DEFAULT) && (std::isspace(line[i]) || ((line[i] == '=') || (line[i] == '>') || (line[i] == '<')))) {
+    if ((state == PARSER_DEFAULT) && (std::isspace(line[i]) || ((line[i] == '=')))) {
       if (extracting_token) {
         cur_token_length = i - cur_token_start;
         if (cur_token_length > 0) {
@@ -85,7 +86,7 @@ Parser::Parser(const std::string &original_line) : _cond(false), _empty(false)
         TSError("[%s] malformed line \"%s\", ignoring", PLUGIN_NAME, line.c_str());
         _tokens.clear();
         _empty = true;
-        return;
+        return false;
       }
     } else if (!extracting_token) {
       if (_tokens.empty() && line[i] == '#') {
@@ -94,7 +95,7 @@ Parser::Parser(const std::string &original_line) : _cond(false), _empty(false)
         break;
       }
 
-      if ((line[i] == '=') || (line[i] == '>') || (line[i] == '<')) {
+      if ((line[i] == '=') || (line[i] == '+')) {
         // These are always a seperate token
         _tokens.push_back(std::string(1, line[i]));
         continue;
@@ -114,21 +115,49 @@ Parser::Parser(const std::string &original_line) : _cond(false), _empty(false)
       TSError("[%s] malformed line, unterminated quotation: \"%s\", ignoring", PLUGIN_NAME, line.c_str());
       _tokens.clear();
       _empty = true;
-      return;
+      return false;
     }
   }
 
   if (_tokens.empty()) {
     _empty = true;
   } else {
-    preprocess(_tokens);
+    return preprocess(_tokens);
   }
+
+  return true;
 }
 
-// This is the core "parser", parsing rule sets
-void
+// This is the main "parser", a helper function to the above tokenizer. NOTE: this modifies (possibly) the tokens list,
+// therefore, we pass in a copy of the parsers tokens here, such that the original token list is retained (useful for tests etc.).
+bool
 Parser::preprocess(std::vector<std::string> tokens)
 {
+  // The last token might be the "flags" section, lets consume it if it is
+  if (tokens.size() > 0) {
+    std::string m = tokens[tokens.size() - 1];
+
+    if (!m.empty() && (m[0] == '[')) {
+      if (m[m.size() - 1] == ']') {
+        m = m.substr(1, m.size() - 2);
+        if (m.find_first_of(',') != std::string::npos) {
+          std::istringstream iss(m);
+          std::string t;
+          while (getline(iss, t, ',')) {
+            _mods.push_back(t);
+          }
+        } else {
+          _mods.push_back(m);
+        }
+        tokens.pop_back(); // consume it, so we don't concatenate it into the value
+      } else {
+        // Syntax error
+        TSError("[%s] mods have to be enclosed in []", PLUGIN_NAME);
+        return false;
+      }
+    }
+  }
+
   // Special case for "conditional" values
   if (tokens[0].substr(0, 2) == "%{") {
     _cond = true;
@@ -155,15 +184,21 @@ Parser::preprocess(std::vector<std::string> tokens)
       }
     } else {
       TSError("[%s] conditions must be embraced in %%{}", PLUGIN_NAME);
-      return;
+      return false;
     }
   } else {
-    // Operator has no qualifiers, but could take an optional second argumetn
+    // Operator has no qualifiers, but could take an optional second argument
     _op = tokens[0];
     if (tokens.size() > 1) {
       _arg = tokens[1];
+
       if (tokens.size() > 2) {
-        _val = tokens[2];
+        for (auto it = tokens.begin() + 2; it != tokens.end(); it++) {
+          _val = _val + *it;
+          if (std::next(it) != tokens.end()) {
+            _val = _val + " ";
+          }
+        }
       } else {
         _val = "";
       }
@@ -173,29 +208,7 @@ Parser::preprocess(std::vector<std::string> tokens)
     }
   }
 
-  // The last token might be the "flags" section
-  if (tokens.size() > 0) {
-    std::string m = tokens[tokens.size() - 1];
-
-    if (!m.empty() && (m[0] == '[')) {
-      if (m[m.size() - 1] == ']') {
-        m = m.substr(1, m.size() - 2);
-        if (m.find_first_of(',') != std::string::npos) {
-          std::istringstream iss(m);
-          std::string t;
-          while (getline(iss, t, ',')) {
-            _mods.push_back(t);
-          }
-        } else {
-          _mods.push_back(m);
-        }
-      } else {
-        // Syntax error
-        TSError("[%s] mods have to be embraced in []", PLUGIN_NAME);
-        return;
-      }
-    }
-  }
+  return true;
 }
 
 // Check if the operator is a condition, a hook, and if so, which hook. If the cond is not a hook
@@ -233,4 +246,52 @@ Parser::cond_is_hook(TSHttpHookID &hook) const
   }
 
   return false;
+}
+
+SimpleTokenizer::SimpleTokenizer(const std::string &original_line)
+{
+  std::string line        = original_line;
+  ParserState state       = PARSER_DEFAULT;
+  bool extracting_token   = false;
+  off_t cur_token_start   = 0;
+  size_t cur_token_length = 0;
+
+  for (size_t i = 0; i < line.size(); ++i) {
+    extracting_token = true;
+    switch (state) {
+    case PARSER_DEFAULT:
+      if ((line[i] == '{') || (line[i] == '<')) {
+        if (line[i - 1] == '%') {
+          // pickup what we currently have
+          cur_token_length = i - cur_token_start - 1;
+          if (cur_token_length > 0) {
+            _tokens.push_back(line.substr(cur_token_start, cur_token_length));
+          }
+
+          cur_token_start  = i - 1;
+          state            = PARSER_IN_EXPANSION;
+          extracting_token = false;
+        }
+      }
+      break;
+    case PARSER_IN_EXPANSION:
+      if ((line[i] == '}') || (line[i] == '>')) {
+        cur_token_length = i - cur_token_start + 1;
+        if (cur_token_length > 0) {
+          _tokens.push_back(line.substr(cur_token_start, cur_token_length));
+        }
+        cur_token_start  = i + 1;
+        state            = PARSER_DEFAULT;
+        extracting_token = false;
+      }
+      break;
+    default:
+      break;
+    }
+  }
+
+  // take what was left behind
+  if (extracting_token) {
+    _tokens.push_back(line.substr(cur_token_start));
+  }
 }

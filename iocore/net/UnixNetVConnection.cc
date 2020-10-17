@@ -1137,7 +1137,7 @@ UnixNetVConnection::acceptEvent(int event, Event *e)
 int
 UnixNetVConnection::mainEvent(int event, Event *e)
 {
-  ink_assert(event == EVENT_IMMEDIATE || event == EVENT_INTERVAL);
+  ink_assert(event == VC_EVENT_ACTIVE_TIMEOUT || event == VC_EVENT_INACTIVITY_TIMEOUT);
   ink_assert(thread == this_ethread());
 
   MUTEX_TRY_LOCK(hlock, get_NetHandler(thread)->mutex, e->ethread);
@@ -1161,18 +1161,23 @@ UnixNetVConnection::mainEvent(int event, Event *e)
   Event *t                      = nullptr;
   Event **signal_timeout        = &t;
 
-  if (event == EVENT_IMMEDIATE) {
-    /* BZ 49408 */
-    // ink_assert(inactivity_timeout_in);
-    // ink_assert(next_inactivity_timeout_at < Thread::get_hrtime());
-    if (!inactivity_timeout_in || next_inactivity_timeout_at > Thread::get_hrtime()) {
-      return EVENT_CONT;
-    }
+  switch (event) {
+  // Treating immediate as inactivity timeout for any
+  // deprecated remaining immediates. The previous code was using EVENT_INTERVAL
+  // and EVENT_IMMEDIATE to distinguish active and inactive timeouts.
+  // There appears to be some stray EVENT_IMMEDIATEs floating around
+  case EVENT_IMMEDIATE:
+  case VC_EVENT_INACTIVITY_TIMEOUT:
     signal_event      = VC_EVENT_INACTIVITY_TIMEOUT;
     signal_timeout_at = &next_inactivity_timeout_at;
-  } else {
+    break;
+  case VC_EVENT_ACTIVE_TIMEOUT:
     signal_event      = VC_EVENT_ACTIVE_TIMEOUT;
     signal_timeout_at = &next_activity_timeout_at;
+    break;
+  default:
+    ink_release_assert(!"BUG: unexpected event in UnixNetVConnection::mainEvent");
+    break;
   }
 
   *signal_timeout    = nullptr;

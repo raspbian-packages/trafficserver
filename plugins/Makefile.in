@@ -946,6 +946,22 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+#  Licensed to the Apache Software Foundation (ASF) under one
+#  or more contributor license agreements.  See the NOTICE file
+#  distributed with this work for additional information
+#  regarding copyright ownership.  The ASF licenses this file
+#  to you under the Apache License, Version 2.0 (the
+#  "License"); you may not use this file except in compliance
+#  with the License.  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+
 #
 #  Licensed to the Apache Software Foundation (ASF) under one
 #  or more contributor license agreements.  See the NOTICE file
@@ -1071,7 +1087,7 @@ check_PROGRAMS = esi/docnode_test$(EXEEXT) esi/parser_test$(EXEEXT) \
 	esi/processor_test$(EXEEXT) esi/utils_test$(EXEEXT) \
 	esi/vars_test$(EXEEXT) esi/gzip_test$(EXEEXT) \
 	header_rewrite/header_rewrite_test$(EXEEXT) \
-	s3_auth/test_s3auth$(EXEEXT) $(am__EXEEXT_1)
+	s3_auth/test_s3auth$(EXEEXT) $(am__EXEEXT_1) $(am__EXEEXT_2)
 @BUILD_HEALTHCHECK_PLUGIN_TRUE@am__append_1 = healthchecks/healthchecks.la
 @HAS_LUAJIT_TRUE@am__append_2 = lua/tslua.la
 @BUILD_EXPERIMENTAL_PLUGINS_TRUE@am__append_3 = experimental/access_control/access_control.la \
@@ -1096,6 +1112,7 @@ check_PROGRAMS = esi/docnode_test$(EXEEXT) esi/parser_test$(EXEEXT) \
 @BUILD_EXPERIMENTAL_PLUGINS_TRUE@	experimental/multiplexer/multiplexer.la \
 @BUILD_EXPERIMENTAL_PLUGINS_TRUE@	experimental/remap_purge/remap_purge.la \
 @BUILD_EXPERIMENTAL_PLUGINS_TRUE@	experimental/server_push_preload/server_push_preload.la \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@	experimental/slice/slice.la \
 @BUILD_EXPERIMENTAL_PLUGINS_TRUE@	experimental/ssl_cert_loader/ssl_cert_loader.la \
 @BUILD_EXPERIMENTAL_PLUGINS_TRUE@	experimental/sslheaders/sslheaders.la \
 @BUILD_EXPERIMENTAL_PLUGINS_TRUE@	experimental/stale_while_revalidate/stale_while_revalidate.la \
@@ -1106,15 +1123,19 @@ check_PROGRAMS = esi/docnode_test$(EXEEXT) esi/parser_test$(EXEEXT) \
 @BUILD_EXPERIMENTAL_PLUGINS_TRUE@	experimental/url_sig/url_sig.la \
 @BUILD_EXPERIMENTAL_PLUGINS_TRUE@	experimental/prefetch/prefetch.la
 @BUILD_EXPERIMENTAL_PLUGINS_TRUE@am__append_4 = experimental/access_control/test_access_control \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@	experimental/slice/test_content_range \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@	experimental/slice/test_range \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@	experimental/slice/test_config \
 @BUILD_EXPERIMENTAL_PLUGINS_TRUE@	experimental/sslheaders/test_sslheaders
 @BUILD_EXPERIMENTAL_PLUGINS_TRUE@am__append_5 = experimental/sslheaders/libsslhdr.la
 @BUILD_EXPERIMENTAL_PLUGINS_TRUE@@BUILD_URI_SIGNING_PLUGIN_TRUE@am__append_6 = experimental/uri_signing/uri_signing.la
-@BUILD_EXPERIMENTAL_PLUGINS_TRUE@@BUILD_MEMCACHED_REMAP_PLUGIN_TRUE@am__append_7 = experimental/memcached_remap/memcached_remap.la
-@BUILD_EXPERIMENTAL_PLUGINS_TRUE@@BUILD_REMAP_STATS_PLUGIN_TRUE@am__append_8 = experimental/remap_stats/remap_stats.la
-@BUILD_EXPERIMENTAL_PLUGINS_TRUE@@HAS_KYOTOCABINET_TRUE@am__append_9 = experimental/cache_key_genid/cache_key_genid.la
-@BUILD_EXPERIMENTAL_PLUGINS_TRUE@@BUILD_IMAGE_MAGICK_PLUGINS_TRUE@am__append_10 = experimental/webp_transform/WebpTransform.la \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@@BUILD_URI_SIGNING_PLUGIN_TRUE@am__append_7 = experimental/uri_signing/test_uri_signing
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@@BUILD_MEMCACHED_REMAP_PLUGIN_TRUE@am__append_8 = experimental/memcached_remap/memcached_remap.la
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@@BUILD_REMAP_STATS_PLUGIN_TRUE@am__append_9 = experimental/remap_stats/remap_stats.la
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@@HAS_KYOTOCABINET_TRUE@am__append_10 = experimental/cache_key_genid/cache_key_genid.la
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@@BUILD_IMAGE_MAGICK_PLUGINS_TRUE@am__append_11 = experimental/webp_transform/WebpTransform.la \
 @BUILD_EXPERIMENTAL_PLUGINS_TRUE@@BUILD_IMAGE_MAGICK_PLUGINS_TRUE@	experimental/magick/magick.la
-@BUILD_EXPERIMENTAL_PLUGINS_TRUE@@HAS_MYSQL_TRUE@am__append_11 = experimental/mysql_remap/mysql_remap.la
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@@HAS_MYSQL_TRUE@am__append_12 = experimental/mysql_remap/mysql_remap.la
 subdir = plugins
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/build/ax_check_openssl.m4 \
@@ -1126,8 +1147,9 @@ am__aclocal_m4_deps = $(top_srcdir)/build/ax_check_openssl.m4 \
 	$(top_srcdir)/build/ax_perl_modules.m4 \
 	$(top_srcdir)/build/ax_require_defined.m4 \
 	$(top_srcdir)/build/ax_with_curses.m4 \
-	$(top_srcdir)/build/brotli.m4 $(top_srcdir)/build/common.m4 \
-	$(top_srcdir)/build/crypto.m4 $(top_srcdir)/build/jemalloc.m4 \
+	$(top_srcdir)/build/brotli.m4 $(top_srcdir)/build/cjose.m4 \
+	$(top_srcdir)/build/common.m4 $(top_srcdir)/build/crypto.m4 \
+	$(top_srcdir)/build/jansson.m4 $(top_srcdir)/build/jemalloc.m4 \
 	$(top_srcdir)/build/libtool.m4 \
 	$(top_srcdir)/build/ltoptions.m4 \
 	$(top_srcdir)/build/ltsugar.m4 \
@@ -1147,7 +1169,11 @@ CONFIG_HEADER = $(top_builddir)/include/ink_autoconf.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 @BUILD_EXPERIMENTAL_PLUGINS_TRUE@am__EXEEXT_1 = experimental/access_control/test_access_control$(EXEEXT) \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@	experimental/slice/test_content_range$(EXEEXT) \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@	experimental/slice/test_range$(EXEEXT) \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@	experimental/slice/test_config$(EXEEXT) \
 @BUILD_EXPERIMENTAL_PLUGINS_TRUE@	experimental/sslheaders/test_sslheaders$(EXEEXT)
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@@BUILD_URI_SIGNING_PLUGIN_TRUE@am__EXEEXT_2 = experimental/uri_signing/test_uri_signing$(EXEEXT)
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
     $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
@@ -1195,7 +1221,9 @@ background_fetch_background_fetch_la_OBJECTS =  \
 	$(am_background_fetch_background_fetch_la_OBJECTS)
 cache_promote_cache_promote_la_LIBADD =
 am_cache_promote_cache_promote_la_OBJECTS =  \
-	cache_promote/cache_promote.lo
+	cache_promote/cache_promote.lo cache_promote/configs.lo \
+	cache_promote/policy.lo cache_promote/lru_policy.lo \
+	cache_promote/policy_manager.lo
 cache_promote_cache_promote_la_OBJECTS =  \
 	$(am_cache_promote_cache_promote_la_OBJECTS)
 cachekey_cachekey_la_LIBADD =
@@ -1574,6 +1602,38 @@ experimental_server_push_preload_server_push_preload_la_LINK =  \
 	$(LDFLAGS) -o $@
 @BUILD_EXPERIMENTAL_PLUGINS_TRUE@am_experimental_server_push_preload_server_push_preload_la_rpath =  \
 @BUILD_EXPERIMENTAL_PLUGINS_TRUE@	-rpath $(pkglibdir)
+experimental_slice_slice_la_LIBADD =
+am__experimental_slice_slice_la_SOURCES_DIST =  \
+	experimental/slice/client.cc experimental/slice/client.h \
+	experimental/slice/Config.cc experimental/slice/Config.h \
+	experimental/slice/ContentRange.cc \
+	experimental/slice/ContentRange.h experimental/slice/Data.h \
+	experimental/slice/HttpHeader.cc \
+	experimental/slice/HttpHeader.h \
+	experimental/slice/intercept.cc experimental/slice/intercept.h \
+	experimental/slice/Range.cc experimental/slice/Range.h \
+	experimental/slice/response.cc experimental/slice/response.h \
+	experimental/slice/server.cc experimental/slice/server.h \
+	experimental/slice/slice.cc experimental/slice/slice.h \
+	experimental/slice/Stage.h experimental/slice/transfer.cc \
+	experimental/slice/transfer.h experimental/slice/util.cc \
+	experimental/slice/util.h
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@am_experimental_slice_slice_la_OBJECTS =  \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@	experimental/slice/client.lo \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@	experimental/slice/Config.lo \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@	experimental/slice/ContentRange.lo \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@	experimental/slice/HttpHeader.lo \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@	experimental/slice/intercept.lo \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@	experimental/slice/Range.lo \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@	experimental/slice/response.lo \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@	experimental/slice/server.lo \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@	experimental/slice/slice.lo \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@	experimental/slice/transfer.lo \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@	experimental/slice/util.lo
+experimental_slice_slice_la_OBJECTS =  \
+	$(am_experimental_slice_slice_la_OBJECTS)
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@am_experimental_slice_slice_la_rpath =  \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@	-rpath $(pkglibdir)
 @BUILD_EXPERIMENTAL_PLUGINS_TRUE@experimental_ssl_cert_loader_ssl_cert_loader_la_DEPENDENCIES = $(top_builddir)/lib/tsconfig/libtsconfig.la
 am__experimental_ssl_cert_loader_ssl_cert_loader_la_SOURCES_DIST =  \
 	experimental/ssl_cert_loader/ssl-cert-loader.cc \
@@ -1653,6 +1713,7 @@ am__experimental_uri_signing_uri_signing_la_SOURCES_DIST =  \
 	experimental/uri_signing/jwt.c \
 	experimental/uri_signing/match.c \
 	experimental/uri_signing/parse.c \
+	experimental/uri_signing/normalize.c \
 	experimental/uri_signing/timing.c
 @BUILD_EXPERIMENTAL_PLUGINS_TRUE@@BUILD_URI_SIGNING_PLUGIN_TRUE@am_experimental_uri_signing_uri_signing_la_OBJECTS = experimental/uri_signing/uri_signing.lo \
 @BUILD_EXPERIMENTAL_PLUGINS_TRUE@@BUILD_URI_SIGNING_PLUGIN_TRUE@	experimental/uri_signing/config.lo \
@@ -1660,6 +1721,7 @@ am__experimental_uri_signing_uri_signing_la_SOURCES_DIST =  \
 @BUILD_EXPERIMENTAL_PLUGINS_TRUE@@BUILD_URI_SIGNING_PLUGIN_TRUE@	experimental/uri_signing/jwt.lo \
 @BUILD_EXPERIMENTAL_PLUGINS_TRUE@@BUILD_URI_SIGNING_PLUGIN_TRUE@	experimental/uri_signing/match.lo \
 @BUILD_EXPERIMENTAL_PLUGINS_TRUE@@BUILD_URI_SIGNING_PLUGIN_TRUE@	experimental/uri_signing/parse.lo \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@@BUILD_URI_SIGNING_PLUGIN_TRUE@	experimental/uri_signing/normalize.lo \
 @BUILD_EXPERIMENTAL_PLUGINS_TRUE@@BUILD_URI_SIGNING_PLUGIN_TRUE@	experimental/uri_signing/timing.lo
 experimental_uri_signing_uri_signing_la_OBJECTS =  \
 	$(am_experimental_uri_signing_uri_signing_la_OBJECTS)
@@ -1699,7 +1761,8 @@ am_header_rewrite_header_rewrite_la_OBJECTS =  \
 	header_rewrite/header_rewrite.lo header_rewrite/lulu.lo \
 	header_rewrite/operator.lo header_rewrite/operators.lo \
 	header_rewrite/regex_helper.lo header_rewrite/resources.lo \
-	header_rewrite/ruleset.lo header_rewrite/statement.lo
+	header_rewrite/ruleset.lo header_rewrite/statement.lo \
+	header_rewrite/value.lo
 header_rewrite_header_rewrite_la_OBJECTS =  \
 	$(am_header_rewrite_header_rewrite_la_OBJECTS)
 header_rewrite_parser_la_LIBADD =
@@ -1852,6 +1915,30 @@ experimental_access_control_test_access_control_OBJECTS =  \
 	$(am_experimental_access_control_test_access_control_OBJECTS)
 @BUILD_EXPERIMENTAL_PLUGINS_TRUE@experimental_access_control_test_access_control_DEPENDENCIES =  \
 @BUILD_EXPERIMENTAL_PLUGINS_TRUE@	$(am__DEPENDENCIES_1)
+am__experimental_slice_test_config_SOURCES_DIST =  \
+	experimental/slice/unit-tests/test_config.cc \
+	experimental/slice/Config.cc
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@am_experimental_slice_test_config_OBJECTS = experimental/slice/unit-tests/test_config-test_config.$(OBJEXT) \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@	experimental/slice/test_config-Config.$(OBJEXT)
+experimental_slice_test_config_OBJECTS =  \
+	$(am_experimental_slice_test_config_OBJECTS)
+experimental_slice_test_config_LDADD = $(LDADD)
+am__experimental_slice_test_content_range_SOURCES_DIST =  \
+	experimental/slice/unit-tests/test_content_range.cc \
+	experimental/slice/ContentRange.cc
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@am_experimental_slice_test_content_range_OBJECTS = experimental/slice/unit-tests/test_content_range-test_content_range.$(OBJEXT) \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@	experimental/slice/test_content_range-ContentRange.$(OBJEXT)
+experimental_slice_test_content_range_OBJECTS =  \
+	$(am_experimental_slice_test_content_range_OBJECTS)
+experimental_slice_test_content_range_LDADD = $(LDADD)
+am__experimental_slice_test_range_SOURCES_DIST =  \
+	experimental/slice/unit-tests/test_range.cc \
+	experimental/slice/Range.cc
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@am_experimental_slice_test_range_OBJECTS = experimental/slice/unit-tests/test_range-test_range.$(OBJEXT) \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@	experimental/slice/test_range-Range.$(OBJEXT)
+experimental_slice_test_range_OBJECTS =  \
+	$(am_experimental_slice_test_range_OBJECTS)
+experimental_slice_test_range_LDADD = $(LDADD)
 am__experimental_sslheaders_test_sslheaders_SOURCES_DIST =  \
 	experimental/sslheaders/test_sslheaders.cc \
 	experimental/sslheaders/sslheaders.h
@@ -1866,6 +1953,28 @@ experimental_sslheaders_test_sslheaders_LINK = $(LIBTOOL) $(AM_V_lt) \
 	$(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
 	$(experimental_sslheaders_test_sslheaders_LDFLAGS) $(LDFLAGS) \
 	-o $@
+am__experimental_uri_signing_test_uri_signing_SOURCES_DIST =  \
+	experimental/uri_signing/unit_tests/uri_signing_test.cc \
+	experimental/uri_signing/jwt.c \
+	experimental/uri_signing/common.c \
+	experimental/uri_signing/parse.c \
+	experimental/uri_signing/cookie.c \
+	experimental/uri_signing/config.c \
+	experimental/uri_signing/timing.c \
+	experimental/uri_signing/normalize.c \
+	experimental/uri_signing/match.c
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@@BUILD_URI_SIGNING_PLUGIN_TRUE@am_experimental_uri_signing_test_uri_signing_OBJECTS = experimental/uri_signing/unit_tests/test_uri_signing-uri_signing_test.$(OBJEXT) \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@@BUILD_URI_SIGNING_PLUGIN_TRUE@	experimental/uri_signing/test_uri_signing-jwt.$(OBJEXT) \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@@BUILD_URI_SIGNING_PLUGIN_TRUE@	experimental/uri_signing/test_uri_signing-common.$(OBJEXT) \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@@BUILD_URI_SIGNING_PLUGIN_TRUE@	experimental/uri_signing/test_uri_signing-parse.$(OBJEXT) \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@@BUILD_URI_SIGNING_PLUGIN_TRUE@	experimental/uri_signing/test_uri_signing-cookie.$(OBJEXT) \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@@BUILD_URI_SIGNING_PLUGIN_TRUE@	experimental/uri_signing/test_uri_signing-config.$(OBJEXT) \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@@BUILD_URI_SIGNING_PLUGIN_TRUE@	experimental/uri_signing/test_uri_signing-timing.$(OBJEXT) \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@@BUILD_URI_SIGNING_PLUGIN_TRUE@	experimental/uri_signing/test_uri_signing-normalize.$(OBJEXT) \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@@BUILD_URI_SIGNING_PLUGIN_TRUE@	experimental/uri_signing/test_uri_signing-match.$(OBJEXT)
+experimental_uri_signing_test_uri_signing_OBJECTS =  \
+	$(am_experimental_uri_signing_test_uri_signing_OBJECTS)
+experimental_uri_signing_test_uri_signing_DEPENDENCIES =
 am_header_rewrite_header_rewrite_test_OBJECTS =  \
 	header_rewrite/header_rewrite_test.$(OBJEXT)
 header_rewrite_header_rewrite_test_OBJECTS =  \
@@ -1899,6 +2008,10 @@ am__depfiles_remade = authproxy/$(DEPDIR)/authproxy.Plo \
 	background_fetch/$(DEPDIR)/headers.Plo \
 	background_fetch/$(DEPDIR)/rules.Plo \
 	cache_promote/$(DEPDIR)/cache_promote.Plo \
+	cache_promote/$(DEPDIR)/configs.Plo \
+	cache_promote/$(DEPDIR)/lru_policy.Plo \
+	cache_promote/$(DEPDIR)/policy.Plo \
+	cache_promote/$(DEPDIR)/policy_manager.Plo \
 	cachekey/$(DEPDIR)/cachekey.Plo cachekey/$(DEPDIR)/common.Plo \
 	cachekey/$(DEPDIR)/configs.Plo cachekey/$(DEPDIR)/pattern.Plo \
 	cachekey/$(DEPDIR)/plugin.Plo \
@@ -2000,6 +2113,23 @@ am__depfiles_remade = authproxy/$(DEPDIR)/authproxy.Plo \
 	experimental/remap_purge/$(DEPDIR)/remap_purge.Plo \
 	experimental/remap_stats/$(DEPDIR)/remap_stats.Plo \
 	experimental/server_push_preload/$(DEPDIR)/server_push_preload.Plo \
+	experimental/slice/$(DEPDIR)/Config.Plo \
+	experimental/slice/$(DEPDIR)/ContentRange.Plo \
+	experimental/slice/$(DEPDIR)/HttpHeader.Plo \
+	experimental/slice/$(DEPDIR)/Range.Plo \
+	experimental/slice/$(DEPDIR)/client.Plo \
+	experimental/slice/$(DEPDIR)/intercept.Plo \
+	experimental/slice/$(DEPDIR)/response.Plo \
+	experimental/slice/$(DEPDIR)/server.Plo \
+	experimental/slice/$(DEPDIR)/slice.Plo \
+	experimental/slice/$(DEPDIR)/test_config-Config.Po \
+	experimental/slice/$(DEPDIR)/test_content_range-ContentRange.Po \
+	experimental/slice/$(DEPDIR)/test_range-Range.Po \
+	experimental/slice/$(DEPDIR)/transfer.Plo \
+	experimental/slice/$(DEPDIR)/util.Plo \
+	experimental/slice/unit-tests/$(DEPDIR)/test_config-test_config.Po \
+	experimental/slice/unit-tests/$(DEPDIR)/test_content_range-test_content_range.Po \
+	experimental/slice/unit-tests/$(DEPDIR)/test_range-test_range.Po \
 	experimental/ssl_cert_loader/$(DEPDIR)/domain-tree.Plo \
 	experimental/ssl_cert_loader/$(DEPDIR)/ssl-cert-loader.Plo \
 	experimental/sslheaders/$(DEPDIR)/libsslhdr_la-expand.Plo \
@@ -2016,9 +2146,19 @@ am__depfiles_remade = authproxy/$(DEPDIR)/authproxy.Plo \
 	experimental/uri_signing/$(DEPDIR)/cookie.Plo \
 	experimental/uri_signing/$(DEPDIR)/jwt.Plo \
 	experimental/uri_signing/$(DEPDIR)/match.Plo \
+	experimental/uri_signing/$(DEPDIR)/normalize.Plo \
 	experimental/uri_signing/$(DEPDIR)/parse.Plo \
+	experimental/uri_signing/$(DEPDIR)/test_uri_signing-common.Po \
+	experimental/uri_signing/$(DEPDIR)/test_uri_signing-config.Po \
+	experimental/uri_signing/$(DEPDIR)/test_uri_signing-cookie.Po \
+	experimental/uri_signing/$(DEPDIR)/test_uri_signing-jwt.Po \
+	experimental/uri_signing/$(DEPDIR)/test_uri_signing-match.Po \
+	experimental/uri_signing/$(DEPDIR)/test_uri_signing-normalize.Po \
+	experimental/uri_signing/$(DEPDIR)/test_uri_signing-parse.Po \
+	experimental/uri_signing/$(DEPDIR)/test_uri_signing-timing.Po \
 	experimental/uri_signing/$(DEPDIR)/timing.Plo \
 	experimental/uri_signing/$(DEPDIR)/uri_signing.Plo \
+	experimental/uri_signing/unit_tests/$(DEPDIR)/test_uri_signing-uri_signing_test.Po \
 	experimental/url_sig/$(DEPDIR)/url_sig.Plo \
 	experimental/webp_transform/$(DEPDIR)/WebpTransform_la-ImageTransform.Plo \
 	generator/$(DEPDIR)/generator.Plo \
@@ -2036,6 +2176,7 @@ am__depfiles_remade = authproxy/$(DEPDIR)/authproxy.Plo \
 	header_rewrite/$(DEPDIR)/resources.Plo \
 	header_rewrite/$(DEPDIR)/ruleset.Plo \
 	header_rewrite/$(DEPDIR)/statement.Plo \
+	header_rewrite/$(DEPDIR)/value.Plo \
 	healthchecks/$(DEPDIR)/healthchecks.Plo \
 	libloader/$(DEPDIR)/libloader.Plo \
 	lua/$(DEPDIR)/tslua_la-ts_lua.Plo \
@@ -2149,6 +2290,7 @@ SOURCES = $(authproxy_authproxy_la_SOURCES) \
 	$(experimental_remap_purge_remap_purge_la_SOURCES) \
 	$(experimental_remap_stats_remap_stats_la_SOURCES) \
 	$(experimental_server_push_preload_server_push_preload_la_SOURCES) \
+	$(experimental_slice_slice_la_SOURCES) \
 	$(experimental_ssl_cert_loader_ssl_cert_loader_la_SOURCES) \
 	$(experimental_sslheaders_libsslhdr_la_SOURCES) \
 	$(experimental_sslheaders_sslheaders_la_SOURCES) \
@@ -2176,7 +2318,11 @@ SOURCES = $(authproxy_authproxy_la_SOURCES) \
 	$(esi_processor_test_SOURCES) $(esi_utils_test_SOURCES) \
 	$(esi_vars_test_SOURCES) \
 	$(experimental_access_control_test_access_control_SOURCES) \
+	$(experimental_slice_test_config_SOURCES) \
+	$(experimental_slice_test_content_range_SOURCES) \
+	$(experimental_slice_test_range_SOURCES) \
 	$(experimental_sslheaders_test_sslheaders_SOURCES) \
+	$(experimental_uri_signing_test_uri_signing_SOURCES) \
 	$(header_rewrite_header_rewrite_test_SOURCES) \
 	$(s3_auth_test_s3auth_SOURCES)
 DIST_SOURCES = $(authproxy_authproxy_la_SOURCES) \
@@ -2216,6 +2362,7 @@ DIST_SOURCES = $(authproxy_authproxy_la_SOURCES) \
 	$(am__experimental_remap_purge_remap_purge_la_SOURCES_DIST) \
 	$(am__experimental_remap_stats_remap_stats_la_SOURCES_DIST) \
 	$(am__experimental_server_push_preload_server_push_preload_la_SOURCES_DIST) \
+	$(am__experimental_slice_slice_la_SOURCES_DIST) \
 	$(am__experimental_ssl_cert_loader_ssl_cert_loader_la_SOURCES_DIST) \
 	$(am__experimental_sslheaders_libsslhdr_la_SOURCES_DIST) \
 	$(am__experimental_sslheaders_sslheaders_la_SOURCES_DIST) \
@@ -2244,7 +2391,11 @@ DIST_SOURCES = $(authproxy_authproxy_la_SOURCES) \
 	$(esi_processor_test_SOURCES) $(esi_utils_test_SOURCES) \
 	$(esi_vars_test_SOURCES) \
 	$(am__experimental_access_control_test_access_control_SOURCES_DIST) \
+	$(am__experimental_slice_test_config_SOURCES_DIST) \
+	$(am__experimental_slice_test_content_range_SOURCES_DIST) \
+	$(am__experimental_slice_test_range_SOURCES_DIST) \
 	$(am__experimental_sslheaders_test_sslheaders_SOURCES_DIST) \
+	$(am__experimental_uri_signing_test_uri_signing_SOURCES_DIST) \
 	$(header_rewrite_header_rewrite_test_SOURCES) \
 	$(s3_auth_test_s3auth_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive cscopelist-recursive \
@@ -2501,6 +2652,7 @@ am__DIST_COMMON = $(srcdir)/Makefile.in \
 	$(srcdir)/experimental/remap_purge/Makefile.inc \
 	$(srcdir)/experimental/remap_stats/Makefile.inc \
 	$(srcdir)/experimental/server_push_preload/Makefile.inc \
+	$(srcdir)/experimental/slice/Makefile.inc \
 	$(srcdir)/experimental/ssl_cert_loader/Makefile.inc \
 	$(srcdir)/experimental/sslheaders/Makefile.inc \
 	$(srcdir)/experimental/stale_while_revalidate/Makefile.inc \
@@ -2564,7 +2716,7 @@ AM_CFLAGS = @AM_CFLAGS@
 AM_CPPFLAGS = @AM_CPPFLAGS@ $(TS_PLUGIN_CPPFLAGS)
 AM_CXXFLAGS = @AM_CXXFLAGS@
 AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
-AM_LDFLAGS = $(TS_PLUGIN_LD_FLAGS)
+AM_LDFLAGS = @AM_LDFLAGS@ $(TS_PLUGIN_LD_FLAGS)
 AR = @AR@
 ASCPP = @ASCPP@
 AUTOCONF = @AUTOCONF@
@@ -2860,6 +3012,7 @@ use_dh_get_2048_256 = @use_dh_get_2048_256@
 use_diags = @use_diags@
 use_epoll = @use_epoll@
 use_fast_sdk = @use_fast_sdk@
+use_hello_cb = @use_hello_cb@
 use_hwloc = @use_hwloc@
 use_kqueue = @use_kqueue@
 use_linux_native_aio = @use_linux_native_aio@
@@ -2921,8 +3074,8 @@ pkglib_LTLIBRARIES = authproxy/authproxy.la \
 	regex_revalidate/regex_revalidate.la s3_auth/s3_auth.la \
 	stats_over_http/stats_over_http.la tcpinfo/tcpinfo.la \
 	xdebug/xdebug.la test_cppapi/test_cppapi.la $(am__append_3) \
-	$(am__append_6) $(am__append_7) $(am__append_8) \
-	$(am__append_9) $(am__append_10) $(am__append_11)
+	$(am__append_6) $(am__append_8) $(am__append_9) \
+	$(am__append_10) $(am__append_11) $(am__append_12)
 SUBDIRS = 
 authproxy_authproxy_la_SOURCES = \
 	authproxy/authproxy.cc \
@@ -2946,7 +3099,11 @@ cachekey_cachekey_la_SOURCES = \
   cachekey/plugin.cc
 
 cache_promote_cache_promote_la_SOURCES = \
-  cache_promote/cache_promote.cc
+  cache_promote/cache_promote.cc \
+  cache_promote/configs.cc \
+  cache_promote/policy.cc \
+  cache_promote/lru_policy.cc \
+  cache_promote/policy_manager.cc
 
 conf_remap_conf_remap_la_SOURCES = conf_remap/conf_remap.cc
 escalate_escalate_la_SOURCES = \
@@ -3084,6 +3241,7 @@ header_rewrite_header_rewrite_la_SOURCES = \
 	header_rewrite/ruleset.h \
 	header_rewrite/statement.cc \
 	header_rewrite/statement.h \
+	header_rewrite/value.cc \
 	header_rewrite/value.h
 
 header_rewrite_parser_la_SOURCES = \
@@ -3267,6 +3425,47 @@ test_cppapi_test_cppapi_la_SOURCES = test_cppapi/test_cppapi.cc
 @BUILD_EXPERIMENTAL_PLUGINS_TRUE@experimental_server_push_preload_server_push_preload_la_LIBADD = \
 @BUILD_EXPERIMENTAL_PLUGINS_TRUE@  $(top_builddir)/src/tscpp/api/libtscppapi.la
 
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@experimental_slice_slice_la_SOURCES = \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@  experimental/slice/client.cc \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@  experimental/slice/client.h \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@  experimental/slice/Config.cc \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@  experimental/slice/Config.h \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@  experimental/slice/ContentRange.cc \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@  experimental/slice/ContentRange.h \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@  experimental/slice/Data.h \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@  experimental/slice/HttpHeader.cc \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@  experimental/slice/HttpHeader.h \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@  experimental/slice/intercept.cc \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@  experimental/slice/intercept.h \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@  experimental/slice/Range.cc \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@  experimental/slice/Range.h \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@  experimental/slice/response.cc \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@  experimental/slice/response.h \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@  experimental/slice/server.cc \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@  experimental/slice/server.h \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@  experimental/slice/slice.cc \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@  experimental/slice/slice.h \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@  experimental/slice/Stage.h \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@  experimental/slice/transfer.cc \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@  experimental/slice/transfer.h \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@  experimental/slice/util.cc \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@  experimental/slice/util.h
+
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@experimental_slice_test_content_range_CPPFLAGS = $(AM_CPPFLAGS) -I$(abs_top_srcdir)/tests/include -DUNITTEST
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@experimental_slice_test_content_range_SOURCES = \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@  experimental/slice/unit-tests/test_content_range.cc \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@  experimental/slice/ContentRange.cc
+
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@experimental_slice_test_range_CPPFLAGS = $(AM_CPPFLAGS) -I$(abs_top_srcdir)/tests/include -DUNITTEST
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@experimental_slice_test_range_SOURCES = \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@  experimental/slice/unit-tests/test_range.cc \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@  experimental/slice/Range.cc
+
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@experimental_slice_test_config_CPPFLAGS = $(AM_CPPFLAGS) -I$(abs_top_srcdir)/tests/include -DUNITTEST
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@experimental_slice_test_config_SOURCES = \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@  experimental/slice/unit-tests/test_config.cc \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@  experimental/slice/Config.cc
+
 @BUILD_EXPERIMENTAL_PLUGINS_TRUE@experimental_ssl_cert_loader_ssl_cert_loader_la_SOURCES = \
 @BUILD_EXPERIMENTAL_PLUGINS_TRUE@  experimental/ssl_cert_loader/ssl-cert-loader.cc \
 @BUILD_EXPERIMENTAL_PLUGINS_TRUE@  experimental/ssl_cert_loader/domain-tree.cc
@@ -3350,9 +3549,23 @@ test_cppapi_test_cppapi_la_SOURCES = test_cppapi/test_cppapi.cc
 @BUILD_EXPERIMENTAL_PLUGINS_TRUE@@BUILD_URI_SIGNING_PLUGIN_TRUE@  experimental/uri_signing/jwt.c                  \
 @BUILD_EXPERIMENTAL_PLUGINS_TRUE@@BUILD_URI_SIGNING_PLUGIN_TRUE@  experimental/uri_signing/match.c                \
 @BUILD_EXPERIMENTAL_PLUGINS_TRUE@@BUILD_URI_SIGNING_PLUGIN_TRUE@  experimental/uri_signing/parse.c                \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@@BUILD_URI_SIGNING_PLUGIN_TRUE@  experimental/uri_signing/normalize.c            \
 @BUILD_EXPERIMENTAL_PLUGINS_TRUE@@BUILD_URI_SIGNING_PLUGIN_TRUE@  experimental/uri_signing/timing.c
 
 @BUILD_EXPERIMENTAL_PLUGINS_TRUE@@BUILD_URI_SIGNING_PLUGIN_TRUE@experimental_uri_signing_uri_signing_la_LIBADD = @LIBJANSSON@ @LIBCJOSE@ @LIBPCRE@ -lm -lcrypto
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@@BUILD_URI_SIGNING_PLUGIN_TRUE@experimental_uri_signing_test_uri_signing_CPPFLAGS = $(AM_CPPFLAGS) -I$(abs_top_srcdir)/tests/include -DURI_SIGNING_UNIT_TEST
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@@BUILD_URI_SIGNING_PLUGIN_TRUE@experimental_uri_signing_test_uri_signing_LDADD = @LIBJANSSON@ @LIBCJOSE@ @LIBPCRE@ -lm -lcrypto
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@@BUILD_URI_SIGNING_PLUGIN_TRUE@experimental_uri_signing_test_uri_signing_SOURCES = \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@@BUILD_URI_SIGNING_PLUGIN_TRUE@	experimental/uri_signing/unit_tests/uri_signing_test.cc \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@@BUILD_URI_SIGNING_PLUGIN_TRUE@    experimental/uri_signing/jwt.c \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@@BUILD_URI_SIGNING_PLUGIN_TRUE@    experimental/uri_signing/common.c \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@@BUILD_URI_SIGNING_PLUGIN_TRUE@    experimental/uri_signing/parse.c \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@@BUILD_URI_SIGNING_PLUGIN_TRUE@    experimental/uri_signing/cookie.c \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@@BUILD_URI_SIGNING_PLUGIN_TRUE@    experimental/uri_signing/config.c \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@@BUILD_URI_SIGNING_PLUGIN_TRUE@    experimental/uri_signing/timing.c \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@@BUILD_URI_SIGNING_PLUGIN_TRUE@    experimental/uri_signing/normalize.c \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@@BUILD_URI_SIGNING_PLUGIN_TRUE@    experimental/uri_signing/match.c
+
 @BUILD_EXPERIMENTAL_PLUGINS_TRUE@@BUILD_MEMCACHED_REMAP_PLUGIN_TRUE@experimental_memcached_remap_memcached_remap_la__CXXFLAGS = $(AM_CXXFLAGS) $(LIBMEMCACHED_CFLAGS)
 @BUILD_EXPERIMENTAL_PLUGINS_TRUE@@BUILD_MEMCACHED_REMAP_PLUGIN_TRUE@experimental_memcached_remap_memcached_remap_la_SOURCES = \
 @BUILD_EXPERIMENTAL_PLUGINS_TRUE@@BUILD_MEMCACHED_REMAP_PLUGIN_TRUE@  experimental/memcached_remap/memcached_remap.cc
@@ -3409,7 +3622,7 @@ all: all-recursive
 
 .SUFFIXES:
 .SUFFIXES: .c .cc .lo .log .o .obj .test .test$(EXEEXT) .trs
-$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(top_srcdir)/build/plugins.mk $(top_srcdir)/build/tidy.mk $(srcdir)/authproxy/Makefile.inc $(srcdir)/background_fetch/Makefile.inc $(srcdir)/cachekey/Makefile.inc $(srcdir)/cache_promote/Makefile.inc $(srcdir)/conf_remap/Makefile.inc $(srcdir)/escalate/Makefile.inc $(srcdir)/esi/Makefile.inc $(srcdir)/generator/Makefile.inc $(srcdir)/compress/Makefile.inc $(srcdir)/header_rewrite/Makefile.inc $(srcdir)/healthchecks/Makefile.inc $(srcdir)/libloader/Makefile.inc $(srcdir)/lua/Makefile.inc $(srcdir)/regex_remap/Makefile.inc $(srcdir)/regex_revalidate/Makefile.inc $(srcdir)/s3_auth/Makefile.inc $(srcdir)/stats_over_http/Makefile.inc $(srcdir)/tcpinfo/Makefile.inc $(srcdir)/xdebug/Makefile.inc $(srcdir)/test_cppapi/Makefile.inc $(srcdir)/experimental/access_control/Makefile.inc $(srcdir)/experimental/acme/Makefile.inc $(srcdir)/experimental/balancer/Makefile.inc $(srcdir)/experimental/buffer_upload/Makefile.inc $(srcdir)/experimental/cache_range_requests/Makefile.inc $(srcdir)/experimental/certifier/Makefile.inc $(srcdir)/experimental/collapsed_forwarding/Makefile.inc $(srcdir)/experimental/custom_redirect/Makefile.inc $(srcdir)/experimental/fq_pacing/Makefile.inc $(srcdir)/experimental/geoip_acl/Makefile.inc $(srcdir)/experimental/header_freq/Makefile.inc $(srcdir)/experimental/header_normalize/Makefile.inc $(srcdir)/experimental/hipes/Makefile.inc $(srcdir)/experimental/hook-trace/Makefile.inc $(srcdir)/experimental/inliner/Makefile.inc $(srcdir)/experimental/memcache/Makefile.inc $(srcdir)/experimental/metalink/Makefile.inc $(srcdir)/experimental/money_trace/Makefile.inc $(srcdir)/experimental/mp4/Makefile.inc $(srcdir)/experimental/multiplexer/Makefile.inc $(srcdir)/experimental/remap_purge/Makefile.inc $(srcdir)/experimental/server_push_preload/Makefile.inc $(srcdir)/experimental/ssl_cert_loader/Makefile.inc $(srcdir)/experimental/sslheaders/Makefile.inc $(srcdir)/experimental/stale_while_revalidate/Makefile.inc $(srcdir)/experimental/stream_editor/Makefile.inc $(srcdir)/experimental/system_stats/Makefile.inc $(srcdir)/experimental/traffic_dump/Makefile.inc $(srcdir)/experimental/tls_bridge/Makefile.inc $(srcdir)/experimental/url_sig/Makefile.inc $(srcdir)/experimental/prefetch/Makefile.inc $(srcdir)/experimental/uri_signing/Makefile.inc $(srcdir)/experimental/memcached_remap/Makefile.inc $(srcdir)/experimental/remap_stats/Makefile.inc $(srcdir)/experimental/cache_key_genid/Makefile.inc $(srcdir)/experimental/webp_transform/Makefile.inc $(srcdir)/experimental/magick/Makefile.inc $(srcdir)/experimental/mysql_remap/Makefile.inc $(am__configure_deps)
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(top_srcdir)/build/plugins.mk $(top_srcdir)/build/tidy.mk $(srcdir)/authproxy/Makefile.inc $(srcdir)/background_fetch/Makefile.inc $(srcdir)/cachekey/Makefile.inc $(srcdir)/cache_promote/Makefile.inc $(srcdir)/conf_remap/Makefile.inc $(srcdir)/escalate/Makefile.inc $(srcdir)/esi/Makefile.inc $(srcdir)/generator/Makefile.inc $(srcdir)/compress/Makefile.inc $(srcdir)/header_rewrite/Makefile.inc $(srcdir)/healthchecks/Makefile.inc $(srcdir)/libloader/Makefile.inc $(srcdir)/lua/Makefile.inc $(srcdir)/regex_remap/Makefile.inc $(srcdir)/regex_revalidate/Makefile.inc $(srcdir)/s3_auth/Makefile.inc $(srcdir)/stats_over_http/Makefile.inc $(srcdir)/tcpinfo/Makefile.inc $(srcdir)/xdebug/Makefile.inc $(srcdir)/test_cppapi/Makefile.inc $(srcdir)/experimental/access_control/Makefile.inc $(srcdir)/experimental/acme/Makefile.inc $(srcdir)/experimental/balancer/Makefile.inc $(srcdir)/experimental/buffer_upload/Makefile.inc $(srcdir)/experimental/cache_range_requests/Makefile.inc $(srcdir)/experimental/certifier/Makefile.inc $(srcdir)/experimental/collapsed_forwarding/Makefile.inc $(srcdir)/experimental/custom_redirect/Makefile.inc $(srcdir)/experimental/fq_pacing/Makefile.inc $(srcdir)/experimental/geoip_acl/Makefile.inc $(srcdir)/experimental/header_freq/Makefile.inc $(srcdir)/experimental/header_normalize/Makefile.inc $(srcdir)/experimental/hipes/Makefile.inc $(srcdir)/experimental/hook-trace/Makefile.inc $(srcdir)/experimental/inliner/Makefile.inc $(srcdir)/experimental/memcache/Makefile.inc $(srcdir)/experimental/metalink/Makefile.inc $(srcdir)/experimental/money_trace/Makefile.inc $(srcdir)/experimental/mp4/Makefile.inc $(srcdir)/experimental/multiplexer/Makefile.inc $(srcdir)/experimental/remap_purge/Makefile.inc $(srcdir)/experimental/server_push_preload/Makefile.inc $(srcdir)/experimental/slice/Makefile.inc $(srcdir)/experimental/ssl_cert_loader/Makefile.inc $(srcdir)/experimental/sslheaders/Makefile.inc $(srcdir)/experimental/stale_while_revalidate/Makefile.inc $(srcdir)/experimental/stream_editor/Makefile.inc $(srcdir)/experimental/system_stats/Makefile.inc $(srcdir)/experimental/traffic_dump/Makefile.inc $(srcdir)/experimental/tls_bridge/Makefile.inc $(srcdir)/experimental/url_sig/Makefile.inc $(srcdir)/experimental/prefetch/Makefile.inc $(srcdir)/experimental/uri_signing/Makefile.inc $(srcdir)/experimental/memcached_remap/Makefile.inc $(srcdir)/experimental/remap_stats/Makefile.inc $(srcdir)/experimental/cache_key_genid/Makefile.inc $(srcdir)/experimental/webp_transform/Makefile.inc $(srcdir)/experimental/magick/Makefile.inc $(srcdir)/experimental/mysql_remap/Makefile.inc $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -3429,7 +3642,7 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__maybe_remake_depfiles)'; \
 	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__maybe_remake_depfiles);; \
 	esac;
-$(top_srcdir)/build/plugins.mk $(top_srcdir)/build/tidy.mk $(srcdir)/authproxy/Makefile.inc $(srcdir)/background_fetch/Makefile.inc $(srcdir)/cachekey/Makefile.inc $(srcdir)/cache_promote/Makefile.inc $(srcdir)/conf_remap/Makefile.inc $(srcdir)/escalate/Makefile.inc $(srcdir)/esi/Makefile.inc $(srcdir)/generator/Makefile.inc $(srcdir)/compress/Makefile.inc $(srcdir)/header_rewrite/Makefile.inc $(srcdir)/healthchecks/Makefile.inc $(srcdir)/libloader/Makefile.inc $(srcdir)/lua/Makefile.inc $(srcdir)/regex_remap/Makefile.inc $(srcdir)/regex_revalidate/Makefile.inc $(srcdir)/s3_auth/Makefile.inc $(srcdir)/stats_over_http/Makefile.inc $(srcdir)/tcpinfo/Makefile.inc $(srcdir)/xdebug/Makefile.inc $(srcdir)/test_cppapi/Makefile.inc $(srcdir)/experimental/access_control/Makefile.inc $(srcdir)/experimental/acme/Makefile.inc $(srcdir)/experimental/balancer/Makefile.inc $(srcdir)/experimental/buffer_upload/Makefile.inc $(srcdir)/experimental/cache_range_requests/Makefile.inc $(srcdir)/experimental/certifier/Makefile.inc $(srcdir)/experimental/collapsed_forwarding/Makefile.inc $(srcdir)/experimental/custom_redirect/Makefile.inc $(srcdir)/experimental/fq_pacing/Makefile.inc $(srcdir)/experimental/geoip_acl/Makefile.inc $(srcdir)/experimental/header_freq/Makefile.inc $(srcdir)/experimental/header_normalize/Makefile.inc $(srcdir)/experimental/hipes/Makefile.inc $(srcdir)/experimental/hook-trace/Makefile.inc $(srcdir)/experimental/inliner/Makefile.inc $(srcdir)/experimental/memcache/Makefile.inc $(srcdir)/experimental/metalink/Makefile.inc $(srcdir)/experimental/money_trace/Makefile.inc $(srcdir)/experimental/mp4/Makefile.inc $(srcdir)/experimental/multiplexer/Makefile.inc $(srcdir)/experimental/remap_purge/Makefile.inc $(srcdir)/experimental/server_push_preload/Makefile.inc $(srcdir)/experimental/ssl_cert_loader/Makefile.inc $(srcdir)/experimental/sslheaders/Makefile.inc $(srcdir)/experimental/stale_while_revalidate/Makefile.inc $(srcdir)/experimental/stream_editor/Makefile.inc $(srcdir)/experimental/system_stats/Makefile.inc $(srcdir)/experimental/traffic_dump/Makefile.inc $(srcdir)/experimental/tls_bridge/Makefile.inc $(srcdir)/experimental/url_sig/Makefile.inc $(srcdir)/experimental/prefetch/Makefile.inc $(srcdir)/experimental/uri_signing/Makefile.inc $(srcdir)/experimental/memcached_remap/Makefile.inc $(srcdir)/experimental/remap_stats/Makefile.inc $(srcdir)/experimental/cache_key_genid/Makefile.inc $(srcdir)/experimental/webp_transform/Makefile.inc $(srcdir)/experimental/magick/Makefile.inc $(srcdir)/experimental/mysql_remap/Makefile.inc $(am__empty):
+$(top_srcdir)/build/plugins.mk $(top_srcdir)/build/tidy.mk $(srcdir)/authproxy/Makefile.inc $(srcdir)/background_fetch/Makefile.inc $(srcdir)/cachekey/Makefile.inc $(srcdir)/cache_promote/Makefile.inc $(srcdir)/conf_remap/Makefile.inc $(srcdir)/escalate/Makefile.inc $(srcdir)/esi/Makefile.inc $(srcdir)/generator/Makefile.inc $(srcdir)/compress/Makefile.inc $(srcdir)/header_rewrite/Makefile.inc $(srcdir)/healthchecks/Makefile.inc $(srcdir)/libloader/Makefile.inc $(srcdir)/lua/Makefile.inc $(srcdir)/regex_remap/Makefile.inc $(srcdir)/regex_revalidate/Makefile.inc $(srcdir)/s3_auth/Makefile.inc $(srcdir)/stats_over_http/Makefile.inc $(srcdir)/tcpinfo/Makefile.inc $(srcdir)/xdebug/Makefile.inc $(srcdir)/test_cppapi/Makefile.inc $(srcdir)/experimental/access_control/Makefile.inc $(srcdir)/experimental/acme/Makefile.inc $(srcdir)/experimental/balancer/Makefile.inc $(srcdir)/experimental/buffer_upload/Makefile.inc $(srcdir)/experimental/cache_range_requests/Makefile.inc $(srcdir)/experimental/certifier/Makefile.inc $(srcdir)/experimental/collapsed_forwarding/Makefile.inc $(srcdir)/experimental/custom_redirect/Makefile.inc $(srcdir)/experimental/fq_pacing/Makefile.inc $(srcdir)/experimental/geoip_acl/Makefile.inc $(srcdir)/experimental/header_freq/Makefile.inc $(srcdir)/experimental/header_normalize/Makefile.inc $(srcdir)/experimental/hipes/Makefile.inc $(srcdir)/experimental/hook-trace/Makefile.inc $(srcdir)/experimental/inliner/Makefile.inc $(srcdir)/experimental/memcache/Makefile.inc $(srcdir)/experimental/metalink/Makefile.inc $(srcdir)/experimental/money_trace/Makefile.inc $(srcdir)/experimental/mp4/Makefile.inc $(srcdir)/experimental/multiplexer/Makefile.inc $(srcdir)/experimental/remap_purge/Makefile.inc $(srcdir)/experimental/server_push_preload/Makefile.inc $(srcdir)/experimental/slice/Makefile.inc $(srcdir)/experimental/ssl_cert_loader/Makefile.inc $(srcdir)/experimental/sslheaders/Makefile.inc $(srcdir)/experimental/stale_while_revalidate/Makefile.inc $(srcdir)/experimental/stream_editor/Makefile.inc $(srcdir)/experimental/system_stats/Makefile.inc $(srcdir)/experimental/traffic_dump/Makefile.inc $(srcdir)/experimental/tls_bridge/Makefile.inc $(srcdir)/experimental/url_sig/Makefile.inc $(srcdir)/experimental/prefetch/Makefile.inc $(srcdir)/experimental/uri_signing/Makefile.inc $(srcdir)/experimental/memcached_remap/Makefile.inc $(srcdir)/experimental/remap_stats/Makefile.inc $(srcdir)/experimental/cache_key_genid/Makefile.inc $(srcdir)/experimental/webp_transform/Makefile.inc $(srcdir)/experimental/magick/Makefile.inc $(srcdir)/experimental/mysql_remap/Makefile.inc $(am__empty):
 
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
@@ -3532,6 +3745,14 @@ cache_promote/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) cache_promote/$(DEPDIR)
 	@: > cache_promote/$(DEPDIR)/$(am__dirstamp)
 cache_promote/cache_promote.lo: cache_promote/$(am__dirstamp) \
+	cache_promote/$(DEPDIR)/$(am__dirstamp)
+cache_promote/configs.lo: cache_promote/$(am__dirstamp) \
+	cache_promote/$(DEPDIR)/$(am__dirstamp)
+cache_promote/policy.lo: cache_promote/$(am__dirstamp) \
+	cache_promote/$(DEPDIR)/$(am__dirstamp)
+cache_promote/lru_policy.lo: cache_promote/$(am__dirstamp) \
+	cache_promote/$(DEPDIR)/$(am__dirstamp)
+cache_promote/policy_manager.lo: cache_promote/$(am__dirstamp) \
 	cache_promote/$(DEPDIR)/$(am__dirstamp)
 
 cache_promote/cache_promote.la: $(cache_promote_cache_promote_la_OBJECTS) $(cache_promote_cache_promote_la_DEPENDENCIES) $(EXTRA_cache_promote_cache_promote_la_DEPENDENCIES) cache_promote/$(am__dirstamp)
@@ -4104,6 +4325,38 @@ experimental/server_push_preload/server_push_preload.lo:  \
 
 experimental/server_push_preload/server_push_preload.la: $(experimental_server_push_preload_server_push_preload_la_OBJECTS) $(experimental_server_push_preload_server_push_preload_la_DEPENDENCIES) $(EXTRA_experimental_server_push_preload_server_push_preload_la_DEPENDENCIES) experimental/server_push_preload/$(am__dirstamp)
 	$(AM_V_CXXLD)$(experimental_server_push_preload_server_push_preload_la_LINK) $(am_experimental_server_push_preload_server_push_preload_la_rpath) $(experimental_server_push_preload_server_push_preload_la_OBJECTS) $(experimental_server_push_preload_server_push_preload_la_LIBADD) $(LIBS)
+experimental/slice/$(am__dirstamp):
+	@$(MKDIR_P) experimental/slice
+	@: > experimental/slice/$(am__dirstamp)
+experimental/slice/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) experimental/slice/$(DEPDIR)
+	@: > experimental/slice/$(DEPDIR)/$(am__dirstamp)
+experimental/slice/client.lo: experimental/slice/$(am__dirstamp) \
+	experimental/slice/$(DEPDIR)/$(am__dirstamp)
+experimental/slice/Config.lo: experimental/slice/$(am__dirstamp) \
+	experimental/slice/$(DEPDIR)/$(am__dirstamp)
+experimental/slice/ContentRange.lo:  \
+	experimental/slice/$(am__dirstamp) \
+	experimental/slice/$(DEPDIR)/$(am__dirstamp)
+experimental/slice/HttpHeader.lo: experimental/slice/$(am__dirstamp) \
+	experimental/slice/$(DEPDIR)/$(am__dirstamp)
+experimental/slice/intercept.lo: experimental/slice/$(am__dirstamp) \
+	experimental/slice/$(DEPDIR)/$(am__dirstamp)
+experimental/slice/Range.lo: experimental/slice/$(am__dirstamp) \
+	experimental/slice/$(DEPDIR)/$(am__dirstamp)
+experimental/slice/response.lo: experimental/slice/$(am__dirstamp) \
+	experimental/slice/$(DEPDIR)/$(am__dirstamp)
+experimental/slice/server.lo: experimental/slice/$(am__dirstamp) \
+	experimental/slice/$(DEPDIR)/$(am__dirstamp)
+experimental/slice/slice.lo: experimental/slice/$(am__dirstamp) \
+	experimental/slice/$(DEPDIR)/$(am__dirstamp)
+experimental/slice/transfer.lo: experimental/slice/$(am__dirstamp) \
+	experimental/slice/$(DEPDIR)/$(am__dirstamp)
+experimental/slice/util.lo: experimental/slice/$(am__dirstamp) \
+	experimental/slice/$(DEPDIR)/$(am__dirstamp)
+
+experimental/slice/slice.la: $(experimental_slice_slice_la_OBJECTS) $(experimental_slice_slice_la_DEPENDENCIES) $(EXTRA_experimental_slice_slice_la_DEPENDENCIES) experimental/slice/$(am__dirstamp)
+	$(AM_V_CXXLD)$(CXXLINK) $(am_experimental_slice_slice_la_rpath) $(experimental_slice_slice_la_OBJECTS) $(experimental_slice_slice_la_LIBADD) $(LIBS)
 experimental/ssl_cert_loader/$(am__dirstamp):
 	@$(MKDIR_P) experimental/ssl_cert_loader
 	@: > experimental/ssl_cert_loader/$(am__dirstamp)
@@ -4227,6 +4480,9 @@ experimental/uri_signing/match.lo:  \
 experimental/uri_signing/parse.lo:  \
 	experimental/uri_signing/$(am__dirstamp) \
 	experimental/uri_signing/$(DEPDIR)/$(am__dirstamp)
+experimental/uri_signing/normalize.lo:  \
+	experimental/uri_signing/$(am__dirstamp) \
+	experimental/uri_signing/$(DEPDIR)/$(am__dirstamp)
 experimental/uri_signing/timing.lo:  \
 	experimental/uri_signing/$(am__dirstamp) \
 	experimental/uri_signing/$(DEPDIR)/$(am__dirstamp)
@@ -4296,6 +4552,8 @@ header_rewrite/resources.lo: header_rewrite/$(am__dirstamp) \
 header_rewrite/ruleset.lo: header_rewrite/$(am__dirstamp) \
 	header_rewrite/$(DEPDIR)/$(am__dirstamp)
 header_rewrite/statement.lo: header_rewrite/$(am__dirstamp) \
+	header_rewrite/$(DEPDIR)/$(am__dirstamp)
+header_rewrite/value.lo: header_rewrite/$(am__dirstamp) \
 	header_rewrite/$(DEPDIR)/$(am__dirstamp)
 
 header_rewrite/header_rewrite.la: $(header_rewrite_header_rewrite_la_OBJECTS) $(header_rewrite_header_rewrite_la_DEPENDENCIES) $(EXTRA_header_rewrite_header_rewrite_la_DEPENDENCIES) header_rewrite/$(am__dirstamp)
@@ -4531,6 +4789,42 @@ experimental/access_control/test_access_control-utils.$(OBJEXT):  \
 experimental/access_control/test_access_control$(EXEEXT): $(experimental_access_control_test_access_control_OBJECTS) $(experimental_access_control_test_access_control_DEPENDENCIES) $(EXTRA_experimental_access_control_test_access_control_DEPENDENCIES) experimental/access_control/$(am__dirstamp)
 	@rm -f experimental/access_control/test_access_control$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(experimental_access_control_test_access_control_OBJECTS) $(experimental_access_control_test_access_control_LDADD) $(LIBS)
+experimental/slice/unit-tests/$(am__dirstamp):
+	@$(MKDIR_P) experimental/slice/unit-tests
+	@: > experimental/slice/unit-tests/$(am__dirstamp)
+experimental/slice/unit-tests/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) experimental/slice/unit-tests/$(DEPDIR)
+	@: > experimental/slice/unit-tests/$(DEPDIR)/$(am__dirstamp)
+experimental/slice/unit-tests/test_config-test_config.$(OBJEXT):  \
+	experimental/slice/unit-tests/$(am__dirstamp) \
+	experimental/slice/unit-tests/$(DEPDIR)/$(am__dirstamp)
+experimental/slice/test_config-Config.$(OBJEXT):  \
+	experimental/slice/$(am__dirstamp) \
+	experimental/slice/$(DEPDIR)/$(am__dirstamp)
+
+experimental/slice/test_config$(EXEEXT): $(experimental_slice_test_config_OBJECTS) $(experimental_slice_test_config_DEPENDENCIES) $(EXTRA_experimental_slice_test_config_DEPENDENCIES) experimental/slice/$(am__dirstamp)
+	@rm -f experimental/slice/test_config$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(experimental_slice_test_config_OBJECTS) $(experimental_slice_test_config_LDADD) $(LIBS)
+experimental/slice/unit-tests/test_content_range-test_content_range.$(OBJEXT):  \
+	experimental/slice/unit-tests/$(am__dirstamp) \
+	experimental/slice/unit-tests/$(DEPDIR)/$(am__dirstamp)
+experimental/slice/test_content_range-ContentRange.$(OBJEXT):  \
+	experimental/slice/$(am__dirstamp) \
+	experimental/slice/$(DEPDIR)/$(am__dirstamp)
+
+experimental/slice/test_content_range$(EXEEXT): $(experimental_slice_test_content_range_OBJECTS) $(experimental_slice_test_content_range_DEPENDENCIES) $(EXTRA_experimental_slice_test_content_range_DEPENDENCIES) experimental/slice/$(am__dirstamp)
+	@rm -f experimental/slice/test_content_range$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(experimental_slice_test_content_range_OBJECTS) $(experimental_slice_test_content_range_LDADD) $(LIBS)
+experimental/slice/unit-tests/test_range-test_range.$(OBJEXT):  \
+	experimental/slice/unit-tests/$(am__dirstamp) \
+	experimental/slice/unit-tests/$(DEPDIR)/$(am__dirstamp)
+experimental/slice/test_range-Range.$(OBJEXT):  \
+	experimental/slice/$(am__dirstamp) \
+	experimental/slice/$(DEPDIR)/$(am__dirstamp)
+
+experimental/slice/test_range$(EXEEXT): $(experimental_slice_test_range_OBJECTS) $(experimental_slice_test_range_DEPENDENCIES) $(EXTRA_experimental_slice_test_range_DEPENDENCIES) experimental/slice/$(am__dirstamp)
+	@rm -f experimental/slice/test_range$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(experimental_slice_test_range_OBJECTS) $(experimental_slice_test_range_LDADD) $(LIBS)
 experimental/sslheaders/test_sslheaders-test_sslheaders.$(OBJEXT):  \
 	experimental/sslheaders/$(am__dirstamp) \
 	experimental/sslheaders/$(DEPDIR)/$(am__dirstamp)
@@ -4538,6 +4832,43 @@ experimental/sslheaders/test_sslheaders-test_sslheaders.$(OBJEXT):  \
 experimental/sslheaders/test_sslheaders$(EXEEXT): $(experimental_sslheaders_test_sslheaders_OBJECTS) $(experimental_sslheaders_test_sslheaders_DEPENDENCIES) $(EXTRA_experimental_sslheaders_test_sslheaders_DEPENDENCIES) experimental/sslheaders/$(am__dirstamp)
 	@rm -f experimental/sslheaders/test_sslheaders$(EXEEXT)
 	$(AM_V_CXXLD)$(experimental_sslheaders_test_sslheaders_LINK) $(experimental_sslheaders_test_sslheaders_OBJECTS) $(experimental_sslheaders_test_sslheaders_LDADD) $(LIBS)
+experimental/uri_signing/unit_tests/$(am__dirstamp):
+	@$(MKDIR_P) experimental/uri_signing/unit_tests
+	@: > experimental/uri_signing/unit_tests/$(am__dirstamp)
+experimental/uri_signing/unit_tests/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) experimental/uri_signing/unit_tests/$(DEPDIR)
+	@: > experimental/uri_signing/unit_tests/$(DEPDIR)/$(am__dirstamp)
+experimental/uri_signing/unit_tests/test_uri_signing-uri_signing_test.$(OBJEXT):  \
+	experimental/uri_signing/unit_tests/$(am__dirstamp) \
+	experimental/uri_signing/unit_tests/$(DEPDIR)/$(am__dirstamp)
+experimental/uri_signing/test_uri_signing-jwt.$(OBJEXT):  \
+	experimental/uri_signing/$(am__dirstamp) \
+	experimental/uri_signing/$(DEPDIR)/$(am__dirstamp)
+experimental/uri_signing/test_uri_signing-common.$(OBJEXT):  \
+	experimental/uri_signing/$(am__dirstamp) \
+	experimental/uri_signing/$(DEPDIR)/$(am__dirstamp)
+experimental/uri_signing/test_uri_signing-parse.$(OBJEXT):  \
+	experimental/uri_signing/$(am__dirstamp) \
+	experimental/uri_signing/$(DEPDIR)/$(am__dirstamp)
+experimental/uri_signing/test_uri_signing-cookie.$(OBJEXT):  \
+	experimental/uri_signing/$(am__dirstamp) \
+	experimental/uri_signing/$(DEPDIR)/$(am__dirstamp)
+experimental/uri_signing/test_uri_signing-config.$(OBJEXT):  \
+	experimental/uri_signing/$(am__dirstamp) \
+	experimental/uri_signing/$(DEPDIR)/$(am__dirstamp)
+experimental/uri_signing/test_uri_signing-timing.$(OBJEXT):  \
+	experimental/uri_signing/$(am__dirstamp) \
+	experimental/uri_signing/$(DEPDIR)/$(am__dirstamp)
+experimental/uri_signing/test_uri_signing-normalize.$(OBJEXT):  \
+	experimental/uri_signing/$(am__dirstamp) \
+	experimental/uri_signing/$(DEPDIR)/$(am__dirstamp)
+experimental/uri_signing/test_uri_signing-match.$(OBJEXT):  \
+	experimental/uri_signing/$(am__dirstamp) \
+	experimental/uri_signing/$(DEPDIR)/$(am__dirstamp)
+
+experimental/uri_signing/test_uri_signing$(EXEEXT): $(experimental_uri_signing_test_uri_signing_OBJECTS) $(experimental_uri_signing_test_uri_signing_DEPENDENCIES) $(EXTRA_experimental_uri_signing_test_uri_signing_DEPENDENCIES) experimental/uri_signing/$(am__dirstamp)
+	@rm -f experimental/uri_signing/test_uri_signing$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(experimental_uri_signing_test_uri_signing_OBJECTS) $(experimental_uri_signing_test_uri_signing_LDADD) $(LIBS)
 header_rewrite/header_rewrite_test.$(OBJEXT):  \
 	header_rewrite/$(am__dirstamp) \
 	header_rewrite/$(DEPDIR)/$(am__dirstamp)
@@ -4644,6 +4975,9 @@ mostlyclean-compile:
 	-rm -f experimental/remap_stats/*.lo
 	-rm -f experimental/server_push_preload/*.$(OBJEXT)
 	-rm -f experimental/server_push_preload/*.lo
+	-rm -f experimental/slice/*.$(OBJEXT)
+	-rm -f experimental/slice/*.lo
+	-rm -f experimental/slice/unit-tests/*.$(OBJEXT)
 	-rm -f experimental/ssl_cert_loader/*.$(OBJEXT)
 	-rm -f experimental/ssl_cert_loader/*.lo
 	-rm -f experimental/sslheaders/*.$(OBJEXT)
@@ -4660,6 +4994,7 @@ mostlyclean-compile:
 	-rm -f experimental/traffic_dump/*.lo
 	-rm -f experimental/uri_signing/*.$(OBJEXT)
 	-rm -f experimental/uri_signing/*.lo
+	-rm -f experimental/uri_signing/unit_tests/*.$(OBJEXT)
 	-rm -f experimental/url_sig/*.$(OBJEXT)
 	-rm -f experimental/url_sig/*.lo
 	-rm -f experimental/webp_transform/*.$(OBJEXT)
@@ -4700,6 +5035,10 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@background_fetch/$(DEPDIR)/headers.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@background_fetch/$(DEPDIR)/rules.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@cache_promote/$(DEPDIR)/cache_promote.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@cache_promote/$(DEPDIR)/configs.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@cache_promote/$(DEPDIR)/lru_policy.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@cache_promote/$(DEPDIR)/policy.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@cache_promote/$(DEPDIR)/policy_manager.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@cachekey/$(DEPDIR)/cachekey.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@cachekey/$(DEPDIR)/common.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@cachekey/$(DEPDIR)/configs.Plo@am__quote@ # am--include-marker
@@ -4803,6 +5142,23 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@experimental/remap_purge/$(DEPDIR)/remap_purge.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@experimental/remap_stats/$(DEPDIR)/remap_stats.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@experimental/server_push_preload/$(DEPDIR)/server_push_preload.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@experimental/slice/$(DEPDIR)/Config.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@experimental/slice/$(DEPDIR)/ContentRange.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@experimental/slice/$(DEPDIR)/HttpHeader.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@experimental/slice/$(DEPDIR)/Range.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@experimental/slice/$(DEPDIR)/client.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@experimental/slice/$(DEPDIR)/intercept.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@experimental/slice/$(DEPDIR)/response.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@experimental/slice/$(DEPDIR)/server.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@experimental/slice/$(DEPDIR)/slice.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@experimental/slice/$(DEPDIR)/test_config-Config.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@experimental/slice/$(DEPDIR)/test_content_range-ContentRange.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@experimental/slice/$(DEPDIR)/test_range-Range.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@experimental/slice/$(DEPDIR)/transfer.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@experimental/slice/$(DEPDIR)/util.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@experimental/slice/unit-tests/$(DEPDIR)/test_config-test_config.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@experimental/slice/unit-tests/$(DEPDIR)/test_content_range-test_content_range.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@experimental/slice/unit-tests/$(DEPDIR)/test_range-test_range.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@experimental/ssl_cert_loader/$(DEPDIR)/domain-tree.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@experimental/ssl_cert_loader/$(DEPDIR)/ssl-cert-loader.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@experimental/sslheaders/$(DEPDIR)/libsslhdr_la-expand.Plo@am__quote@ # am--include-marker
@@ -4819,9 +5175,19 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@experimental/uri_signing/$(DEPDIR)/cookie.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@experimental/uri_signing/$(DEPDIR)/jwt.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@experimental/uri_signing/$(DEPDIR)/match.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@experimental/uri_signing/$(DEPDIR)/normalize.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@experimental/uri_signing/$(DEPDIR)/parse.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@experimental/uri_signing/$(DEPDIR)/test_uri_signing-common.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@experimental/uri_signing/$(DEPDIR)/test_uri_signing-config.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@experimental/uri_signing/$(DEPDIR)/test_uri_signing-cookie.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@experimental/uri_signing/$(DEPDIR)/test_uri_signing-jwt.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@experimental/uri_signing/$(DEPDIR)/test_uri_signing-match.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@experimental/uri_signing/$(DEPDIR)/test_uri_signing-normalize.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@experimental/uri_signing/$(DEPDIR)/test_uri_signing-parse.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@experimental/uri_signing/$(DEPDIR)/test_uri_signing-timing.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@experimental/uri_signing/$(DEPDIR)/timing.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@experimental/uri_signing/$(DEPDIR)/uri_signing.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@experimental/uri_signing/unit_tests/$(DEPDIR)/test_uri_signing-uri_signing_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@experimental/url_sig/$(DEPDIR)/url_sig.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@experimental/webp_transform/$(DEPDIR)/WebpTransform_la-ImageTransform.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@generator/$(DEPDIR)/generator.Plo@am__quote@ # am--include-marker
@@ -4839,6 +5205,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@header_rewrite/$(DEPDIR)/resources.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@header_rewrite/$(DEPDIR)/ruleset.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@header_rewrite/$(DEPDIR)/statement.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@header_rewrite/$(DEPDIR)/value.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@healthchecks/$(DEPDIR)/healthchecks.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@libloader/$(DEPDIR)/libloader.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@lua/$(DEPDIR)/tslua_la-ts_lua.Plo@am__quote@ # am--include-marker
@@ -5097,6 +5464,118 @@ lua/tslua_la-ts_lua_constant.lo: lua/ts_lua_constant.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lua/ts_lua_constant.c' object='lua/tslua_la-ts_lua_constant.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(lua_tslua_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o lua/tslua_la-ts_lua_constant.lo `test -f 'lua/ts_lua_constant.c' || echo '$(srcdir)/'`lua/ts_lua_constant.c
+
+experimental/uri_signing/test_uri_signing-jwt.o: experimental/uri_signing/jwt.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_uri_signing_test_uri_signing_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT experimental/uri_signing/test_uri_signing-jwt.o -MD -MP -MF experimental/uri_signing/$(DEPDIR)/test_uri_signing-jwt.Tpo -c -o experimental/uri_signing/test_uri_signing-jwt.o `test -f 'experimental/uri_signing/jwt.c' || echo '$(srcdir)/'`experimental/uri_signing/jwt.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) experimental/uri_signing/$(DEPDIR)/test_uri_signing-jwt.Tpo experimental/uri_signing/$(DEPDIR)/test_uri_signing-jwt.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='experimental/uri_signing/jwt.c' object='experimental/uri_signing/test_uri_signing-jwt.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_uri_signing_test_uri_signing_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o experimental/uri_signing/test_uri_signing-jwt.o `test -f 'experimental/uri_signing/jwt.c' || echo '$(srcdir)/'`experimental/uri_signing/jwt.c
+
+experimental/uri_signing/test_uri_signing-jwt.obj: experimental/uri_signing/jwt.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_uri_signing_test_uri_signing_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT experimental/uri_signing/test_uri_signing-jwt.obj -MD -MP -MF experimental/uri_signing/$(DEPDIR)/test_uri_signing-jwt.Tpo -c -o experimental/uri_signing/test_uri_signing-jwt.obj `if test -f 'experimental/uri_signing/jwt.c'; then $(CYGPATH_W) 'experimental/uri_signing/jwt.c'; else $(CYGPATH_W) '$(srcdir)/experimental/uri_signing/jwt.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) experimental/uri_signing/$(DEPDIR)/test_uri_signing-jwt.Tpo experimental/uri_signing/$(DEPDIR)/test_uri_signing-jwt.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='experimental/uri_signing/jwt.c' object='experimental/uri_signing/test_uri_signing-jwt.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_uri_signing_test_uri_signing_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o experimental/uri_signing/test_uri_signing-jwt.obj `if test -f 'experimental/uri_signing/jwt.c'; then $(CYGPATH_W) 'experimental/uri_signing/jwt.c'; else $(CYGPATH_W) '$(srcdir)/experimental/uri_signing/jwt.c'; fi`
+
+experimental/uri_signing/test_uri_signing-common.o: experimental/uri_signing/common.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_uri_signing_test_uri_signing_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT experimental/uri_signing/test_uri_signing-common.o -MD -MP -MF experimental/uri_signing/$(DEPDIR)/test_uri_signing-common.Tpo -c -o experimental/uri_signing/test_uri_signing-common.o `test -f 'experimental/uri_signing/common.c' || echo '$(srcdir)/'`experimental/uri_signing/common.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) experimental/uri_signing/$(DEPDIR)/test_uri_signing-common.Tpo experimental/uri_signing/$(DEPDIR)/test_uri_signing-common.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='experimental/uri_signing/common.c' object='experimental/uri_signing/test_uri_signing-common.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_uri_signing_test_uri_signing_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o experimental/uri_signing/test_uri_signing-common.o `test -f 'experimental/uri_signing/common.c' || echo '$(srcdir)/'`experimental/uri_signing/common.c
+
+experimental/uri_signing/test_uri_signing-common.obj: experimental/uri_signing/common.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_uri_signing_test_uri_signing_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT experimental/uri_signing/test_uri_signing-common.obj -MD -MP -MF experimental/uri_signing/$(DEPDIR)/test_uri_signing-common.Tpo -c -o experimental/uri_signing/test_uri_signing-common.obj `if test -f 'experimental/uri_signing/common.c'; then $(CYGPATH_W) 'experimental/uri_signing/common.c'; else $(CYGPATH_W) '$(srcdir)/experimental/uri_signing/common.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) experimental/uri_signing/$(DEPDIR)/test_uri_signing-common.Tpo experimental/uri_signing/$(DEPDIR)/test_uri_signing-common.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='experimental/uri_signing/common.c' object='experimental/uri_signing/test_uri_signing-common.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_uri_signing_test_uri_signing_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o experimental/uri_signing/test_uri_signing-common.obj `if test -f 'experimental/uri_signing/common.c'; then $(CYGPATH_W) 'experimental/uri_signing/common.c'; else $(CYGPATH_W) '$(srcdir)/experimental/uri_signing/common.c'; fi`
+
+experimental/uri_signing/test_uri_signing-parse.o: experimental/uri_signing/parse.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_uri_signing_test_uri_signing_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT experimental/uri_signing/test_uri_signing-parse.o -MD -MP -MF experimental/uri_signing/$(DEPDIR)/test_uri_signing-parse.Tpo -c -o experimental/uri_signing/test_uri_signing-parse.o `test -f 'experimental/uri_signing/parse.c' || echo '$(srcdir)/'`experimental/uri_signing/parse.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) experimental/uri_signing/$(DEPDIR)/test_uri_signing-parse.Tpo experimental/uri_signing/$(DEPDIR)/test_uri_signing-parse.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='experimental/uri_signing/parse.c' object='experimental/uri_signing/test_uri_signing-parse.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_uri_signing_test_uri_signing_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o experimental/uri_signing/test_uri_signing-parse.o `test -f 'experimental/uri_signing/parse.c' || echo '$(srcdir)/'`experimental/uri_signing/parse.c
+
+experimental/uri_signing/test_uri_signing-parse.obj: experimental/uri_signing/parse.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_uri_signing_test_uri_signing_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT experimental/uri_signing/test_uri_signing-parse.obj -MD -MP -MF experimental/uri_signing/$(DEPDIR)/test_uri_signing-parse.Tpo -c -o experimental/uri_signing/test_uri_signing-parse.obj `if test -f 'experimental/uri_signing/parse.c'; then $(CYGPATH_W) 'experimental/uri_signing/parse.c'; else $(CYGPATH_W) '$(srcdir)/experimental/uri_signing/parse.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) experimental/uri_signing/$(DEPDIR)/test_uri_signing-parse.Tpo experimental/uri_signing/$(DEPDIR)/test_uri_signing-parse.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='experimental/uri_signing/parse.c' object='experimental/uri_signing/test_uri_signing-parse.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_uri_signing_test_uri_signing_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o experimental/uri_signing/test_uri_signing-parse.obj `if test -f 'experimental/uri_signing/parse.c'; then $(CYGPATH_W) 'experimental/uri_signing/parse.c'; else $(CYGPATH_W) '$(srcdir)/experimental/uri_signing/parse.c'; fi`
+
+experimental/uri_signing/test_uri_signing-cookie.o: experimental/uri_signing/cookie.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_uri_signing_test_uri_signing_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT experimental/uri_signing/test_uri_signing-cookie.o -MD -MP -MF experimental/uri_signing/$(DEPDIR)/test_uri_signing-cookie.Tpo -c -o experimental/uri_signing/test_uri_signing-cookie.o `test -f 'experimental/uri_signing/cookie.c' || echo '$(srcdir)/'`experimental/uri_signing/cookie.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) experimental/uri_signing/$(DEPDIR)/test_uri_signing-cookie.Tpo experimental/uri_signing/$(DEPDIR)/test_uri_signing-cookie.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='experimental/uri_signing/cookie.c' object='experimental/uri_signing/test_uri_signing-cookie.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_uri_signing_test_uri_signing_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o experimental/uri_signing/test_uri_signing-cookie.o `test -f 'experimental/uri_signing/cookie.c' || echo '$(srcdir)/'`experimental/uri_signing/cookie.c
+
+experimental/uri_signing/test_uri_signing-cookie.obj: experimental/uri_signing/cookie.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_uri_signing_test_uri_signing_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT experimental/uri_signing/test_uri_signing-cookie.obj -MD -MP -MF experimental/uri_signing/$(DEPDIR)/test_uri_signing-cookie.Tpo -c -o experimental/uri_signing/test_uri_signing-cookie.obj `if test -f 'experimental/uri_signing/cookie.c'; then $(CYGPATH_W) 'experimental/uri_signing/cookie.c'; else $(CYGPATH_W) '$(srcdir)/experimental/uri_signing/cookie.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) experimental/uri_signing/$(DEPDIR)/test_uri_signing-cookie.Tpo experimental/uri_signing/$(DEPDIR)/test_uri_signing-cookie.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='experimental/uri_signing/cookie.c' object='experimental/uri_signing/test_uri_signing-cookie.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_uri_signing_test_uri_signing_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o experimental/uri_signing/test_uri_signing-cookie.obj `if test -f 'experimental/uri_signing/cookie.c'; then $(CYGPATH_W) 'experimental/uri_signing/cookie.c'; else $(CYGPATH_W) '$(srcdir)/experimental/uri_signing/cookie.c'; fi`
+
+experimental/uri_signing/test_uri_signing-config.o: experimental/uri_signing/config.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_uri_signing_test_uri_signing_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT experimental/uri_signing/test_uri_signing-config.o -MD -MP -MF experimental/uri_signing/$(DEPDIR)/test_uri_signing-config.Tpo -c -o experimental/uri_signing/test_uri_signing-config.o `test -f 'experimental/uri_signing/config.c' || echo '$(srcdir)/'`experimental/uri_signing/config.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) experimental/uri_signing/$(DEPDIR)/test_uri_signing-config.Tpo experimental/uri_signing/$(DEPDIR)/test_uri_signing-config.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='experimental/uri_signing/config.c' object='experimental/uri_signing/test_uri_signing-config.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_uri_signing_test_uri_signing_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o experimental/uri_signing/test_uri_signing-config.o `test -f 'experimental/uri_signing/config.c' || echo '$(srcdir)/'`experimental/uri_signing/config.c
+
+experimental/uri_signing/test_uri_signing-config.obj: experimental/uri_signing/config.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_uri_signing_test_uri_signing_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT experimental/uri_signing/test_uri_signing-config.obj -MD -MP -MF experimental/uri_signing/$(DEPDIR)/test_uri_signing-config.Tpo -c -o experimental/uri_signing/test_uri_signing-config.obj `if test -f 'experimental/uri_signing/config.c'; then $(CYGPATH_W) 'experimental/uri_signing/config.c'; else $(CYGPATH_W) '$(srcdir)/experimental/uri_signing/config.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) experimental/uri_signing/$(DEPDIR)/test_uri_signing-config.Tpo experimental/uri_signing/$(DEPDIR)/test_uri_signing-config.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='experimental/uri_signing/config.c' object='experimental/uri_signing/test_uri_signing-config.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_uri_signing_test_uri_signing_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o experimental/uri_signing/test_uri_signing-config.obj `if test -f 'experimental/uri_signing/config.c'; then $(CYGPATH_W) 'experimental/uri_signing/config.c'; else $(CYGPATH_W) '$(srcdir)/experimental/uri_signing/config.c'; fi`
+
+experimental/uri_signing/test_uri_signing-timing.o: experimental/uri_signing/timing.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_uri_signing_test_uri_signing_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT experimental/uri_signing/test_uri_signing-timing.o -MD -MP -MF experimental/uri_signing/$(DEPDIR)/test_uri_signing-timing.Tpo -c -o experimental/uri_signing/test_uri_signing-timing.o `test -f 'experimental/uri_signing/timing.c' || echo '$(srcdir)/'`experimental/uri_signing/timing.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) experimental/uri_signing/$(DEPDIR)/test_uri_signing-timing.Tpo experimental/uri_signing/$(DEPDIR)/test_uri_signing-timing.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='experimental/uri_signing/timing.c' object='experimental/uri_signing/test_uri_signing-timing.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_uri_signing_test_uri_signing_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o experimental/uri_signing/test_uri_signing-timing.o `test -f 'experimental/uri_signing/timing.c' || echo '$(srcdir)/'`experimental/uri_signing/timing.c
+
+experimental/uri_signing/test_uri_signing-timing.obj: experimental/uri_signing/timing.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_uri_signing_test_uri_signing_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT experimental/uri_signing/test_uri_signing-timing.obj -MD -MP -MF experimental/uri_signing/$(DEPDIR)/test_uri_signing-timing.Tpo -c -o experimental/uri_signing/test_uri_signing-timing.obj `if test -f 'experimental/uri_signing/timing.c'; then $(CYGPATH_W) 'experimental/uri_signing/timing.c'; else $(CYGPATH_W) '$(srcdir)/experimental/uri_signing/timing.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) experimental/uri_signing/$(DEPDIR)/test_uri_signing-timing.Tpo experimental/uri_signing/$(DEPDIR)/test_uri_signing-timing.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='experimental/uri_signing/timing.c' object='experimental/uri_signing/test_uri_signing-timing.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_uri_signing_test_uri_signing_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o experimental/uri_signing/test_uri_signing-timing.obj `if test -f 'experimental/uri_signing/timing.c'; then $(CYGPATH_W) 'experimental/uri_signing/timing.c'; else $(CYGPATH_W) '$(srcdir)/experimental/uri_signing/timing.c'; fi`
+
+experimental/uri_signing/test_uri_signing-normalize.o: experimental/uri_signing/normalize.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_uri_signing_test_uri_signing_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT experimental/uri_signing/test_uri_signing-normalize.o -MD -MP -MF experimental/uri_signing/$(DEPDIR)/test_uri_signing-normalize.Tpo -c -o experimental/uri_signing/test_uri_signing-normalize.o `test -f 'experimental/uri_signing/normalize.c' || echo '$(srcdir)/'`experimental/uri_signing/normalize.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) experimental/uri_signing/$(DEPDIR)/test_uri_signing-normalize.Tpo experimental/uri_signing/$(DEPDIR)/test_uri_signing-normalize.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='experimental/uri_signing/normalize.c' object='experimental/uri_signing/test_uri_signing-normalize.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_uri_signing_test_uri_signing_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o experimental/uri_signing/test_uri_signing-normalize.o `test -f 'experimental/uri_signing/normalize.c' || echo '$(srcdir)/'`experimental/uri_signing/normalize.c
+
+experimental/uri_signing/test_uri_signing-normalize.obj: experimental/uri_signing/normalize.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_uri_signing_test_uri_signing_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT experimental/uri_signing/test_uri_signing-normalize.obj -MD -MP -MF experimental/uri_signing/$(DEPDIR)/test_uri_signing-normalize.Tpo -c -o experimental/uri_signing/test_uri_signing-normalize.obj `if test -f 'experimental/uri_signing/normalize.c'; then $(CYGPATH_W) 'experimental/uri_signing/normalize.c'; else $(CYGPATH_W) '$(srcdir)/experimental/uri_signing/normalize.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) experimental/uri_signing/$(DEPDIR)/test_uri_signing-normalize.Tpo experimental/uri_signing/$(DEPDIR)/test_uri_signing-normalize.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='experimental/uri_signing/normalize.c' object='experimental/uri_signing/test_uri_signing-normalize.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_uri_signing_test_uri_signing_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o experimental/uri_signing/test_uri_signing-normalize.obj `if test -f 'experimental/uri_signing/normalize.c'; then $(CYGPATH_W) 'experimental/uri_signing/normalize.c'; else $(CYGPATH_W) '$(srcdir)/experimental/uri_signing/normalize.c'; fi`
+
+experimental/uri_signing/test_uri_signing-match.o: experimental/uri_signing/match.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_uri_signing_test_uri_signing_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT experimental/uri_signing/test_uri_signing-match.o -MD -MP -MF experimental/uri_signing/$(DEPDIR)/test_uri_signing-match.Tpo -c -o experimental/uri_signing/test_uri_signing-match.o `test -f 'experimental/uri_signing/match.c' || echo '$(srcdir)/'`experimental/uri_signing/match.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) experimental/uri_signing/$(DEPDIR)/test_uri_signing-match.Tpo experimental/uri_signing/$(DEPDIR)/test_uri_signing-match.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='experimental/uri_signing/match.c' object='experimental/uri_signing/test_uri_signing-match.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_uri_signing_test_uri_signing_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o experimental/uri_signing/test_uri_signing-match.o `test -f 'experimental/uri_signing/match.c' || echo '$(srcdir)/'`experimental/uri_signing/match.c
+
+experimental/uri_signing/test_uri_signing-match.obj: experimental/uri_signing/match.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_uri_signing_test_uri_signing_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT experimental/uri_signing/test_uri_signing-match.obj -MD -MP -MF experimental/uri_signing/$(DEPDIR)/test_uri_signing-match.Tpo -c -o experimental/uri_signing/test_uri_signing-match.obj `if test -f 'experimental/uri_signing/match.c'; then $(CYGPATH_W) 'experimental/uri_signing/match.c'; else $(CYGPATH_W) '$(srcdir)/experimental/uri_signing/match.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) experimental/uri_signing/$(DEPDIR)/test_uri_signing-match.Tpo experimental/uri_signing/$(DEPDIR)/test_uri_signing-match.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='experimental/uri_signing/match.c' object='experimental/uri_signing/test_uri_signing-match.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_uri_signing_test_uri_signing_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o experimental/uri_signing/test_uri_signing-match.obj `if test -f 'experimental/uri_signing/match.c'; then $(CYGPATH_W) 'experimental/uri_signing/match.c'; else $(CYGPATH_W) '$(srcdir)/experimental/uri_signing/match.c'; fi`
 
 .cc.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -5591,6 +6070,90 @@ experimental/access_control/test_access_control-utils.obj: experimental/access_c
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_access_control_test_access_control_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o experimental/access_control/test_access_control-utils.obj `if test -f 'experimental/access_control/utils.cc'; then $(CYGPATH_W) 'experimental/access_control/utils.cc'; else $(CYGPATH_W) '$(srcdir)/experimental/access_control/utils.cc'; fi`
 
+experimental/slice/unit-tests/test_config-test_config.o: experimental/slice/unit-tests/test_config.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_slice_test_config_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT experimental/slice/unit-tests/test_config-test_config.o -MD -MP -MF experimental/slice/unit-tests/$(DEPDIR)/test_config-test_config.Tpo -c -o experimental/slice/unit-tests/test_config-test_config.o `test -f 'experimental/slice/unit-tests/test_config.cc' || echo '$(srcdir)/'`experimental/slice/unit-tests/test_config.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) experimental/slice/unit-tests/$(DEPDIR)/test_config-test_config.Tpo experimental/slice/unit-tests/$(DEPDIR)/test_config-test_config.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='experimental/slice/unit-tests/test_config.cc' object='experimental/slice/unit-tests/test_config-test_config.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_slice_test_config_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o experimental/slice/unit-tests/test_config-test_config.o `test -f 'experimental/slice/unit-tests/test_config.cc' || echo '$(srcdir)/'`experimental/slice/unit-tests/test_config.cc
+
+experimental/slice/unit-tests/test_config-test_config.obj: experimental/slice/unit-tests/test_config.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_slice_test_config_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT experimental/slice/unit-tests/test_config-test_config.obj -MD -MP -MF experimental/slice/unit-tests/$(DEPDIR)/test_config-test_config.Tpo -c -o experimental/slice/unit-tests/test_config-test_config.obj `if test -f 'experimental/slice/unit-tests/test_config.cc'; then $(CYGPATH_W) 'experimental/slice/unit-tests/test_config.cc'; else $(CYGPATH_W) '$(srcdir)/experimental/slice/unit-tests/test_config.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) experimental/slice/unit-tests/$(DEPDIR)/test_config-test_config.Tpo experimental/slice/unit-tests/$(DEPDIR)/test_config-test_config.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='experimental/slice/unit-tests/test_config.cc' object='experimental/slice/unit-tests/test_config-test_config.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_slice_test_config_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o experimental/slice/unit-tests/test_config-test_config.obj `if test -f 'experimental/slice/unit-tests/test_config.cc'; then $(CYGPATH_W) 'experimental/slice/unit-tests/test_config.cc'; else $(CYGPATH_W) '$(srcdir)/experimental/slice/unit-tests/test_config.cc'; fi`
+
+experimental/slice/test_config-Config.o: experimental/slice/Config.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_slice_test_config_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT experimental/slice/test_config-Config.o -MD -MP -MF experimental/slice/$(DEPDIR)/test_config-Config.Tpo -c -o experimental/slice/test_config-Config.o `test -f 'experimental/slice/Config.cc' || echo '$(srcdir)/'`experimental/slice/Config.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) experimental/slice/$(DEPDIR)/test_config-Config.Tpo experimental/slice/$(DEPDIR)/test_config-Config.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='experimental/slice/Config.cc' object='experimental/slice/test_config-Config.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_slice_test_config_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o experimental/slice/test_config-Config.o `test -f 'experimental/slice/Config.cc' || echo '$(srcdir)/'`experimental/slice/Config.cc
+
+experimental/slice/test_config-Config.obj: experimental/slice/Config.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_slice_test_config_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT experimental/slice/test_config-Config.obj -MD -MP -MF experimental/slice/$(DEPDIR)/test_config-Config.Tpo -c -o experimental/slice/test_config-Config.obj `if test -f 'experimental/slice/Config.cc'; then $(CYGPATH_W) 'experimental/slice/Config.cc'; else $(CYGPATH_W) '$(srcdir)/experimental/slice/Config.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) experimental/slice/$(DEPDIR)/test_config-Config.Tpo experimental/slice/$(DEPDIR)/test_config-Config.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='experimental/slice/Config.cc' object='experimental/slice/test_config-Config.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_slice_test_config_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o experimental/slice/test_config-Config.obj `if test -f 'experimental/slice/Config.cc'; then $(CYGPATH_W) 'experimental/slice/Config.cc'; else $(CYGPATH_W) '$(srcdir)/experimental/slice/Config.cc'; fi`
+
+experimental/slice/unit-tests/test_content_range-test_content_range.o: experimental/slice/unit-tests/test_content_range.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_slice_test_content_range_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT experimental/slice/unit-tests/test_content_range-test_content_range.o -MD -MP -MF experimental/slice/unit-tests/$(DEPDIR)/test_content_range-test_content_range.Tpo -c -o experimental/slice/unit-tests/test_content_range-test_content_range.o `test -f 'experimental/slice/unit-tests/test_content_range.cc' || echo '$(srcdir)/'`experimental/slice/unit-tests/test_content_range.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) experimental/slice/unit-tests/$(DEPDIR)/test_content_range-test_content_range.Tpo experimental/slice/unit-tests/$(DEPDIR)/test_content_range-test_content_range.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='experimental/slice/unit-tests/test_content_range.cc' object='experimental/slice/unit-tests/test_content_range-test_content_range.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_slice_test_content_range_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o experimental/slice/unit-tests/test_content_range-test_content_range.o `test -f 'experimental/slice/unit-tests/test_content_range.cc' || echo '$(srcdir)/'`experimental/slice/unit-tests/test_content_range.cc
+
+experimental/slice/unit-tests/test_content_range-test_content_range.obj: experimental/slice/unit-tests/test_content_range.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_slice_test_content_range_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT experimental/slice/unit-tests/test_content_range-test_content_range.obj -MD -MP -MF experimental/slice/unit-tests/$(DEPDIR)/test_content_range-test_content_range.Tpo -c -o experimental/slice/unit-tests/test_content_range-test_content_range.obj `if test -f 'experimental/slice/unit-tests/test_content_range.cc'; then $(CYGPATH_W) 'experimental/slice/unit-tests/test_content_range.cc'; else $(CYGPATH_W) '$(srcdir)/experimental/slice/unit-tests/test_content_range.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) experimental/slice/unit-tests/$(DEPDIR)/test_content_range-test_content_range.Tpo experimental/slice/unit-tests/$(DEPDIR)/test_content_range-test_content_range.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='experimental/slice/unit-tests/test_content_range.cc' object='experimental/slice/unit-tests/test_content_range-test_content_range.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_slice_test_content_range_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o experimental/slice/unit-tests/test_content_range-test_content_range.obj `if test -f 'experimental/slice/unit-tests/test_content_range.cc'; then $(CYGPATH_W) 'experimental/slice/unit-tests/test_content_range.cc'; else $(CYGPATH_W) '$(srcdir)/experimental/slice/unit-tests/test_content_range.cc'; fi`
+
+experimental/slice/test_content_range-ContentRange.o: experimental/slice/ContentRange.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_slice_test_content_range_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT experimental/slice/test_content_range-ContentRange.o -MD -MP -MF experimental/slice/$(DEPDIR)/test_content_range-ContentRange.Tpo -c -o experimental/slice/test_content_range-ContentRange.o `test -f 'experimental/slice/ContentRange.cc' || echo '$(srcdir)/'`experimental/slice/ContentRange.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) experimental/slice/$(DEPDIR)/test_content_range-ContentRange.Tpo experimental/slice/$(DEPDIR)/test_content_range-ContentRange.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='experimental/slice/ContentRange.cc' object='experimental/slice/test_content_range-ContentRange.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_slice_test_content_range_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o experimental/slice/test_content_range-ContentRange.o `test -f 'experimental/slice/ContentRange.cc' || echo '$(srcdir)/'`experimental/slice/ContentRange.cc
+
+experimental/slice/test_content_range-ContentRange.obj: experimental/slice/ContentRange.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_slice_test_content_range_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT experimental/slice/test_content_range-ContentRange.obj -MD -MP -MF experimental/slice/$(DEPDIR)/test_content_range-ContentRange.Tpo -c -o experimental/slice/test_content_range-ContentRange.obj `if test -f 'experimental/slice/ContentRange.cc'; then $(CYGPATH_W) 'experimental/slice/ContentRange.cc'; else $(CYGPATH_W) '$(srcdir)/experimental/slice/ContentRange.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) experimental/slice/$(DEPDIR)/test_content_range-ContentRange.Tpo experimental/slice/$(DEPDIR)/test_content_range-ContentRange.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='experimental/slice/ContentRange.cc' object='experimental/slice/test_content_range-ContentRange.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_slice_test_content_range_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o experimental/slice/test_content_range-ContentRange.obj `if test -f 'experimental/slice/ContentRange.cc'; then $(CYGPATH_W) 'experimental/slice/ContentRange.cc'; else $(CYGPATH_W) '$(srcdir)/experimental/slice/ContentRange.cc'; fi`
+
+experimental/slice/unit-tests/test_range-test_range.o: experimental/slice/unit-tests/test_range.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_slice_test_range_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT experimental/slice/unit-tests/test_range-test_range.o -MD -MP -MF experimental/slice/unit-tests/$(DEPDIR)/test_range-test_range.Tpo -c -o experimental/slice/unit-tests/test_range-test_range.o `test -f 'experimental/slice/unit-tests/test_range.cc' || echo '$(srcdir)/'`experimental/slice/unit-tests/test_range.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) experimental/slice/unit-tests/$(DEPDIR)/test_range-test_range.Tpo experimental/slice/unit-tests/$(DEPDIR)/test_range-test_range.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='experimental/slice/unit-tests/test_range.cc' object='experimental/slice/unit-tests/test_range-test_range.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_slice_test_range_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o experimental/slice/unit-tests/test_range-test_range.o `test -f 'experimental/slice/unit-tests/test_range.cc' || echo '$(srcdir)/'`experimental/slice/unit-tests/test_range.cc
+
+experimental/slice/unit-tests/test_range-test_range.obj: experimental/slice/unit-tests/test_range.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_slice_test_range_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT experimental/slice/unit-tests/test_range-test_range.obj -MD -MP -MF experimental/slice/unit-tests/$(DEPDIR)/test_range-test_range.Tpo -c -o experimental/slice/unit-tests/test_range-test_range.obj `if test -f 'experimental/slice/unit-tests/test_range.cc'; then $(CYGPATH_W) 'experimental/slice/unit-tests/test_range.cc'; else $(CYGPATH_W) '$(srcdir)/experimental/slice/unit-tests/test_range.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) experimental/slice/unit-tests/$(DEPDIR)/test_range-test_range.Tpo experimental/slice/unit-tests/$(DEPDIR)/test_range-test_range.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='experimental/slice/unit-tests/test_range.cc' object='experimental/slice/unit-tests/test_range-test_range.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_slice_test_range_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o experimental/slice/unit-tests/test_range-test_range.obj `if test -f 'experimental/slice/unit-tests/test_range.cc'; then $(CYGPATH_W) 'experimental/slice/unit-tests/test_range.cc'; else $(CYGPATH_W) '$(srcdir)/experimental/slice/unit-tests/test_range.cc'; fi`
+
+experimental/slice/test_range-Range.o: experimental/slice/Range.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_slice_test_range_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT experimental/slice/test_range-Range.o -MD -MP -MF experimental/slice/$(DEPDIR)/test_range-Range.Tpo -c -o experimental/slice/test_range-Range.o `test -f 'experimental/slice/Range.cc' || echo '$(srcdir)/'`experimental/slice/Range.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) experimental/slice/$(DEPDIR)/test_range-Range.Tpo experimental/slice/$(DEPDIR)/test_range-Range.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='experimental/slice/Range.cc' object='experimental/slice/test_range-Range.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_slice_test_range_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o experimental/slice/test_range-Range.o `test -f 'experimental/slice/Range.cc' || echo '$(srcdir)/'`experimental/slice/Range.cc
+
+experimental/slice/test_range-Range.obj: experimental/slice/Range.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_slice_test_range_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT experimental/slice/test_range-Range.obj -MD -MP -MF experimental/slice/$(DEPDIR)/test_range-Range.Tpo -c -o experimental/slice/test_range-Range.obj `if test -f 'experimental/slice/Range.cc'; then $(CYGPATH_W) 'experimental/slice/Range.cc'; else $(CYGPATH_W) '$(srcdir)/experimental/slice/Range.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) experimental/slice/$(DEPDIR)/test_range-Range.Tpo experimental/slice/$(DEPDIR)/test_range-Range.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='experimental/slice/Range.cc' object='experimental/slice/test_range-Range.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_slice_test_range_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o experimental/slice/test_range-Range.obj `if test -f 'experimental/slice/Range.cc'; then $(CYGPATH_W) 'experimental/slice/Range.cc'; else $(CYGPATH_W) '$(srcdir)/experimental/slice/Range.cc'; fi`
+
 experimental/sslheaders/test_sslheaders-test_sslheaders.o: experimental/sslheaders/test_sslheaders.cc
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_sslheaders_test_sslheaders_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT experimental/sslheaders/test_sslheaders-test_sslheaders.o -MD -MP -MF experimental/sslheaders/$(DEPDIR)/test_sslheaders-test_sslheaders.Tpo -c -o experimental/sslheaders/test_sslheaders-test_sslheaders.o `test -f 'experimental/sslheaders/test_sslheaders.cc' || echo '$(srcdir)/'`experimental/sslheaders/test_sslheaders.cc
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) experimental/sslheaders/$(DEPDIR)/test_sslheaders-test_sslheaders.Tpo experimental/sslheaders/$(DEPDIR)/test_sslheaders-test_sslheaders.Po
@@ -5604,6 +6167,20 @@ experimental/sslheaders/test_sslheaders-test_sslheaders.obj: experimental/sslhea
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='experimental/sslheaders/test_sslheaders.cc' object='experimental/sslheaders/test_sslheaders-test_sslheaders.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_sslheaders_test_sslheaders_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o experimental/sslheaders/test_sslheaders-test_sslheaders.obj `if test -f 'experimental/sslheaders/test_sslheaders.cc'; then $(CYGPATH_W) 'experimental/sslheaders/test_sslheaders.cc'; else $(CYGPATH_W) '$(srcdir)/experimental/sslheaders/test_sslheaders.cc'; fi`
+
+experimental/uri_signing/unit_tests/test_uri_signing-uri_signing_test.o: experimental/uri_signing/unit_tests/uri_signing_test.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_uri_signing_test_uri_signing_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT experimental/uri_signing/unit_tests/test_uri_signing-uri_signing_test.o -MD -MP -MF experimental/uri_signing/unit_tests/$(DEPDIR)/test_uri_signing-uri_signing_test.Tpo -c -o experimental/uri_signing/unit_tests/test_uri_signing-uri_signing_test.o `test -f 'experimental/uri_signing/unit_tests/uri_signing_test.cc' || echo '$(srcdir)/'`experimental/uri_signing/unit_tests/uri_signing_test.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) experimental/uri_signing/unit_tests/$(DEPDIR)/test_uri_signing-uri_signing_test.Tpo experimental/uri_signing/unit_tests/$(DEPDIR)/test_uri_signing-uri_signing_test.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='experimental/uri_signing/unit_tests/uri_signing_test.cc' object='experimental/uri_signing/unit_tests/test_uri_signing-uri_signing_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_uri_signing_test_uri_signing_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o experimental/uri_signing/unit_tests/test_uri_signing-uri_signing_test.o `test -f 'experimental/uri_signing/unit_tests/uri_signing_test.cc' || echo '$(srcdir)/'`experimental/uri_signing/unit_tests/uri_signing_test.cc
+
+experimental/uri_signing/unit_tests/test_uri_signing-uri_signing_test.obj: experimental/uri_signing/unit_tests/uri_signing_test.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_uri_signing_test_uri_signing_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT experimental/uri_signing/unit_tests/test_uri_signing-uri_signing_test.obj -MD -MP -MF experimental/uri_signing/unit_tests/$(DEPDIR)/test_uri_signing-uri_signing_test.Tpo -c -o experimental/uri_signing/unit_tests/test_uri_signing-uri_signing_test.obj `if test -f 'experimental/uri_signing/unit_tests/uri_signing_test.cc'; then $(CYGPATH_W) 'experimental/uri_signing/unit_tests/uri_signing_test.cc'; else $(CYGPATH_W) '$(srcdir)/experimental/uri_signing/unit_tests/uri_signing_test.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) experimental/uri_signing/unit_tests/$(DEPDIR)/test_uri_signing-uri_signing_test.Tpo experimental/uri_signing/unit_tests/$(DEPDIR)/test_uri_signing-uri_signing_test.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='experimental/uri_signing/unit_tests/uri_signing_test.cc' object='experimental/uri_signing/unit_tests/test_uri_signing-uri_signing_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(experimental_uri_signing_test_uri_signing_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o experimental/uri_signing/unit_tests/test_uri_signing-uri_signing_test.obj `if test -f 'experimental/uri_signing/unit_tests/uri_signing_test.cc'; then $(CYGPATH_W) 'experimental/uri_signing/unit_tests/uri_signing_test.cc'; else $(CYGPATH_W) '$(srcdir)/experimental/uri_signing/unit_tests/uri_signing_test.cc'; fi`
 
 s3_auth/unit_tests/test_s3auth-test_aws_auth_v4.o: s3_auth/unit_tests/test_aws_auth_v4.cc
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(s3_auth_test_s3auth_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT s3_auth/unit_tests/test_s3auth-test_aws_auth_v4.o -MD -MP -MF s3_auth/unit_tests/$(DEPDIR)/test_s3auth-test_aws_auth_v4.Tpo -c -o s3_auth/unit_tests/test_s3auth-test_aws_auth_v4.o `test -f 's3_auth/unit_tests/test_aws_auth_v4.cc' || echo '$(srcdir)/'`s3_auth/unit_tests/test_aws_auth_v4.cc
@@ -5678,6 +6255,7 @@ clean-libtool:
 	-rm -rf experimental/remap_purge/.libs experimental/remap_purge/_libs
 	-rm -rf experimental/remap_stats/.libs experimental/remap_stats/_libs
 	-rm -rf experimental/server_push_preload/.libs experimental/server_push_preload/_libs
+	-rm -rf experimental/slice/.libs experimental/slice/_libs
 	-rm -rf experimental/ssl_cert_loader/.libs experimental/ssl_cert_loader/_libs
 	-rm -rf experimental/sslheaders/.libs experimental/sslheaders/_libs
 	-rm -rf experimental/stale_while_revalidate/.libs experimental/stale_while_revalidate/_libs
@@ -6005,9 +6583,37 @@ experimental/access_control/test_access_control.log: experimental/access_control
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+experimental/slice/test_content_range.log: experimental/slice/test_content_range$(EXEEXT)
+	@p='experimental/slice/test_content_range$(EXEEXT)'; \
+	b='experimental/slice/test_content_range'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+experimental/slice/test_range.log: experimental/slice/test_range$(EXEEXT)
+	@p='experimental/slice/test_range$(EXEEXT)'; \
+	b='experimental/slice/test_range'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+experimental/slice/test_config.log: experimental/slice/test_config$(EXEEXT)
+	@p='experimental/slice/test_config$(EXEEXT)'; \
+	b='experimental/slice/test_config'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 experimental/sslheaders/test_sslheaders.log: experimental/sslheaders/test_sslheaders$(EXEEXT)
 	@p='experimental/sslheaders/test_sslheaders$(EXEEXT)'; \
 	b='experimental/sslheaders/test_sslheaders'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+experimental/uri_signing/test_uri_signing.log: experimental/uri_signing/test_uri_signing$(EXEEXT)
+	@p='experimental/uri_signing/test_uri_signing$(EXEEXT)'; \
+	b='experimental/uri_signing/test_uri_signing'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -6206,6 +6812,10 @@ distclean-generic:
 	-rm -f experimental/remap_stats/$(am__dirstamp)
 	-rm -f experimental/server_push_preload/$(DEPDIR)/$(am__dirstamp)
 	-rm -f experimental/server_push_preload/$(am__dirstamp)
+	-rm -f experimental/slice/$(DEPDIR)/$(am__dirstamp)
+	-rm -f experimental/slice/$(am__dirstamp)
+	-rm -f experimental/slice/unit-tests/$(DEPDIR)/$(am__dirstamp)
+	-rm -f experimental/slice/unit-tests/$(am__dirstamp)
 	-rm -f experimental/ssl_cert_loader/$(DEPDIR)/$(am__dirstamp)
 	-rm -f experimental/ssl_cert_loader/$(am__dirstamp)
 	-rm -f experimental/sslheaders/$(DEPDIR)/$(am__dirstamp)
@@ -6222,6 +6832,8 @@ distclean-generic:
 	-rm -f experimental/traffic_dump/$(am__dirstamp)
 	-rm -f experimental/uri_signing/$(DEPDIR)/$(am__dirstamp)
 	-rm -f experimental/uri_signing/$(am__dirstamp)
+	-rm -f experimental/uri_signing/unit_tests/$(DEPDIR)/$(am__dirstamp)
+	-rm -f experimental/uri_signing/unit_tests/$(am__dirstamp)
 	-rm -f experimental/url_sig/$(DEPDIR)/$(am__dirstamp)
 	-rm -f experimental/url_sig/$(am__dirstamp)
 	-rm -f experimental/webp_transform/$(DEPDIR)/$(am__dirstamp)
@@ -6273,6 +6885,10 @@ distclean: distclean-recursive
 	-rm -f background_fetch/$(DEPDIR)/headers.Plo
 	-rm -f background_fetch/$(DEPDIR)/rules.Plo
 	-rm -f cache_promote/$(DEPDIR)/cache_promote.Plo
+	-rm -f cache_promote/$(DEPDIR)/configs.Plo
+	-rm -f cache_promote/$(DEPDIR)/lru_policy.Plo
+	-rm -f cache_promote/$(DEPDIR)/policy.Plo
+	-rm -f cache_promote/$(DEPDIR)/policy_manager.Plo
 	-rm -f cachekey/$(DEPDIR)/cachekey.Plo
 	-rm -f cachekey/$(DEPDIR)/common.Plo
 	-rm -f cachekey/$(DEPDIR)/configs.Plo
@@ -6376,6 +6992,23 @@ distclean: distclean-recursive
 	-rm -f experimental/remap_purge/$(DEPDIR)/remap_purge.Plo
 	-rm -f experimental/remap_stats/$(DEPDIR)/remap_stats.Plo
 	-rm -f experimental/server_push_preload/$(DEPDIR)/server_push_preload.Plo
+	-rm -f experimental/slice/$(DEPDIR)/Config.Plo
+	-rm -f experimental/slice/$(DEPDIR)/ContentRange.Plo
+	-rm -f experimental/slice/$(DEPDIR)/HttpHeader.Plo
+	-rm -f experimental/slice/$(DEPDIR)/Range.Plo
+	-rm -f experimental/slice/$(DEPDIR)/client.Plo
+	-rm -f experimental/slice/$(DEPDIR)/intercept.Plo
+	-rm -f experimental/slice/$(DEPDIR)/response.Plo
+	-rm -f experimental/slice/$(DEPDIR)/server.Plo
+	-rm -f experimental/slice/$(DEPDIR)/slice.Plo
+	-rm -f experimental/slice/$(DEPDIR)/test_config-Config.Po
+	-rm -f experimental/slice/$(DEPDIR)/test_content_range-ContentRange.Po
+	-rm -f experimental/slice/$(DEPDIR)/test_range-Range.Po
+	-rm -f experimental/slice/$(DEPDIR)/transfer.Plo
+	-rm -f experimental/slice/$(DEPDIR)/util.Plo
+	-rm -f experimental/slice/unit-tests/$(DEPDIR)/test_config-test_config.Po
+	-rm -f experimental/slice/unit-tests/$(DEPDIR)/test_content_range-test_content_range.Po
+	-rm -f experimental/slice/unit-tests/$(DEPDIR)/test_range-test_range.Po
 	-rm -f experimental/ssl_cert_loader/$(DEPDIR)/domain-tree.Plo
 	-rm -f experimental/ssl_cert_loader/$(DEPDIR)/ssl-cert-loader.Plo
 	-rm -f experimental/sslheaders/$(DEPDIR)/libsslhdr_la-expand.Plo
@@ -6392,9 +7025,19 @@ distclean: distclean-recursive
 	-rm -f experimental/uri_signing/$(DEPDIR)/cookie.Plo
 	-rm -f experimental/uri_signing/$(DEPDIR)/jwt.Plo
 	-rm -f experimental/uri_signing/$(DEPDIR)/match.Plo
+	-rm -f experimental/uri_signing/$(DEPDIR)/normalize.Plo
 	-rm -f experimental/uri_signing/$(DEPDIR)/parse.Plo
+	-rm -f experimental/uri_signing/$(DEPDIR)/test_uri_signing-common.Po
+	-rm -f experimental/uri_signing/$(DEPDIR)/test_uri_signing-config.Po
+	-rm -f experimental/uri_signing/$(DEPDIR)/test_uri_signing-cookie.Po
+	-rm -f experimental/uri_signing/$(DEPDIR)/test_uri_signing-jwt.Po
+	-rm -f experimental/uri_signing/$(DEPDIR)/test_uri_signing-match.Po
+	-rm -f experimental/uri_signing/$(DEPDIR)/test_uri_signing-normalize.Po
+	-rm -f experimental/uri_signing/$(DEPDIR)/test_uri_signing-parse.Po
+	-rm -f experimental/uri_signing/$(DEPDIR)/test_uri_signing-timing.Po
 	-rm -f experimental/uri_signing/$(DEPDIR)/timing.Plo
 	-rm -f experimental/uri_signing/$(DEPDIR)/uri_signing.Plo
+	-rm -f experimental/uri_signing/unit_tests/$(DEPDIR)/test_uri_signing-uri_signing_test.Po
 	-rm -f experimental/url_sig/$(DEPDIR)/url_sig.Plo
 	-rm -f experimental/webp_transform/$(DEPDIR)/WebpTransform_la-ImageTransform.Plo
 	-rm -f generator/$(DEPDIR)/generator.Plo
@@ -6412,6 +7055,7 @@ distclean: distclean-recursive
 	-rm -f header_rewrite/$(DEPDIR)/resources.Plo
 	-rm -f header_rewrite/$(DEPDIR)/ruleset.Plo
 	-rm -f header_rewrite/$(DEPDIR)/statement.Plo
+	-rm -f header_rewrite/$(DEPDIR)/value.Plo
 	-rm -f healthchecks/$(DEPDIR)/healthchecks.Plo
 	-rm -f libloader/$(DEPDIR)/libloader.Plo
 	-rm -f lua/$(DEPDIR)/tslua_la-ts_lua.Plo
@@ -6503,6 +7147,10 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f background_fetch/$(DEPDIR)/headers.Plo
 	-rm -f background_fetch/$(DEPDIR)/rules.Plo
 	-rm -f cache_promote/$(DEPDIR)/cache_promote.Plo
+	-rm -f cache_promote/$(DEPDIR)/configs.Plo
+	-rm -f cache_promote/$(DEPDIR)/lru_policy.Plo
+	-rm -f cache_promote/$(DEPDIR)/policy.Plo
+	-rm -f cache_promote/$(DEPDIR)/policy_manager.Plo
 	-rm -f cachekey/$(DEPDIR)/cachekey.Plo
 	-rm -f cachekey/$(DEPDIR)/common.Plo
 	-rm -f cachekey/$(DEPDIR)/configs.Plo
@@ -6606,6 +7254,23 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f experimental/remap_purge/$(DEPDIR)/remap_purge.Plo
 	-rm -f experimental/remap_stats/$(DEPDIR)/remap_stats.Plo
 	-rm -f experimental/server_push_preload/$(DEPDIR)/server_push_preload.Plo
+	-rm -f experimental/slice/$(DEPDIR)/Config.Plo
+	-rm -f experimental/slice/$(DEPDIR)/ContentRange.Plo
+	-rm -f experimental/slice/$(DEPDIR)/HttpHeader.Plo
+	-rm -f experimental/slice/$(DEPDIR)/Range.Plo
+	-rm -f experimental/slice/$(DEPDIR)/client.Plo
+	-rm -f experimental/slice/$(DEPDIR)/intercept.Plo
+	-rm -f experimental/slice/$(DEPDIR)/response.Plo
+	-rm -f experimental/slice/$(DEPDIR)/server.Plo
+	-rm -f experimental/slice/$(DEPDIR)/slice.Plo
+	-rm -f experimental/slice/$(DEPDIR)/test_config-Config.Po
+	-rm -f experimental/slice/$(DEPDIR)/test_content_range-ContentRange.Po
+	-rm -f experimental/slice/$(DEPDIR)/test_range-Range.Po
+	-rm -f experimental/slice/$(DEPDIR)/transfer.Plo
+	-rm -f experimental/slice/$(DEPDIR)/util.Plo
+	-rm -f experimental/slice/unit-tests/$(DEPDIR)/test_config-test_config.Po
+	-rm -f experimental/slice/unit-tests/$(DEPDIR)/test_content_range-test_content_range.Po
+	-rm -f experimental/slice/unit-tests/$(DEPDIR)/test_range-test_range.Po
 	-rm -f experimental/ssl_cert_loader/$(DEPDIR)/domain-tree.Plo
 	-rm -f experimental/ssl_cert_loader/$(DEPDIR)/ssl-cert-loader.Plo
 	-rm -f experimental/sslheaders/$(DEPDIR)/libsslhdr_la-expand.Plo
@@ -6622,9 +7287,19 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f experimental/uri_signing/$(DEPDIR)/cookie.Plo
 	-rm -f experimental/uri_signing/$(DEPDIR)/jwt.Plo
 	-rm -f experimental/uri_signing/$(DEPDIR)/match.Plo
+	-rm -f experimental/uri_signing/$(DEPDIR)/normalize.Plo
 	-rm -f experimental/uri_signing/$(DEPDIR)/parse.Plo
+	-rm -f experimental/uri_signing/$(DEPDIR)/test_uri_signing-common.Po
+	-rm -f experimental/uri_signing/$(DEPDIR)/test_uri_signing-config.Po
+	-rm -f experimental/uri_signing/$(DEPDIR)/test_uri_signing-cookie.Po
+	-rm -f experimental/uri_signing/$(DEPDIR)/test_uri_signing-jwt.Po
+	-rm -f experimental/uri_signing/$(DEPDIR)/test_uri_signing-match.Po
+	-rm -f experimental/uri_signing/$(DEPDIR)/test_uri_signing-normalize.Po
+	-rm -f experimental/uri_signing/$(DEPDIR)/test_uri_signing-parse.Po
+	-rm -f experimental/uri_signing/$(DEPDIR)/test_uri_signing-timing.Po
 	-rm -f experimental/uri_signing/$(DEPDIR)/timing.Plo
 	-rm -f experimental/uri_signing/$(DEPDIR)/uri_signing.Plo
+	-rm -f experimental/uri_signing/unit_tests/$(DEPDIR)/test_uri_signing-uri_signing_test.Po
 	-rm -f experimental/url_sig/$(DEPDIR)/url_sig.Plo
 	-rm -f experimental/webp_transform/$(DEPDIR)/WebpTransform_la-ImageTransform.Plo
 	-rm -f generator/$(DEPDIR)/generator.Plo
@@ -6642,6 +7317,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f header_rewrite/$(DEPDIR)/resources.Plo
 	-rm -f header_rewrite/$(DEPDIR)/ruleset.Plo
 	-rm -f header_rewrite/$(DEPDIR)/statement.Plo
+	-rm -f header_rewrite/$(DEPDIR)/value.Plo
 	-rm -f healthchecks/$(DEPDIR)/healthchecks.Plo
 	-rm -f libloader/$(DEPDIR)/libloader.Plo
 	-rm -f lua/$(DEPDIR)/tslua_la-ts_lua.Plo

@@ -27,7 +27,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
  
 --- a/doc/admin-guide/files/parent.config.en.rst
 +++ b/doc/admin-guide/files/parent.config.en.rst
-@@ -202,7 +202,7 @@ The following list shows the possible ac
+@@ -210,7 +210,7 @@ The following list shows the possible ac
      - ``simple_retry`` - If the parent origin server returns a 404 response on a request
        a new parent is selected and the request is retried.  The number of retries is controlled
        by ``max_simple_retries`` which is set to 1 by default.
@@ -36,7 +36,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
        a list of http 5xx responses defined in ``unavailable_server_retry_responses``, the currently selected
        parent is marked down and a new parent is selected to retry the request.  The number of
        retries is controlled by ``max_unavailable_server_retries`` which is set to 1 by default.
-@@ -220,7 +220,7 @@ The following list shows the possible ac
+@@ -228,7 +228,7 @@ The following list shows the possible ac
  
  ``max_simple_retries``
    By default the value for ``max_simple_retries`` is 1.  It may be set to any value in the range 1 to 5.
@@ -45,7 +45,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
    from a parent origin server will cause the request to be retried using a new parent at most 1 to 5
    times as configured by ``max_simple_retries``.
  
-@@ -228,7 +228,7 @@ The following list shows the possible ac
+@@ -236,7 +236,7 @@ The following list shows the possible ac
  
  ``max_unavailable_server_retries``
    By default the value for ``max_unavailable_server_retries`` is 1.  It may be set to any value in the range 1 to 5.
@@ -56,7 +56,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
    will be retried at most 1 to 5 times as configured by ``max_unavailable_server_retries``.
 --- a/doc/admin-guide/files/records.config.en.rst
 +++ b/doc/admin-guide/files/records.config.en.rst
-@@ -802,7 +802,7 @@ ip-resolve
+@@ -833,7 +833,7 @@ mptcp
     ===== ======================================================================
     Value Description
     ===== ======================================================================
@@ -65,7 +65,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
           then send the request to the origin server.
     ``1`` Immediately return a ``100 Continue`` from |TS| without waiting for
           the post body.
-@@ -1599,7 +1599,7 @@ Proxy User Variables
+@@ -1630,7 +1630,7 @@ Proxy User Variables
     connection=full     Full user agent connection :ref:`protocol tags <protocol_tags>`
     ==================  ===============================================================
  
@@ -74,7 +74,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
     a valid value for this variable.  Note that the ``connection`` parameter is a non-standard extension to
     RFC 7239.  Also note that, while Traffic Server allows multiple ``by`` parameters for the same proxy, this
     is prohibited by RFC 7239. Currently, for the ``host`` parameter to provide the original host from the
-@@ -1627,7 +1627,7 @@ Proxy User Variables
+@@ -1658,7 +1658,7 @@ Proxy User Variables
         information.
         See :ts:cv:`proxy.config.http.server_ports` for information on how to enable Proxy Protocol on a port.
  
@@ -83,7 +83,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
  
  .. ts:cv:: CONFIG proxy.config.http.normalize_ae INT 1
     :reloadable:
-@@ -2328,7 +2328,7 @@ DNS
+@@ -2364,7 +2364,7 @@ DNS
  
  .. ts:cv:: CONFIG proxy.config.dns.resolv_conf STRING /etc/resolv.conf
  
@@ -92,7 +92,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
     standard ``resolv.conf`` file, this option allows an administrator to manage the set of resolvers in an external configuration file,
     without affecting how the rest of the operating system uses DNS.
  
-@@ -2586,7 +2586,7 @@ HostDB
+@@ -2622,7 +2622,7 @@ HostDB
     Set the frequency (in seconds) to sync hostdb to disk.
  
     Note: hostdb is syncd to disk on a per-partition basis (of which there are 64).
@@ -101,7 +101,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
  
  Logging Configuration
  =====================
-@@ -2900,7 +2900,7 @@ Diagnostic Logging Configuration
+@@ -2956,7 +2956,7 @@ Diagnostic Logging Configuration
  
  .. ts:cv:: CONFIG proxy.config.diags.debug.tags STRING http|dns
  
@@ -110,7 +110,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
     contains an anchored regular expression that filters the messages based on the tag. The
     expressions are prefix matched which creates an implicit ``.*`` at the end. Therefore the default
     value ``http|dns`` will match tags such as ``http``, ``http_hdrs``, ``dns``, and ``dns_recv``.
-@@ -2908,7 +2908,7 @@ Diagnostic Logging Configuration
+@@ -2964,7 +2964,7 @@ Diagnostic Logging Configuration
     Some commonly used debug tags are:
  
     ============  =====================================================
@@ -119,7 +119,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
     ============  =====================================================
     dns           DNS query resolution
     http_hdrs     Logs the headers for HTTP requests and responses
-@@ -3064,7 +3064,7 @@ SSL Termination
+@@ -3120,7 +3120,7 @@ SSL Termination
  .. ts:cv:: CONFIG proxy.config.ssl.client.groups_list STRING <See notes under proxy.config.ssl.server.groups_list.>
  
     Configures the list of supported groups provided by OpenSSL which
@@ -128,7 +128,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
     of TLSv1.3 connections. The value is a colon separated list of
     group NIDs or names, for example "P-521:P-384:P-256". For
     instructions, see "Groups" section of `TLS1.3 - OpenSSLWiki <https://wiki.openssl.org/index.php/TLS1.3#Groups>`_.
-@@ -3207,7 +3207,7 @@ SSL Termination
+@@ -3263,7 +3263,7 @@ SSL Termination
     ``0`` Disables the session cache entirely.
     ``1`` Enables the session cache using OpenSSL's implementation.
     ``2`` Default. Enables the session cache using |TS|'s implementation. This
@@ -169,7 +169,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
 +    Get the current status of the hosts used in parent.config as a next hop in a multi-tiered cache hierarchy.  The value 0 or 1 is returned indicating that the host is marked as down '0' or marked as up '1'.  If a host is marked as down, it will not be used as the next hop parent, another host marked as up will be chosen.
  
  .. program:: traffic_ctl host
- .. option:: down --time seconds HOSTNAME [HOSTNAME ...]
+ .. option:: down --time seconds --reason 'active|local|manual' HOSTNAME [HOSTNAME ...]
 --- a/doc/developer-guide/api/functions/TSCacheRemove.en.rst
 +++ b/doc/developer-guide/api/functions/TSCacheRemove.en.rst
 @@ -41,4 +41,4 @@ the cache calls :arg:`contp` back with t
@@ -325,7 +325,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
            // ends here
 --- a/iocore/eventsystem/IOBuffer.cc
 +++ b/iocore/eventsystem/IOBuffer.cc
-@@ -179,7 +179,7 @@ MIOBuffer::puts(char *s, int64_t len)
+@@ -182,7 +182,7 @@ MIOBuffer::puts(char *s, int64_t len)
      }
      if (!*pb || *pb == '\n') {
        int64_t n = (int64_t)(pb - s);
@@ -440,28 +440,6 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
  
    int result = 0;
    pos        = stmt.find_first_of("+-");
---- a/plugins/experimental/uri_signing/parse.c
-+++ b/plugins/experimental/uri_signing/parse.c
-@@ -142,7 +142,7 @@ validate_jws(cjose_jws_t *jws, struct co
-     PluginDebug("Initial validation of JWT failed for %16p", jws);
-     goto jwt_fail;
-   }
--  TimerDebug("inital validation of jwt");
-+  TimerDebug("initial validation of jwt");
- 
-   cjose_header_t *hdr = cjose_jws_get_protected(jws);
-   TimerDebug("getting header of jws");
---- a/plugins/experimental/uri_signing/uri_signing.c
-+++ b/plugins/experimental/uri_signing/uri_signing.c
-@@ -46,7 +46,7 @@ TSRemapInit(TSRemapInterface *api_info,
-     return TS_ERROR;
-   }
- 
--  TSDebug(PLUGIN_NAME, "plugin is succesfully initialized");
-+  TSDebug(PLUGIN_NAME, "plugin is successfully initialized");
-   return TS_SUCCESS;
- }
- 
 --- a/plugins/experimental/url_sig/url_sig.c
 +++ b/plugins/experimental/url_sig/url_sig.c
 @@ -98,7 +98,7 @@ TSRemapInit(TSRemapInterface *api_info,
@@ -486,7 +464,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
  
 --- a/plugins/header_rewrite/header_rewrite.cc
 +++ b/plugins/header_rewrite/header_rewrite.cc
-@@ -330,7 +330,7 @@ TSPluginInit(int argc, const char *argv[
+@@ -339,7 +339,7 @@ TSPluginInit(int argc, const char *argv[
      // just appended to the configurations.
      TSDebug(PLUGIN_NAME, "Loading global configuration file %s", argv[i]);
      if (conf->parse_config(argv[i], TS_HTTP_READ_RESPONSE_HDR_HOOK)) {
@@ -495,7 +473,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
        got_config = true;
      } else {
        TSError("[header_rewrite] failed to parse configuration file %s", argv[i]);
-@@ -401,7 +401,7 @@ TSRemapNewInstance(int argc, char *argv[
+@@ -410,7 +410,7 @@ TSRemapNewInstance(int argc, char *argv[
        delete conf;
        return TS_ERROR;
      } else {
@@ -504,17 +482,9 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
      }
    }
  
-@@ -470,6 +470,6 @@ TSRemapDoRemap(void *ih, TSHttpTxn rh, T
-     rule = rule->next;
-   }
- 
--  TSDebug(PLUGIN_NAME_DBG, "Returing from TSRemapDoRemap with status: %d", rval);
-+  TSDebug(PLUGIN_NAME_DBG, "Returning from TSRemapDoRemap with status: %d", rval);
-   return rval;
- }
 --- a/plugins/s3_auth/s3_auth.cc
 +++ b/plugins/s3_auth/s3_auth.cc
-@@ -871,7 +871,7 @@ event_handler(TSCont cont, TSEvent event
+@@ -869,7 +869,7 @@ event_handler(TSCont cont, TSEvent event
      }
  
      if (TS_HTTP_STATUS_OK == status) {
@@ -525,7 +495,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
        TSHttpTxnStatusSet(txnp, status);
 --- a/src/traffic_cache_tool/CacheTool.cc
 +++ b/src/traffic_cache_tool/CacheTool.cc
-@@ -867,7 +867,7 @@ Span::updateHeader()
+@@ -869,7 +869,7 @@ Span::updateHeader()
        zret.push(0, errno, "Failed to update span - ", strerror(errno));
      }
    } else {
@@ -625,7 +595,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
 @@ -628,7 +628,7 @@ UDPNetProcessor::CreateUDPSocket(int *re
      }
  
-     if ((res = safe_getsockname(fd, &local_addr.sa, &local_addr_len)) < 0) {
+     if (safe_getsockname(fd, &local_addr.sa, &local_addr_len) < 0) {
 -      Debug("udpnet", "CreateUdpsocket: getsockname didnt' work");
 +      Debug("udpnet", "CreateUdpsocket: getsockname didn't work");
        goto HardError;
@@ -655,7 +625,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
      }
 --- a/proxy/logging/LogObject.cc
 +++ b/proxy/logging/LogObject.cc
-@@ -409,7 +409,7 @@ LogObject::_checkout_write(size_t *write
+@@ -420,7 +420,7 @@ LogObject::_checkout_write(size_t *write
  
      switch (result_code) {
      case LogBuffer::LB_OK:
@@ -675,7 +645,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
     %{INBOUND:IPV6}            The string "ipv6" if the connection is IPv6, otherwise the empty string.
     %{INBOUND:IP-FAMILY}       The IP family, either "ipv4" or "ipv6".
     %{INBOUND:STACK}           The full protocol stack separated by ','.
-@@ -827,7 +827,7 @@ Variable                Description
+@@ -836,7 +836,7 @@ Variable                Description
  %<INBOUND:TLS>          The TLS protocol for the inbound connection if it is over TLS, otherwise the
                          empty string.
  %<INBOUND:H2>           The string "h2" if the inbound connection is HTTP/2, otherwise the empty string.
@@ -697,7 +667,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
      }
 --- a/lib/records/RecHttp.cc
 +++ b/lib/records/RecHttp.cc
-@@ -410,7 +410,7 @@ HttpProxyPort::processOptions(const char
+@@ -435,7 +435,7 @@ HttpProxyPort::processOptions(const char
      if (in_ip_set_p && m_family != m_inbound_ip.family()) {
        std::string_view iname{ats_ip_family_name(m_inbound_ip.family())};
        std::string_view fname{ats_ip_family_name(m_family)};
@@ -708,7 +678,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
        zret = false;
 --- a/proxy/ParentSelection.cc
 +++ b/proxy/ParentSelection.cc
-@@ -491,7 +491,7 @@ ParentRecord::ProcessParents(char *val,
+@@ -517,7 +517,7 @@ ParentRecord::ProcessParents(char *val,
        errPtr = "Parent hostname is too long";
        goto MERROR;
      } else if (tmp - current == 0) {
@@ -781,7 +751,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
        writer_lock_retry = 0;
 --- a/iocore/eventsystem/I_IOBuffer.h
 +++ b/iocore/eventsystem/I_IOBuffer.h
-@@ -697,7 +697,7 @@ public:
+@@ -680,7 +680,7 @@ public:
    /**
      Perform a memchr() across the list of IOBufferBlocks. Returns the
      offset from the current start point of the reader to the first
@@ -792,7 +762,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
      @param len number of characters to check. If len exceeds the number
 --- a/iocore/net/OCSPStapling.cc
 +++ b/iocore/net/OCSPStapling.cc
-@@ -92,7 +92,7 @@ stapling_get_issuer(SSL_CTX *ssl_ctx, X5
+@@ -99,7 +99,7 @@ stapling_get_issuer(SSL_CTX *ssl_ctx, X5
  
  #ifdef SSL_CTX_select_current_cert
    if (!SSL_CTX_select_current_cert(ssl_ctx, x)) {
@@ -836,7 +806,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
        return 0;
 --- a/proxy/hdrs/HdrHeap.cc
 +++ b/proxy/hdrs/HdrHeap.cc
-@@ -950,7 +950,7 @@ HdrHeap::unmarshal(int buf_length, int o
+@@ -965,7 +965,7 @@ HdrHeap::unmarshal(int buf_length, int o
        // Nothing to do
        break;
      default:

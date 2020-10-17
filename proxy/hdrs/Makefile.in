@@ -124,8 +124,8 @@ EXTRA_PROGRAMS = load_http_hdr$(EXEEXT)
 @BUILD_TESTS_TRUE@	HdrTest.cc \
 @BUILD_TESTS_TRUE@	HdrTest.h
 
-check_PROGRAMS = test_mime$(EXEEXT)
-TESTS = test_mime$(EXEEXT)
+check_PROGRAMS = test_mime$(EXEEXT) test_Huffmancode$(EXEEXT) \
+	test_XPACK$(EXEEXT)
 subdir = proxy/hdrs
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/build/ax_check_openssl.m4 \
@@ -137,8 +137,9 @@ am__aclocal_m4_deps = $(top_srcdir)/build/ax_check_openssl.m4 \
 	$(top_srcdir)/build/ax_perl_modules.m4 \
 	$(top_srcdir)/build/ax_require_defined.m4 \
 	$(top_srcdir)/build/ax_with_curses.m4 \
-	$(top_srcdir)/build/brotli.m4 $(top_srcdir)/build/common.m4 \
-	$(top_srcdir)/build/crypto.m4 $(top_srcdir)/build/jemalloc.m4 \
+	$(top_srcdir)/build/brotli.m4 $(top_srcdir)/build/cjose.m4 \
+	$(top_srcdir)/build/common.m4 $(top_srcdir)/build/crypto.m4 \
+	$(top_srcdir)/build/jansson.m4 $(top_srcdir)/build/jemalloc.m4 \
 	$(top_srcdir)/build/libtool.m4 \
 	$(top_srcdir)/build/ltoptions.m4 \
 	$(top_srcdir)/build/ltsugar.m4 \
@@ -168,12 +169,13 @@ libhdrs_a_LIBADD =
 am__libhdrs_a_SOURCES_DIST = HTTP.cc HTTP.h HdrHeap.cc HdrHeap.h \
 	HdrTSOnly.cc HdrToken.cc HdrToken.h HdrUtils.cc HdrUtils.h \
 	HttpCompat.cc HttpCompat.h MIME.cc MIME.h URL.cc URL.h \
-	HdrTest.cc HdrTest.h
+	HuffmanCodec.cc HuffmanCodec.h XPACK.cc XPACK.h HdrTest.cc \
+	HdrTest.h
 @BUILD_TESTS_TRUE@am__objects_1 = HdrTest.$(OBJEXT)
 am_libhdrs_a_OBJECTS = HTTP.$(OBJEXT) HdrHeap.$(OBJEXT) \
 	HdrTSOnly.$(OBJEXT) HdrToken.$(OBJEXT) HdrUtils.$(OBJEXT) \
 	HttpCompat.$(OBJEXT) MIME.$(OBJEXT) URL.$(OBJEXT) \
-	$(am__objects_1)
+	HuffmanCodec.$(OBJEXT) XPACK.$(OBJEXT) $(am__objects_1)
 libhdrs_a_OBJECTS = $(am_libhdrs_a_OBJECTS)
 am_load_http_hdr_OBJECTS = load_http_hdr.$(OBJEXT)
 load_http_hdr_OBJECTS = $(am_load_http_hdr_OBJECTS)
@@ -183,6 +185,18 @@ AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
+am_test_Huffmancode_OBJECTS = test_Huffmancode.$(OBJEXT) \
+	HuffmanCodec.$(OBJEXT)
+test_Huffmancode_OBJECTS = $(am_test_Huffmancode_OBJECTS)
+test_Huffmancode_DEPENDENCIES =  \
+	$(top_builddir)/src/tscore/libtscore.la \
+	$(top_builddir)/src/tscpp/util/libtscpputil.la
+am__dirstamp = $(am__leading_dot)dirstamp
+am_test_XPACK_OBJECTS = unit_tests/test_XPACK-test_XPACK.$(OBJEXT) \
+	test_XPACK-HuffmanCodec.$(OBJEXT) test_XPACK-XPACK.$(OBJEXT)
+test_XPACK_OBJECTS = $(am_test_XPACK_OBJECTS)
+test_XPACK_DEPENDENCIES = $(top_builddir)/src/tscore/libtscore.la \
+	$(top_builddir)/src/tscpp/util/libtscpputil.la
 am_test_mime_OBJECTS = test_mime.$(OBJEXT)
 test_mime_OBJECTS = $(am_test_mime_OBJECTS)
 test_mime_DEPENDENCIES = $(top_builddir)/src/tscore/libtscore.la \
@@ -209,9 +223,12 @@ am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = ./$(DEPDIR)/HTTP.Po ./$(DEPDIR)/HdrHeap.Po \
 	./$(DEPDIR)/HdrTSOnly.Po ./$(DEPDIR)/HdrTest.Po \
 	./$(DEPDIR)/HdrToken.Po ./$(DEPDIR)/HdrUtils.Po \
-	./$(DEPDIR)/HttpCompat.Po ./$(DEPDIR)/MIME.Po \
-	./$(DEPDIR)/URL.Po ./$(DEPDIR)/load_http_hdr.Po \
-	./$(DEPDIR)/test_mime.Po
+	./$(DEPDIR)/HttpCompat.Po ./$(DEPDIR)/HuffmanCodec.Po \
+	./$(DEPDIR)/MIME.Po ./$(DEPDIR)/URL.Po ./$(DEPDIR)/XPACK.Po \
+	./$(DEPDIR)/load_http_hdr.Po ./$(DEPDIR)/test_Huffmancode.Po \
+	./$(DEPDIR)/test_XPACK-HuffmanCodec.Po \
+	./$(DEPDIR)/test_XPACK-XPACK.Po ./$(DEPDIR)/test_mime.Po \
+	unit_tests/$(DEPDIR)/test_XPACK-test_XPACK.Po
 am__mv = mv -f
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -250,8 +267,10 @@ am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
 SOURCES = $(libhdrs_a_SOURCES) $(load_http_hdr_SOURCES) \
+	$(test_Huffmancode_SOURCES) $(test_XPACK_SOURCES) \
 	$(test_mime_SOURCES)
 DIST_SOURCES = $(am__libhdrs_a_SOURCES_DIST) $(load_http_hdr_SOURCES) \
+	$(test_Huffmancode_SOURCES) $(test_XPACK_SOURCES) \
 	$(test_mime_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
@@ -794,6 +813,7 @@ use_dh_get_2048_256 = @use_dh_get_2048_256@
 use_diags = @use_diags@
 use_epoll = @use_epoll@
 use_fast_sdk = @use_fast_sdk@
+use_hello_cb = @use_hello_cb@
 use_hwloc = @use_hwloc@
 use_kqueue = @use_kqueue@
 use_linux_native_aio = @use_linux_native_aio@
@@ -830,7 +850,8 @@ noinst_LIBRARIES = libhdrs.a
 # Http library source files.
 libhdrs_a_SOURCES = HTTP.cc HTTP.h HdrHeap.cc HdrHeap.h HdrTSOnly.cc \
 	HdrToken.cc HdrToken.h HdrUtils.cc HdrUtils.h HttpCompat.cc \
-	HttpCompat.h MIME.cc MIME.h URL.cc URL.h $(am__append_1)
+	HttpCompat.h MIME.cc MIME.h URL.cc URL.h HuffmanCodec.cc \
+	HuffmanCodec.h XPACK.cc XPACK.h $(am__append_1)
 load_http_hdr_SOURCES = \
 	HTTP.h \
 	HdrHeap.h \
@@ -842,6 +863,7 @@ load_http_hdr_LDADD = -L. -lhdrs \
 	$(top_builddir)/src/tscpp/util/libtscpputil.la \
 	@LIBTCL@
 
+TESTS = $(check_PROGRAMS)
 test_mime_LDADD = -L. -lhdrs \
 	$(top_builddir)/src/tscore/libtscore.la \
 	$(top_builddir)/src/tscpp/util/libtscpputil.la \
@@ -853,6 +875,28 @@ test_mime_LDADD = -L. -lhdrs \
 	@LIBTCL@ @LIBCAP@
 
 test_mime_SOURCES = test_mime.cc
+test_Huffmancode_LDADD = \
+	$(top_builddir)/src/tscore/libtscore.la \
+	$(top_builddir)/src/tscpp/util/libtscpputil.la
+
+test_Huffmancode_SOURCES = \
+	test_Huffmancode.cc \
+	HuffmanCodec.cc \
+	HuffmanCodec.h
+
+test_XPACK_CPPFLAGS = \
+	$(AM_CPPFLAGS) \
+	-I$(abs_top_srcdir)/tests/include
+
+test_XPACK_LDADD = \
+	$(top_builddir)/src/tscore/libtscore.la \
+	$(top_builddir)/src/tscpp/util/libtscpputil.la
+
+test_XPACK_SOURCES = \
+	unit_tests/test_XPACK.cc \
+	HuffmanCodec.cc \
+	XPACK.cc
+
 all: all-am
 
 .SUFFIXES:
@@ -909,12 +953,30 @@ load_http_hdr$(EXEEXT): $(load_http_hdr_OBJECTS) $(load_http_hdr_DEPENDENCIES) $
 	@rm -f load_http_hdr$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(load_http_hdr_OBJECTS) $(load_http_hdr_LDADD) $(LIBS)
 
+test_Huffmancode$(EXEEXT): $(test_Huffmancode_OBJECTS) $(test_Huffmancode_DEPENDENCIES) $(EXTRA_test_Huffmancode_DEPENDENCIES) 
+	@rm -f test_Huffmancode$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(test_Huffmancode_OBJECTS) $(test_Huffmancode_LDADD) $(LIBS)
+unit_tests/$(am__dirstamp):
+	@$(MKDIR_P) unit_tests
+	@: > unit_tests/$(am__dirstamp)
+unit_tests/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) unit_tests/$(DEPDIR)
+	@: > unit_tests/$(DEPDIR)/$(am__dirstamp)
+unit_tests/test_XPACK-test_XPACK.$(OBJEXT):  \
+	unit_tests/$(am__dirstamp) \
+	unit_tests/$(DEPDIR)/$(am__dirstamp)
+
+test_XPACK$(EXEEXT): $(test_XPACK_OBJECTS) $(test_XPACK_DEPENDENCIES) $(EXTRA_test_XPACK_DEPENDENCIES) 
+	@rm -f test_XPACK$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(test_XPACK_OBJECTS) $(test_XPACK_LDADD) $(LIBS)
+
 test_mime$(EXEEXT): $(test_mime_OBJECTS) $(test_mime_DEPENDENCIES) $(EXTRA_test_mime_DEPENDENCIES) 
 	@rm -f test_mime$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(test_mime_OBJECTS) $(test_mime_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
+	-rm -f unit_tests/*.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
@@ -926,10 +988,16 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/HdrToken.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/HdrUtils.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/HttpCompat.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/HuffmanCodec.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MIME.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/URL.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XPACK.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/load_http_hdr.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_Huffmancode.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_XPACK-HuffmanCodec.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_XPACK-XPACK.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_mime.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@unit_tests/$(DEPDIR)/test_XPACK-test_XPACK.Po@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -960,6 +1028,48 @@ am--depfiles: $(am__depfiles_remade)
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LTCXXCOMPILE) -c -o $@ $<
+
+unit_tests/test_XPACK-test_XPACK.o: unit_tests/test_XPACK.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_XPACK_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT unit_tests/test_XPACK-test_XPACK.o -MD -MP -MF unit_tests/$(DEPDIR)/test_XPACK-test_XPACK.Tpo -c -o unit_tests/test_XPACK-test_XPACK.o `test -f 'unit_tests/test_XPACK.cc' || echo '$(srcdir)/'`unit_tests/test_XPACK.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) unit_tests/$(DEPDIR)/test_XPACK-test_XPACK.Tpo unit_tests/$(DEPDIR)/test_XPACK-test_XPACK.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='unit_tests/test_XPACK.cc' object='unit_tests/test_XPACK-test_XPACK.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_XPACK_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o unit_tests/test_XPACK-test_XPACK.o `test -f 'unit_tests/test_XPACK.cc' || echo '$(srcdir)/'`unit_tests/test_XPACK.cc
+
+unit_tests/test_XPACK-test_XPACK.obj: unit_tests/test_XPACK.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_XPACK_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT unit_tests/test_XPACK-test_XPACK.obj -MD -MP -MF unit_tests/$(DEPDIR)/test_XPACK-test_XPACK.Tpo -c -o unit_tests/test_XPACK-test_XPACK.obj `if test -f 'unit_tests/test_XPACK.cc'; then $(CYGPATH_W) 'unit_tests/test_XPACK.cc'; else $(CYGPATH_W) '$(srcdir)/unit_tests/test_XPACK.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) unit_tests/$(DEPDIR)/test_XPACK-test_XPACK.Tpo unit_tests/$(DEPDIR)/test_XPACK-test_XPACK.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='unit_tests/test_XPACK.cc' object='unit_tests/test_XPACK-test_XPACK.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_XPACK_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o unit_tests/test_XPACK-test_XPACK.obj `if test -f 'unit_tests/test_XPACK.cc'; then $(CYGPATH_W) 'unit_tests/test_XPACK.cc'; else $(CYGPATH_W) '$(srcdir)/unit_tests/test_XPACK.cc'; fi`
+
+test_XPACK-HuffmanCodec.o: HuffmanCodec.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_XPACK_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test_XPACK-HuffmanCodec.o -MD -MP -MF $(DEPDIR)/test_XPACK-HuffmanCodec.Tpo -c -o test_XPACK-HuffmanCodec.o `test -f 'HuffmanCodec.cc' || echo '$(srcdir)/'`HuffmanCodec.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_XPACK-HuffmanCodec.Tpo $(DEPDIR)/test_XPACK-HuffmanCodec.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='HuffmanCodec.cc' object='test_XPACK-HuffmanCodec.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_XPACK_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test_XPACK-HuffmanCodec.o `test -f 'HuffmanCodec.cc' || echo '$(srcdir)/'`HuffmanCodec.cc
+
+test_XPACK-HuffmanCodec.obj: HuffmanCodec.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_XPACK_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test_XPACK-HuffmanCodec.obj -MD -MP -MF $(DEPDIR)/test_XPACK-HuffmanCodec.Tpo -c -o test_XPACK-HuffmanCodec.obj `if test -f 'HuffmanCodec.cc'; then $(CYGPATH_W) 'HuffmanCodec.cc'; else $(CYGPATH_W) '$(srcdir)/HuffmanCodec.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_XPACK-HuffmanCodec.Tpo $(DEPDIR)/test_XPACK-HuffmanCodec.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='HuffmanCodec.cc' object='test_XPACK-HuffmanCodec.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_XPACK_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test_XPACK-HuffmanCodec.obj `if test -f 'HuffmanCodec.cc'; then $(CYGPATH_W) 'HuffmanCodec.cc'; else $(CYGPATH_W) '$(srcdir)/HuffmanCodec.cc'; fi`
+
+test_XPACK-XPACK.o: XPACK.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_XPACK_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test_XPACK-XPACK.o -MD -MP -MF $(DEPDIR)/test_XPACK-XPACK.Tpo -c -o test_XPACK-XPACK.o `test -f 'XPACK.cc' || echo '$(srcdir)/'`XPACK.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_XPACK-XPACK.Tpo $(DEPDIR)/test_XPACK-XPACK.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='XPACK.cc' object='test_XPACK-XPACK.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_XPACK_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test_XPACK-XPACK.o `test -f 'XPACK.cc' || echo '$(srcdir)/'`XPACK.cc
+
+test_XPACK-XPACK.obj: XPACK.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_XPACK_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT test_XPACK-XPACK.obj -MD -MP -MF $(DEPDIR)/test_XPACK-XPACK.Tpo -c -o test_XPACK-XPACK.obj `if test -f 'XPACK.cc'; then $(CYGPATH_W) 'XPACK.cc'; else $(CYGPATH_W) '$(srcdir)/XPACK.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test_XPACK-XPACK.Tpo $(DEPDIR)/test_XPACK-XPACK.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='XPACK.cc' object='test_XPACK-XPACK.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_XPACK_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o test_XPACK-XPACK.obj `if test -f 'XPACK.cc'; then $(CYGPATH_W) 'XPACK.cc'; else $(CYGPATH_W) '$(srcdir)/XPACK.cc'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -1168,6 +1278,20 @@ test_mime.log: test_mime$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test_Huffmancode.log: test_Huffmancode$(EXEEXT)
+	@p='test_Huffmancode$(EXEEXT)'; \
+	b='test_Huffmancode'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test_XPACK.log: test_XPACK$(EXEEXT)
+	@p='test_XPACK$(EXEEXT)'; \
+	b='test_XPACK'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 .test.log:
 	@p='$<'; \
 	$(am__set_b); \
@@ -1251,6 +1375,8 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-rm -f unit_tests/$(DEPDIR)/$(am__dirstamp)
+	-rm -f unit_tests/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
@@ -1272,10 +1398,16 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/HdrToken.Po
 	-rm -f ./$(DEPDIR)/HdrUtils.Po
 	-rm -f ./$(DEPDIR)/HttpCompat.Po
+	-rm -f ./$(DEPDIR)/HuffmanCodec.Po
 	-rm -f ./$(DEPDIR)/MIME.Po
 	-rm -f ./$(DEPDIR)/URL.Po
+	-rm -f ./$(DEPDIR)/XPACK.Po
 	-rm -f ./$(DEPDIR)/load_http_hdr.Po
+	-rm -f ./$(DEPDIR)/test_Huffmancode.Po
+	-rm -f ./$(DEPDIR)/test_XPACK-HuffmanCodec.Po
+	-rm -f ./$(DEPDIR)/test_XPACK-XPACK.Po
 	-rm -f ./$(DEPDIR)/test_mime.Po
+	-rm -f unit_tests/$(DEPDIR)/test_XPACK-test_XPACK.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -1328,10 +1460,16 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/HdrToken.Po
 	-rm -f ./$(DEPDIR)/HdrUtils.Po
 	-rm -f ./$(DEPDIR)/HttpCompat.Po
+	-rm -f ./$(DEPDIR)/HuffmanCodec.Po
 	-rm -f ./$(DEPDIR)/MIME.Po
 	-rm -f ./$(DEPDIR)/URL.Po
+	-rm -f ./$(DEPDIR)/XPACK.Po
 	-rm -f ./$(DEPDIR)/load_http_hdr.Po
+	-rm -f ./$(DEPDIR)/test_Huffmancode.Po
+	-rm -f ./$(DEPDIR)/test_XPACK-HuffmanCodec.Po
+	-rm -f ./$(DEPDIR)/test_XPACK-XPACK.Po
 	-rm -f ./$(DEPDIR)/test_mime.Po
+	-rm -f unit_tests/$(DEPDIR)/test_XPACK-test_XPACK.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
