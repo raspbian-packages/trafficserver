@@ -517,7 +517,7 @@ ParentRecord::ProcessParents(char *val, bool isPrimary)
       errPtr = "Parent hostname is too long";
       goto MERROR;
     } else if (tmp - current == 0) {
-      errPtr = "Parent string is emtpy";
+      errPtr = "Parent string is empty";
       goto MERROR;
     }
     // Update the pRecords
