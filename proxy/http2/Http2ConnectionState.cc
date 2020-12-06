@@ -304,10 +304,12 @@ rcv_headers_frame(Http2ConnectionState &cstate, const Http2Frame &frame)
     }
   }
 
-  stream->header_blocks = static_cast<uint8_t *>(ats_malloc(header_block_fragment_length));
-  frame.reader()->memcpy(stream->header_blocks, header_block_fragment_length, header_block_fragment_offset);
+  if (header_block_fragment_length > 0) {
+    stream->header_blocks = static_cast<uint8_t *>(ats_malloc(header_block_fragment_length));
+    frame.reader()->memcpy(stream->header_blocks, header_block_fragment_length, header_block_fragment_offset);
 
-  stream->header_blocks_length = header_block_fragment_length;
+    stream->header_blocks_length = header_block_fragment_length;
+  }
 
   if (frame.header().flags & HTTP2_FLAGS_HEADERS_END_HEADERS) {
     // NOTE: If there are END_HEADERS flag, decode stored Header Blocks.
