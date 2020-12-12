@@ -996,7 +996,9 @@ mptcp
 .. ts:cv:: CONFIG proxy.config.http.attach_server_session_to_client INT 0
    :overridable:
 
-   Control the re-use of an server session by a user agent (client) session.
+   Control the re-use of an server session by a user agent (client) session. Currently only applies to user
+   agents using HTTP/1.0 or HTTP/1.1. For other HTTP versions, the origin connection is always returned to the
+   session sharing pool or closed.
 
    If a user agent performs more than one HTTP transaction on its connection to Traffic Server a server session must be
    obtained for the second (and subsequent) transaction as for the first. This settings affects how that server session
@@ -1504,11 +1506,9 @@ Negative Response Caching
    ====================== =====================================================
    ``204``                No Content
    ``305``                Use Proxy
-   ``400``                Bad Request
    ``403``                Forbidden
    ``404``                Not Found
    ``414``                URI Too Long
-   ``405``                Method Not Allowed
    ``500``                Internal Server Error
    ``501``                Not Implemented
    ``502``                Bad Gateway
@@ -1526,7 +1526,7 @@ Negative Response Caching
    How long (in seconds) Traffic Server keeps the negative responses  valid in cache. This value only affects negative
    responses that do NOT have explicit ``Expires:`` or ``Cache-Control:`` lifetimes set by the server.
 
-.. ts:cv:: CONFIG proxy.config.http.negative_caching_list STRING 204 305 403 404 405 414 500 501 502 503 504
+.. ts:cv:: CONFIG proxy.config.http.negative_caching_list STRING 204 305 403 404 414 500 501 502 503 504
    :reloadable:
 
    The HTTP status code for negative caching. Default values are mentioned above. The unwanted status codes can be

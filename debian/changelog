@@ -1,9 +1,28 @@
-trafficserver (8.1.0+ds-2+rpi1) bullseye-staging; urgency=medium
+trafficserver (8.1.1+ds-1+rpi1) bullseye-staging; urgency=medium
 
   [changes brought forward from 8.0.1-4+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Sat, 19 Jan 2019 12:42:48 +0000]
   * Use -latomic on raspbian too.
 
- -- Raspbian forward porter <root@raspbian.org>  Mon, 30 Nov 2020 01:22:56 +0000
+ -- Raspbian forward porter <root@raspbian.org>  Sat, 12 Dec 2020 21:57:03 +0000
+
+trafficserver (8.1.1+ds-1) unstable; urgency=medium
+
+  * New upstream version 8.1.0+ds
+  * Update d/watch
+  * Update d/upstream/signing-key.asc
+  * New upstream version 8.1.1+ds
+  * Update Debian Standards-Version
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Sun, 06 Dec 2020 16:26:39 +0100
+
+trafficserver (8.1.1+ds-1) unstable; urgency=medium
+
+  * New upstream version 8.1.0+ds
+  * Update d/watch
+  * Update d/upstream/signing-key.asc
+  * New upstream version 8.1.1+ds
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Sun, 06 Dec 2020 15:43:35 +0100
 
 trafficserver (8.1.0+ds-2) unstable; urgency=medium
 

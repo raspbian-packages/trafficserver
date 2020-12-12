@@ -47,7 +47,7 @@ public:
   virtual void set_inactivity_timeout(ink_hrtime timeout_in) = 0;
   virtual void cancel_inactivity_timeout()                   = 0;
 
-  virtual void attach_server_session(HttpServerSession *ssession, bool transaction_done = true);
+  virtual bool attach_server_session(HttpServerSession *ssession, bool transaction_done = true);
 
   // See if we need to schedule on the primary thread for the transaction or change the thread that is associated with the VC.
   // If we reschedule, the scheduled action is returned.  Otherwise, NULL is returned
@@ -142,12 +142,6 @@ public:
   set_host_res_style(HostResStyle style)
   {
     host_res_style = style;
-  }
-
-  const AclRecord *
-  get_acl_record() const
-  {
-    return parent ? parent->acl_record : nullptr;
   }
 
   // Indicate we are done with this transaction
