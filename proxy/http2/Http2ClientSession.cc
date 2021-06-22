@@ -581,8 +581,8 @@ Http2ClientSession::state_process_frame_read(int event, VIO *vio, bool inside_fr
 bool
 Http2ClientSession::_should_do_something_else()
 {
-  // Do something else every 128 incoming frames
-  return (this->_n_frame_read & 0x7F) == 0;
+  // Do something else every 128 incoming frames if connection state isn't closed
+  return (this->_n_frame_read & 0x7F) == 0 && !connection_state.is_state_closed();
 }
 
 int64_t
