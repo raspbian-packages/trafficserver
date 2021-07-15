@@ -2073,7 +2073,6 @@ AC_CONFIG_FILES([
   include/tscore/ink_config.h
   lib/tsconfig/Makefile
   src/wccp/Makefile
-  lib/yamlcpp/Makefile
   mgmt/Makefile
   mgmt/api/Makefile
   mgmt/api/include/Makefile
