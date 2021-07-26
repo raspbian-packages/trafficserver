@@ -258,7 +258,7 @@ inconsequentially variable parameters that might otherwise obfuscate the
 reporting from log analyzers.
 
 Multiple query parameters may be listed, separated by spaces, though only the
-first occurence of each will be wiped from the query string if any individual
+first occurrence of each will be wiped from the query string if any individual
 parameter appears more than once in the URL.
 
 .. _admin-custom-logs-logs:
