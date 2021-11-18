@@ -557,7 +557,6 @@ checksum_block(const char *s, int len)
   return sum;
 }
 
-#ifdef DEBUG
 void
 mime_hdr_sanity_check(MIMEHdrImpl *mh)
 {
@@ -657,7 +656,6 @@ mime_hdr_sanity_check(MIMEHdrImpl *mh)
   ink_release_assert(last_fblock == mh->m_fblock_list_tail);
   ink_release_assert(masksum == mh->m_presence_bits);
 }
-#endif
 
 void
 mime_init()
