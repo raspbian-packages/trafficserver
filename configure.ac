@@ -2278,7 +2278,6 @@ AC_CONFIG_FILES([
   include/ts/apidefs.h
   include/tscore/ink_config.h
   src/wccp/Makefile
-  lib/yamlcpp/Makefile
   mgmt/Makefile
   mgmt/api/Makefile
   mgmt/api/include/Makefile
