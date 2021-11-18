@@ -1,0 +1,25 @@
+Description: Fix traffic_top build when using format-security
+Author: Jean Baptiste Favre <jbfavre@debian.org>
+Last-Update: 2021-10-16
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+--- a/src/traffic_top/traffic_top.cc
++++ b/src/traffic_top/traffic_top.cc
+@@ -126,7 +126,7 @@ prettyPrint(const int x, const int y, co
+   }
+   attron(COLOR_PAIR(color));
+   attron(A_BOLD);
+-  mvprintw(y, x, buffer);
++  mvprintw(y, x, "%s", buffer);
+   attroff(COLOR_PAIR(color));
+   attroff(A_BOLD);
+ }
+@@ -143,7 +143,7 @@ makeTable(const int x, const int y, cons
+     int type;
+ 
+     stats.getStat(item, value, prettyName, type);
+-    mvprintw(my_y, x, prettyName.c_str());
++    mvprintw(my_y, x, "%s", prettyName.c_str());
+     prettyPrint(x + 10, my_y++, value, type);
+   }
+ }

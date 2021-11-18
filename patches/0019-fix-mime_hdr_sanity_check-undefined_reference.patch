@@ -1,0 +1,23 @@
+Description: Fix traffic_manager build with mime-sanity-check enabled
+Author: Jean Baptiste Favre <jbfavre@debian.org>
+Last-Update: 2021-10-16
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+--- a/proxy/hdrs/MIME.cc
++++ b/proxy/hdrs/MIME.cc
+@@ -557,7 +557,6 @@ checksum_block(const char *s, int len)
+   return sum;
+ }
+ 
+-#ifdef DEBUG
+ void
+ mime_hdr_sanity_check(MIMEHdrImpl *mh)
+ {
+@@ -657,7 +656,6 @@ mime_hdr_sanity_check(MIMEHdrImpl *mh)
+   ink_release_assert(last_fblock == mh->m_fblock_list_tail);
+   ink_release_assert(masksum == mh->m_presence_bits);
+ }
+-#endif
+ 
+ void
+ mime_init()

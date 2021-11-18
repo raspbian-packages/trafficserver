@@ -1,0 +1,18 @@
+Description: Force python3 usage, add libfakeroot-sysv to blacklist
+Author: Jean Baptiste Favre <debian@jbfavre.org>
+Origin: other
+Last-Update: 2018-09-24
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+--- a/tools/check-unused-dependencies
++++ b/tools/check-unused-dependencies
+@@ -54,7 +54,8 @@ def get_dependencies(program):
+                     'libgcc_s.so.',
+                     'libm.so.',       # Why does Libtool call ld with -lm?
+                     'libpthread.so.', # Because we add -lpthread to LIBS
+-                    'librt.so.'       # clang + asan pulls this in
++                    'librt.so.',      # clang + asan pulls this in
++                    'libfakeroot-sysv.so'
+                 ])):
+             continue
+ 
