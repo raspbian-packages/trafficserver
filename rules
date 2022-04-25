@@ -1,0 +1,81 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+export DEB_CFLAGS_MAINT_APPEND = -O3
+export DEB_CXXFLAGS_MAINT_APPEND = -O3
+# mips & mipsel need explicit libatomic link
+ifeq ($(DEB_HOST_ARCH),$(filter $(DEB_HOST_ARCH),mips mipsel))
+  export DEB_LDFLAGS_MAINT_APPEND += -latomic
+endif
+
+# Get build architecture. ./configure is different on Linux
+include /usr/share/dpkg/architecture.mk
+# Get rid f dpkg-parsechangelog
+include /usr/share/dpkg/pkg-info.mk
+
+configure_flags = \
+	--enable-layout=Debian \
+	--sysconfdir=/etc/trafficserver --libdir=/usr/lib/trafficserver \
+	--libexecdir=/usr/lib/trafficserver/modules \
+	--with-user=root --with-group=root --disable-silent-rules \
+	--enable-experimental-plugins --enable-32bit-build \
+	--enable-mime-sanity-check \
+	--with-build-version=$(DEB_VERSION) \
+	--with-yaml-cpp=/usr \
+	--with-hrw-geo-provider=maxminddb \
+        $(shell dpkg-buildflags --export=configure)
+
+%:
+	dh $@
+
+override_dh_auto_configure:
+	dh_auto_configure -- $(configure_flags)
+
+override_dh_auto_install:
+	dh_auto_install -- INSTALLDIRS=vendor
+	rm -f debian/tmp/usr/bin/trafficserver # We install our own
+	# Satisfy §10.2 (http://wiki.debian.org/ReleaseGoals/LAFileRemoval)
+	rm -f debian/tmp/usr/lib/trafficserver/lib*.la
+	rm -f debian/tmp/usr/lib/trafficserver/modules/*.la
+	rm -f debian/tmp/usr/lib/trafficserver/lib*.a
+ifneq ($(DEB_HOST_ARCH_OS),linux)
+	# Remove Linux-specific plugin
+	sed -i '/\/healthchecks\.so$$/d' \
+		debian/trafficserver.install
+endif
+
+override_dh_install:
+	dh_install
+	# Remove .so from unit-test
+	# rm -f debian/tmp/lib/trafficserver/plugin_missing*
+	# rm -f debian/tmp/lib/trafficserver/plugin_required*
+	# rm -f debian/tmp/lib/trafficserver/plugin_testing*
+	# rm -f debian/tmp/lib/trafficserver/plugin_v*
+	rm -f debian/tmp/usr/lib/trafficserver/plugin*
+	dh_missing --list-missing
+	./debian/change_config.pl debian/trafficserver/etc/trafficserver/records.config
+	# Lintian fixes
+	mkdir -p debian/trafficserver/usr/share/doc/trafficserver
+	cat CHANGELOG-* >> debian/trafficserver/usr/share/doc/trafficserver/changelog
+	#rm debian/trafficserver-dev/usr/share/doc/trafficserver-dev/examples/ssl-preaccept/ssl_preaccept.config
+	#(cd debian/trafficserver-dev/usr/share/doc/trafficserver-dev/examples/ssl-preaccept/; \
+	#ln -s ssl_preaccept.config ssl_sni.config)
+
+override_dh_fixperms:
+	dh_fixperms -Xvar/lib/trafficserver \
+		    -Xvar/log/trafficserver \
+		    -Xvar/cache/trafficserver \
+		    -Xvar/run/trafficserver
+
+override_dh_installexamples:
+	dh_installexamples -XMakefile -X.libs -X.dirstamp -X.deps -X.la -X.lo
+
+override_dh_makeshlibs:
+	dh_makeshlibs -Xdebian/tmp/usr/lib/trafficserver
+
+override_dh_auto_test:
+	-dh_auto_test
