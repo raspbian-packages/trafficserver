@@ -1112,10 +1112,12 @@ ip-resolve
    An arbitrary string value that, if set, will be used to replace any request
    ``User-Agent`` header.
 
-.. ts:cv:: CONFIG proxy.config.http.strict_uri_parsing INT 0
+.. ts:cv:: CONFIG proxy.config.http.strict_uri_parsing INT 2
 
-   Enables (``1``) or disables (``0``) Traffic Server to return a 400 Bad Request
-   if client's request URI includes character which is not RFC 3986 compliant
+   Takes a value between 0 and 2.  ``0`` disables strict_uri_parsing.  Any character can appears
+   in the URI.  ``1`` causes |TS| to return 400 Bad Request
+   if client's request URI includes character which is not RFC 3986 compliant. ``2`` directs |TS|
+   to reject the clients request if it contains whitespace or non-printable characters.
 
 .. ts:cv:: CONFIG proxy.config.http.errors.log_error_pages INT 1
    :reloadable:
