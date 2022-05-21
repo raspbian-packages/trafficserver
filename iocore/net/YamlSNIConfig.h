@@ -44,7 +44,7 @@ struct YamlSNIConfig {
     client_cert
 
   };
-  enum class Level { NONE = 0, MODERATE, STRICT };
+  enum class Level { NONE = 0, MODERATE, STRICT, UNSET };
 
   YamlSNIConfig() {}
 
@@ -53,7 +53,7 @@ struct YamlSNIConfig {
     bool disable_h2             = false;
     uint8_t verify_client_level = 0;
     std::string tunnel_destination;
-    uint8_t verify_origin_server = 0;
+    uint8_t verify_origin_server = static_cast<uint8_t>(Level::UNSET);
     std::string client_cert;
     std::string ip_allow;
   };
