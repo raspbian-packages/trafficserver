@@ -85,7 +85,8 @@ def command_output(cmd_str):
 
 
 def get_distro():
-    return platform.linux_distribution()
+    import distro
+    return distro.linux_distribution()
 
 
 def distro_version():
