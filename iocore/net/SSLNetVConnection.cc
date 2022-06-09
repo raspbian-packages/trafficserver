@@ -1036,8 +1036,7 @@ SSLNetVConnection::sslStartHandShake(int event, int &err)
       // Making the check here instead of later, so we only
       // do this setting immediately after we create the SSL object
       SNIConfig::scoped_config sniParam;
-      int8_t clientVerify = 0;
-      cchar *serverKey    = this->options.sni_servername;
+      cchar *serverKey = this->options.sni_servername;
       if (!serverKey) {
         ats_ip_ntop(this->get_remote_addr(), buff, INET6_ADDRSTRLEN);
         serverKey = buff;
@@ -1046,15 +1045,21 @@ SSLNetVConnection::sslStartHandShake(int event, int &err)
       SSL_CTX *clientCTX = nullptr;
 
       if (nps) {
-        clientCTX    = nps->ctx;
-        clientVerify = nps->verifyLevel;
+        clientCTX = nps->ctx;
       } else {
-        clientCTX    = params->client_ctx;
-        clientVerify = params->clientVerify;
+        clientCTX = params->client_ctx;
       }
+
       if (!clientCTX) {
         SSLErrorVC(this, "failed to create SSL client session");
         return EVENT_ERROR;
+      }
+
+      if (nps && nps->verifyLevel != static_cast<uint8_t>(YamlSNIConfig::Level::UNSET)) {
+        this->options.clientVerificationFlag = nps->verifyLevel;
+      } else {
+        // Keeping backwards compatibility on the proxy.config.ssl.client.verify.server setting
+        this->options.clientVerificationFlag = params->clientVerify ? (params->clientVerify == 1 ? 2 : 1) : 0;
       }
 
       this->ssl = make_ssl_connection(clientCTX, this);
@@ -1063,7 +1068,7 @@ SSLNetVConnection::sslStartHandShake(int event, int &err)
         return EVENT_ERROR;
       }
       int verify_op;
-      if (clientVerify) {
+      if (this->options.clientVerificationFlag) {
         verify_op = SSL_VERIFY_PEER;
         SSL_set_verify(this->ssl, verify_op, verify_callback);
       } else {

@@ -1,9 +1,21 @@
-trafficserver (8.0.2+ds-1+rpi1+deb10u5) buster-staging; urgency=medium
+trafficserver (8.0.2+ds-1+rpi1+deb10u6) buster-staging; urgency=medium
 
   [changes brought forward from 8.0.1-4+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Sat, 19 Jan 2019 12:42:48 +0000]
   * Use -latomic on raspbian too.
 
- -- Raspbian forward porter <root@raspbian.org>  Thu, 19 Aug 2021 11:19:58 +0000
+ -- Raspbian forward porter <root@raspbian.org>  Thu, 09 Jun 2022 22:05:57 +0000
+
+trafficserver (8.0.2+ds-1+deb10u6) buster-security; urgency=high
+
+  * Multiple CVE fixes for 8.0.x
+    + CVE-2021-37147: Improper input validation vulnerability
+    + CVE-2021-37148: Improper input validation vulnerability
+    + CVE-2021-37149: Improper Input Validation vulnerability
+    + CVE-2021-38161: Improper Authentication vulnerability in TLS origin verification
+    + CVE-2021-44040: Improper Input Validation vulnerability in request line parsing
+    + CVE-2021-44759: Improper Authentication vulnerability in TLS origin validation
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Sat, 21 May 2022 21:14:28 +0200
 
 trafficserver (8.0.2+ds-1+deb10u5) buster-security; urgency=medium
 
