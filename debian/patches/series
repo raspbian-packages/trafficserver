@@ -11,3 +11,9 @@
 0016-fix_python_3.8.patch
 0017-fix_sphinx_3.0.patch
 0018-Fixes-7971.patch
+0019-CVE_2021_37147.patch
+0019-CVE_2021_37148.patch
+0019-CVE_2021_37149.patch
+0019-CVE_2021_38161.patch
+0019-CVE_2021_44040.patch
+0019-CVE_2021_44759.patch

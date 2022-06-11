@@ -1,9 +1,21 @@
-trafficserver (8.1.1+ds-1.1+rpi1) bullseye-staging; urgency=medium
+trafficserver (8.1.1+ds-1.1+rpi1+deb11u1) bullseye-staging; urgency=medium
 
   [changes brought forward from 8.0.1-4+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Sat, 19 Jan 2019 12:42:48 +0000]
   * Use -latomic on raspbian too.
 
- -- Raspbian forward porter <root@raspbian.org>  Sat, 07 Aug 2021 00:02:59 +0000
+ -- Raspbian forward porter <root@raspbian.org>  Sat, 11 Jun 2022 18:41:18 +0000
+
+trafficserver (8.1.1+ds-1.1+deb11u1) bullseye-security; urgency=high
+
+  * Multiple CVE fixes for 8.1.x
+    + CVE-2021-37147: Improper input validation vulnerability
+    + CVE-2021-37148: Improper input validation vulnerability
+    + CVE-2021-37149: Improper Input Validation vulnerability
+    + CVE-2021-38161: Improper Authentication vulnerability in TLS origin verification
+    + CVE-2021-44040: Improper Input Validation vulnerability in request line parsing
+    + CVE-2021-44759: Improper Authentication vulnerability in TLS origin validation
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Sat, 21 May 2022 19:28:31 +0200
 
 trafficserver (8.1.1+ds-1.1) unstable; urgency=medium
 
