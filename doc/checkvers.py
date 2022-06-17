@@ -61,7 +61,6 @@ if __name__ == '__main__':
 
         print('checking for sphinxcontrib.plantuml...', end="")
         try:
-            import sphinxcontrib.plantuml
             print('yes')
         except Exception as e:
             print(e)
