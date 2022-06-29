@@ -1,0 +1,427 @@
+Description: Improve OpenSSL 3 compatibility
+Author: Jered Floyd <jered@redhat.com> and Bryan Call <bcall@apache.org>
+Origin: upstream
+Applied-Upstream: https://github.com/apache/trafficserver/commit/cea26fe72406963fa7648a9bef3099a1a545f838 https://github.com/apache/trafficserver/commit/8ca74ee27cc14f27a1480a88fc453fbabc954e4e
+Last-Update: 2022-06-17
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+--- a/build/crypto.m4
++++ b/build/crypto.m4
+@@ -59,6 +59,25 @@ int main() {
+ ])
+ 
+ dnl
++dnl Check OpenSSL Version 3
++dnl
++AC_DEFUN([TS_CHECK_OPENSSL3], [
++  AC_MSG_CHECKING([for OpenSSL version 3])
++  AC_RUN_IFELSE([AC_LANG_SOURCE(
++  [
++#include <openssl/opensslv.h>
++int main() {
++  if (OPENSSL_VERSION_NUMBER > 0x3000000fL) {
++    return 0;
++  }
++  return 1;
++}
++  ])],
++  [AC_MSG_RESULT(yes) TS_ADDTO(CPPFLAGS, -DOPENSSL_API_COMPAT=10002 -DOPENSSL_IS_OPENSSL3) openssl_is_openssl3=1], [AC_MSG_RESULT(no)]
++  )
++])
++
++dnl
+ dnl Since OpenSSL 1.1.0
+ dnl
+ AC_DEFUN([TS_CHECK_CRYPTO_ASYNC], [
+--- a/configure.ac
++++ b/configure.ac
+@@ -1249,6 +1249,10 @@ TS_CHECK_CRYPTO
+ # Check for OpenSSL Version
+ TS_CHECK_CRYPTO_VERSION
+ 
++# Check for OpenSSL Version 3 and add compatiblity define if needed
++TS_CHECK_OPENSSL3
++AM_CONDITIONAL([OPENSSL_IS_OPENSSL3], [test -n "$openssl_is_openssl3"])
++
+ # Check for openssl ASYNC jobs
+ TS_CHECK_CRYPTO_ASYNC
+ 
+--- a/include/tscore/HKDF.h
++++ b/include/tscore/HKDF.h
+@@ -30,16 +30,25 @@
+ #include <openssl/evp.h>
+ #endif
+ 
++#ifdef OPENSSL_IS_OPENSSL3
++#include <openssl/core.h>
++#endif
++
+ class HKDF
+ {
+ public:
+-  HKDF(const EVP_MD *digest);
++  HKDF(const char *digest);
+   ~HKDF();
+   int extract(uint8_t *dst, size_t *dst_len, const uint8_t *salt, size_t salt_len, const uint8_t *ikm, size_t ikm_len);
+   int expand(uint8_t *dst, size_t *dst_len, const uint8_t *prk, size_t prk_len, const uint8_t *info, size_t info_len,
+              uint16_t length);
+ 
+ protected:
+-  const EVP_MD *_digest = nullptr;
+-  EVP_PKEY_CTX *_pctx   = nullptr;
++#ifdef OPENSSL_IS_OPENSSL3
++  EVP_KDF_CTX *_kctx = nullptr;
++  OSSL_PARAM params[5];
++#else
++  EVP_PKEY_CTX *_pctx      = nullptr;
++  const EVP_MD *_digest_md = nullptr;
++#endif
+ };
+--- a/iocore/net/quic/QUICHKDF.h
++++ b/iocore/net/quic/QUICHKDF.h
+@@ -28,7 +28,7 @@
+ class QUICHKDF : public HKDF
+ {
+ public:
+-  QUICHKDF(const EVP_MD *digest) : HKDF(digest) {}
++  QUICHKDF(const char *digest) : HKDF(digest) {}
+   int expand(uint8_t *dst, size_t *dst_len, const uint8_t *secret, size_t secret_len, const char *label, size_t label_len,
+              uint16_t length);
+ };
+--- a/iocore/net/quic/QUICKeyGenerator.cc
++++ b/iocore/net/quic/QUICKeyGenerator.cc
+@@ -49,7 +49,7 @@ void
+ QUICKeyGenerator::generate(QUICVersion version, uint8_t *hp_key, uint8_t *pp_key, uint8_t *iv, size_t *iv_len, QUICConnectionId cid)
+ {
+   const EVP_CIPHER *cipher = this->_get_cipher_for_initial();
+-  const EVP_MD *md         = EVP_sha256();
++  const char *md           = "SHA256";
+   uint8_t secret[512];
+   size_t secret_len = sizeof(secret);
+   QUICHKDF hkdf(md);
+@@ -57,7 +57,7 @@ QUICKeyGenerator::generate(QUICVersion v
+   switch (this->_ctx) {
+   case Context::CLIENT:
+     this->_generate_initial_secret(version, secret, &secret_len, hkdf, cid, LABEL_FOR_CLIENT_INITIAL_SECRET.data(),
+-                                   LABEL_FOR_CLIENT_INITIAL_SECRET.length(), EVP_MD_size(md));
++                                   LABEL_FOR_CLIENT_INITIAL_SECRET.length(), EVP_MD_size(EVP_get_digestbyname(md)));
+     if (is_debug_tag_set("vv_quic_crypto")) {
+       uint8_t print_buf[1024 + 1];
+       QUICDebug::to_hex(print_buf, secret, secret_len);
+@@ -67,7 +67,7 @@ QUICKeyGenerator::generate(QUICVersion v
+     break;
+   case Context::SERVER:
+     this->_generate_initial_secret(version, secret, &secret_len, hkdf, cid, LABEL_FOR_SERVER_INITIAL_SECRET.data(),
+-                                   LABEL_FOR_SERVER_INITIAL_SECRET.length(), EVP_MD_size(md));
++                                   LABEL_FOR_SERVER_INITIAL_SECRET.length(), EVP_MD_size(EVP_get_digestbyname(md)));
+     if (is_debug_tag_set("vv_quic_crypto")) {
+       uint8_t print_buf[1024 + 1];
+       QUICDebug::to_hex(print_buf, secret, secret_len);
+--- a/iocore/net/quic/QUICTLS.h
++++ b/iocore/net/quic/QUICTLS.h
+@@ -90,7 +90,7 @@ public:
+ private:
+   QUICKeyGenerator _keygen_for_client = QUICKeyGenerator(QUICKeyGenerator::Context::CLIENT);
+   QUICKeyGenerator _keygen_for_server = QUICKeyGenerator(QUICKeyGenerator::Context::SERVER);
+-  const EVP_MD *_get_handshake_digest() const;
++  const char *_get_handshake_digest() const;
+ 
+   int _read_early_data();
+   int _write_early_data();
+--- a/iocore/net/quic/QUICTLS_boringssl.cc
++++ b/iocore/net/quic/QUICTLS_boringssl.cc
+@@ -352,15 +352,15 @@ QUICTLS::_pass_quic_data_to_ssl_impl(con
+   }
+ }
+ 
+-const EVP_MD *
++const char *
+ QUICTLS::_get_handshake_digest() const
+ {
+   switch (SSL_CIPHER_get_id(SSL_get_current_cipher(this->_ssl))) {
+   case TLS1_CK_AES_128_GCM_SHA256:
+   case TLS1_CK_CHACHA20_POLY1305_SHA256:
+-    return EVP_sha256();
++    return "SHA256";
+   case TLS1_CK_AES_256_GCM_SHA384:
+-    return EVP_sha384();
++    return "SHA384";
+   default:
+     ink_assert(false);
+     return nullptr;
+--- a/iocore/net/quic/QUICTLS_openssl.cc
++++ b/iocore/net/quic/QUICTLS_openssl.cc
+@@ -316,7 +316,7 @@ QUICTLS::_pass_quic_data_to_ssl_impl(con
+   }
+ }
+ 
+-const EVP_MD *
++const char *
+ QUICTLS::_get_handshake_digest() const
+ {
+   switch (SSL_CIPHER_get_id(SSL_get_current_cipher(this->_ssl))) {
+@@ -324,9 +324,9 @@ QUICTLS::_get_handshake_digest() const
+   case TLS1_3_CK_CHACHA20_POLY1305_SHA256:
+   case TLS1_3_CK_AES_128_CCM_SHA256:
+   case TLS1_3_CK_AES_128_CCM_8_SHA256:
+-    return EVP_sha256();
++    return "SHA256";
+   case TLS1_3_CK_AES_256_GCM_SHA384:
+-    return EVP_sha384();
++    return "SHA384";
+   default:
+     ink_assert(false);
+     return nullptr;
+--- a/plugins/experimental/access_control/unit_tests/test_utils.cc
++++ b/plugins/experimental/access_control/unit_tests/test_utils.cc
+@@ -21,6 +21,7 @@
+  * @brief Unit tests for functions used in utils.cc
+  */
+ 
++#include <openssl/opensslv.h>
+ #include <catch.hpp> /* catch unit-test framework */
+ #include "../utils.h"
+ #include "../common.h"
+@@ -253,6 +254,13 @@ TEST_CASE("HMAC Digest: test various sup
+   digests.push_back("ccf3230972bcf229fb3b16741495c74a72bbdd14");
+ #endif
+ 
++#ifdef OPENSSL_IS_OPENSSL3 // MD4, RIPEMD160 are deprecated in OpenSSL 3
++  types.pop_front();
++  digests.pop_front();
++  types.pop_back();
++  digests.pop_back();
++#endif
++
+   StringList::iterator digestIter = digests.begin();
+   for (String digestType : types) {
+     size_t outLen = cryptoMessageDigestGet(digestType.c_str(), data.c_str(), data.length(), key.c_str(), key.length(), out,
+--- a/src/tscore/HKDF_boringssl.cc
++++ b/src/tscore/HKDF_boringssl.cc
+@@ -22,14 +22,18 @@
+  */
+ #include "tscore/HKDF.h"
+ #include <openssl/hkdf.h>
++#include <openssl/digest.h>
+ 
+-HKDF::HKDF(const EVP_MD *digest) : _digest(digest) {}
++HKDF::HKDF(const char *digest)
++{
++  this->_digest_md = EVP_get_digestbyname(digest);
++}
+ HKDF::~HKDF() {}
+ 
+ int
+ HKDF::extract(uint8_t *dst, size_t *dst_len, const uint8_t *salt, size_t salt_len, const uint8_t *ikm, size_t ikm_len)
+ {
+-  return HKDF_extract(dst, dst_len, this->_digest, ikm, ikm_len, salt, salt_len);
++  return HKDF_extract(dst, dst_len, this->_digest_md, ikm, ikm_len, salt, salt_len);
+ }
+ 
+ int
+@@ -37,5 +41,5 @@ HKDF::expand(uint8_t *dst, size_t *dst_l
+              uint16_t length)
+ {
+   *dst_len = length;
+-  return HKDF_expand(dst, length, this->_digest, prk, prk_len, info, info_len);
++  return HKDF_expand(dst, length, this->_digest_md, prk, prk_len, info, info_len);
+ }
+--- a/src/tscore/HKDF_openssl.cc
++++ b/src/tscore/HKDF_openssl.cc
+@@ -23,8 +23,9 @@
+ #include "tscore/HKDF.h"
+ #include <openssl/kdf.h>
+ 
+-HKDF::HKDF(const EVP_MD *digest) : _digest(digest)
++HKDF::HKDF(const char *digest)
+ {
++  this->_digest_md = EVP_get_digestbyname(digest);
+   // XXX We cannot reuse pctx now due to a bug in OpenSSL
+   // this->_pctx = EVP_PKEY_CTX_new_id(EVP_PKEY_HKDF, nullptr);
+ }
+@@ -51,7 +52,7 @@ HKDF::extract(uint8_t *dst, size_t *dst_
+   if (EVP_PKEY_CTX_hkdf_mode(this->_pctx, EVP_PKEY_HKDEF_MODE_EXTRACT_ONLY) != 1) {
+     return -2;
+   }
+-  if (EVP_PKEY_CTX_set_hkdf_md(this->_pctx, this->_digest) != 1) {
++  if (EVP_PKEY_CTX_set_hkdf_md(this->_pctx, this->_digest_md) != 1) {
+     return -3;
+   }
+   if (EVP_PKEY_CTX_set1_hkdf_salt(this->_pctx, salt, salt_len) != 1) {
+@@ -84,7 +85,7 @@ HKDF::expand(uint8_t *dst, size_t *dst_l
+   if (EVP_PKEY_CTX_hkdf_mode(this->_pctx, EVP_PKEY_HKDEF_MODE_EXPAND_ONLY) != 1) {
+     return -2;
+   }
+-  if (EVP_PKEY_CTX_set_hkdf_md(this->_pctx, this->_digest) != 1) {
++  if (EVP_PKEY_CTX_set_hkdf_md(this->_pctx, this->_digest_md) != 1) {
+     return -3;
+   }
+   if (EVP_PKEY_CTX_set1_hkdf_key(this->_pctx, prk, prk_len) != 1) {
+--- /dev/null
++++ b/src/tscore/HKDF_openssl3.cc
+@@ -0,0 +1,85 @@
++/** @file
++ *
++ *  HKDF utility (OpenSSL version)
++ *
++ *  @section license License
++ *
++ *  Licensed to the Apache Software Foundation (ASF) under one
++ *  or more contributor license agreements.  See the NOTICE file
++ *  distributed with this work for additional information
++ *  regarding copyright ownership.  The ASF licenses this file
++ *  to you under the Apache License, Version 2.0 (the
++ *  "License"); you may not use this file except in compliance
++ *  with the License.  You may obtain a copy of the License at
++ *
++ *      http://www.apache.org/licenses/LICENSE-2.0
++ *
++ *  Unless required by applicable law or agreed to in writing, software
++ *  distributed under the License is distributed on an "AS IS" BASIS,
++ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ *  See the License for the specific language governing permissions and
++ *  limitations under the License.
++ */
++#include "tscore/HKDF.h"
++#include <openssl/kdf.h>
++#include <cstring>
++#include <openssl/core_names.h>
++
++HKDF::HKDF(const char *digest)
++{
++  EVP_KDF *kdf = EVP_KDF_fetch(NULL, "HKDF", NULL);
++  this->_kctx  = EVP_KDF_CTX_new(kdf);
++  EVP_KDF_free(kdf);
++  *params = OSSL_PARAM_construct_utf8_string(OSSL_KDF_PARAM_DIGEST, (char *)digest, strlen(digest));
++}
++
++HKDF::~HKDF()
++{
++  EVP_KDF_CTX_free(this->_kctx);
++  this->_kctx = nullptr;
++}
++
++int
++HKDF::extract(uint8_t *dst, size_t *dst_len, const uint8_t *salt, size_t salt_len, const uint8_t *ikm, size_t ikm_len)
++{
++  size_t keysize;
++  int mode      = EVP_KDF_HKDF_MODE_EXTRACT_ONLY;
++  OSSL_PARAM *p = params + 1;
++  *p++          = OSSL_PARAM_construct_octet_string(OSSL_KDF_PARAM_KEY, (uint8_t *)ikm, ikm_len);
++  *p++          = OSSL_PARAM_construct_octet_string(OSSL_KDF_PARAM_SALT, (uint8_t *)salt, salt_len);
++  *p++          = OSSL_PARAM_construct_int(OSSL_KDF_PARAM_MODE, &mode);
++  *p            = OSSL_PARAM_construct_end();
++
++  EVP_KDF_CTX_set_params(_kctx, params);
++  keysize = EVP_KDF_CTX_get_kdf_size(this->_kctx);
++  if (*dst_len < keysize) {
++    return -1;
++  }
++  if (EVP_KDF_derive(_kctx, dst, keysize, params) <= 0) {
++    EVP_KDF_CTX_reset(this->_kctx);
++    return -2;
++  }
++  *dst_len = keysize;
++  EVP_KDF_CTX_reset(this->_kctx);
++
++  return 1;
++}
++
++int
++HKDF::expand(uint8_t *dst, size_t *dst_len, const uint8_t *prk, size_t prk_len, const uint8_t *info, size_t info_len,
++             uint16_t length)
++{
++  int mode      = EVP_KDF_HKDF_MODE_EXPAND_ONLY;
++  OSSL_PARAM *p = params + 1;
++  *p++          = OSSL_PARAM_construct_octet_string(OSSL_KDF_PARAM_KEY, (uint8_t *)prk, prk_len);
++  *p++          = OSSL_PARAM_construct_octet_string(OSSL_KDF_PARAM_INFO, (uint8_t *)info, info_len);
++  *p++          = OSSL_PARAM_construct_int(OSSL_KDF_PARAM_MODE, &mode);
++  *p            = OSSL_PARAM_construct_end();
++  if (EVP_KDF_derive(_kctx, dst, length, params) <= 0) {
++    return -1;
++  }
++  *dst_len = length;
++  EVP_KDF_CTX_reset(this->_kctx);
++
++  return 1;
++}
+--- a/src/tscore/Makefile.am
++++ b/src/tscore/Makefile.am
+@@ -126,8 +126,12 @@ if HAS_HKDF
+ if OPENSSL_IS_BORINGSSL
+ HKDF_impl = HKDF_boringssl.cc
+ else
++if OPENSSL_IS_OPENSSL3
++HKDF_impl = HKDF_openssl3.cc
++else
+ HKDF_impl = HKDF_openssl.cc
+ endif
++endif
+ libtscore_la_SOURCES += \
+   $(HKDF_impl)
+ endif
+--- a/src/tscore/unit_tests/test_HKDF.cc
++++ b/src/tscore/unit_tests/test_HKDF.cc
+@@ -54,7 +54,7 @@ TEST_CASE("HKDF tests", "[hkdf]")
+     uint8_t okm[256] = {0};
+     size_t okm_len   = sizeof(okm);
+ 
+-    HKDF hkdf(EVP_sha256());
++    HKDF hkdf("SHA256");
+ 
+     // Extract
+     CHECK(hkdf.extract(prk, &prk_len, salt, sizeof(salt), ikm, sizeof(ikm)) == 1);
+@@ -104,7 +104,7 @@ TEST_CASE("HKDF tests", "[hkdf]")
+     uint8_t okm[256] = {0};
+     size_t okm_len   = sizeof(okm);
+ 
+-    HKDF hkdf(EVP_sha256());
++    HKDF hkdf("SHA256");
+ 
+     // Extract
+     CHECK(hkdf.extract(prk, &prk_len, salt, sizeof(salt), ikm, sizeof(ikm)) == 1);
+@@ -140,7 +140,7 @@ TEST_CASE("HKDF tests", "[hkdf]")
+     uint8_t okm[256] = {0};
+     size_t okm_len   = sizeof(okm);
+ 
+-    HKDF hkdf(EVP_sha256());
++    HKDF hkdf("SHA256");
+ 
+     // Extract
+     CHECK(hkdf.extract(prk, &prk_len, salt, sizeof(salt), ikm, sizeof(ikm)) == 1);
+@@ -178,7 +178,7 @@ TEST_CASE("HKDF tests", "[hkdf]")
+     uint8_t okm[256] = {0};
+     size_t okm_len   = sizeof(okm);
+ 
+-    HKDF hkdf(EVP_sha1());
++    HKDF hkdf("SHA1");
+ 
+     // Extract
+     CHECK(hkdf.extract(prk, &prk_len, salt, sizeof(salt), ikm, sizeof(ikm)) == 1);
+@@ -226,7 +226,7 @@ TEST_CASE("HKDF tests", "[hkdf]")
+     uint8_t okm[256] = {0};
+     size_t okm_len   = sizeof(okm);
+ 
+-    HKDF hkdf(EVP_sha1());
++    HKDF hkdf("SHA1");
+ 
+     // Extract
+     CHECK(hkdf.extract(prk, &prk_len, salt, sizeof(salt), ikm, sizeof(ikm)) == 1);
+@@ -261,7 +261,7 @@ TEST_CASE("HKDF tests", "[hkdf]")
+     uint8_t okm[256] = {0};
+     size_t okm_len   = sizeof(okm);
+ 
+-    HKDF hkdf(EVP_sha1());
++    HKDF hkdf("SHA1");
+ 
+     // Extract
+     CHECK(hkdf.extract(prk, &prk_len, salt, sizeof(salt), ikm, sizeof(ikm)) == 1);
+@@ -296,7 +296,7 @@ TEST_CASE("HKDF tests", "[hkdf]")
+     uint8_t okm[256] = {0};
+     size_t okm_len   = sizeof(okm);
+ 
+-    HKDF hkdf(EVP_sha1());
++    HKDF hkdf("SHA1");
+ 
+     // Extract
+     CHECK(hkdf.extract(prk, &prk_len, salt, sizeof(salt), ikm, sizeof(ikm)) == 1);
