@@ -50,14 +50,14 @@ server.addResponse("sessionlog.json",
 
 # For Test Case 6 - /postchunked
 post_body = "12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"
-server.addResponse("sessionlog.jason",
+server.addResponse("sessionlog.json",
                    {"headers": "POST /postchunked HTTP/1.1\r\nHost: www.example.com\r\n\r\n", "timestamp": "1469733493.993", "body": post_body},
                    {"headers": "HTTP/1.1 200 OK\r\nServer: microserver\r\nConnection: close\r\nContent-Length: 10\r\n\r\n", "timestamp": "1469733493.993", "body": "0123456789"})
 
 # For Test Case 7 - /bigpostchunked
 # Make a post body that will be split across at least two frames
 big_post_body = "0123456789" * 131070
-server.addResponse("sessionlog.jason",
+server.addResponse("sessionlog.json",
                    {"headers": "POST /bigpostchunked HTTP/1.1\r\nHost: www.example.com\r\n\r\n", "timestamp": "1469733493.993", "body": big_post_body},
                    {"headers": "HTTP/1.1 200 OK\r\nServer: microserver\r\nConnection: close\r\nContent-Length: 10\r\n\r\n", "timestamp": "1469733493.993", "body": "0123456789"})
 
@@ -184,7 +184,8 @@ tr = Test.AddTestRun()
 tr.Processes.Default.Command = 'curl -vs -k --http2 https://127.0.0.1:{0}/huge_resp_hdrs'.format(ts.Variables.ssl_port)
 tr.Processes.Default.ReturnCode = 0
 tr.Processes.Default.Streams.stdout = "gold/http2_8_stdout.gold"
-tr.Processes.Default.Streams.stderr = "gold/http2_8_stderr.gold"
+# Different versions of curl will have different cases for HTTP/2 field names.
+tr.Processes.Default.Streams.stderr = Testers.GoldFile("gold/http2_8_stderr.gold", case_insensitive=True)
 tr.StillRunningAfter = server
 
 # Test Case 9: Header Only Response - e.g. 204
@@ -192,5 +193,6 @@ tr = Test.AddTestRun()
 tr.Processes.Default.Command = 'curl -vs -k --http2 https://127.0.0.1:{0}/status/204'.format(ts.Variables.ssl_port)
 tr.Processes.Default.ReturnCode = 0
 tr.Processes.Default.Streams.stdout = "gold/http2_9_stdout.gold"
-tr.Processes.Default.Streams.stderr = "gold/http2_9_stderr.gold"
+# Different versions of curl will have different cases for HTTP/2 field names.
+tr.Processes.Default.Streams.stderr = Testers.GoldFile("gold/http2_9_stderr.gold", case_insensitive=True)
 tr.StillRunningAfter = server

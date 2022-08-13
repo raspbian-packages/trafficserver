@@ -1,9 +1,27 @@
-trafficserver (8.1.1+ds-1.1+rpi1+deb11u1) bullseye-staging; urgency=medium
+trafficserver (8.1.5+ds-1~deb11u1+rpi1) bullseye-staging; urgency=medium
 
   [changes brought forward from 8.0.1-4+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Sat, 19 Jan 2019 12:42:48 +0000]
   * Use -latomic on raspbian too.
 
- -- Raspbian forward porter <root@raspbian.org>  Sat, 11 Jun 2022 18:41:18 +0000
+ -- Raspbian forward porter <root@raspbian.org>  Sat, 13 Aug 2022 03:52:49 +0000
+
+trafficserver (8.1.5+ds-1~deb11u1) bullseye-security; urgency=high
+
+  * Update d/watch to stick to 8.1.X serie
+  * Update upstream gpg keys
+  * UPdate d/salsa-ci.yaml
+  * New upstream version 8.1.5+ds
+  * Patches refresh for 8.1.5
+  * Update experimental plugins list
+  * Multiple CVE fixes for 8.1.x
+    + CVE-2021-37150: Protocol vs scheme mismatch
+    + CVE-2022-25763: Improper input validation on HTTP/2 headers
+    + CVE-2022-28129: Insufficient Validation of HTTP/1.x Headers
+    + CVE-2022-31778: Transfer-Encoding not treated as hop-by-hop
+    + CVE-2022-31779: Improper HTTP/2 scheme and method validation
+    + CVE-2022-31780: HTTP/2 framing vulnerabilities 
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Fri, 12 Aug 2022 09:16:08 +0200
 
 trafficserver (8.1.1+ds-1.1+deb11u1) bullseye-security; urgency=high
 

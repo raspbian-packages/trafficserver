@@ -282,6 +282,7 @@ public:
   }
   bool is_tunnel_alive() const;
   bool has_cache_writer() const;
+  bool has_consumer_besides_client() const;
 
   HttpTunnelProducer *add_producer(VConnection *vc, int64_t nbytes, IOBufferReader *reader_start, HttpProducerHandler sm_handler,
                                    HttpTunnelType_t vc_type, const char *name);
@@ -512,6 +513,33 @@ HttpTunnel::has_cache_writer() const
     }
   }
   return false;
+}
+
+/**
+   Return false if there is only a consumer for client
+ */
+inline bool
+HttpTunnel::has_consumer_besides_client() const
+{
+  bool res = false; // case of no consumers
+
+  for (const auto &consumer : consumers) {
+    if (!consumer.alive) {
+      continue;
+    }
+
+    switch (consumer.vc_type) {
+    case HT_HTTP_CLIENT:
+      continue;
+    case HT_HTTP_SERVER:
+      // ignore uploading data to servers
+      continue;
+    default:
+      return true;
+    }
+  }
+
+  return res;
 }
 
 inline bool

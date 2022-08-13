@@ -732,17 +732,20 @@ HttpSM::state_read_client_request_header(int event, void *data)
   case PARSE_RESULT_DONE:
     SMDebug("http", "[%" PRId64 "] done parsing client request header", sm_id);
 
-    if (!is_internal) {
+    if (!is_internal && t_state.http_config_param->scheme_proto_mismatch_policy != 0) {
       auto scheme = t_state.hdr_info.client_request.url_get()->scheme_get_wksidx();
       if ((client_connection_is_ssl && (scheme == URL_WKSIDX_HTTP || scheme == URL_WKSIDX_WS)) ||
           (!client_connection_is_ssl && (scheme == URL_WKSIDX_HTTPS || scheme == URL_WKSIDX_WSS))) {
-        SMDebug("http", "scheme [%s] vs. protocol [%s] mismatch", hdrtoken_index_to_wks(scheme),
+        Warning("scheme [%s] vs. protocol [%s] mismatch", hdrtoken_index_to_wks(scheme),
                 client_connection_is_ssl ? "tls" : "plaintext");
-        t_state.http_return_code = HTTP_STATUS_BAD_REQUEST;
-        call_transact_and_set_next_state(HttpTransact::BadRequest);
-        break;
+        if (t_state.http_config_param->scheme_proto_mismatch_policy == 2) {
+          t_state.http_return_code = HTTP_STATUS_BAD_REQUEST;
+          call_transact_and_set_next_state(HttpTransact::BadRequest);
+          break;
+        }
       }
     }
+
     ua_txn->set_session_active();
 
     if (t_state.hdr_info.client_request.version_get() == HTTPVersion(1, 1) &&
@@ -850,9 +853,9 @@ HttpSM::state_watch_for_client_abort(int event, void *data)
    * client.
    */
   case VC_EVENT_EOS: {
-    // We got an early EOS.
+    // We got an early EOS. If the tunnal has cache writer, don't kill it for background fill.
     NetVConnection *netvc = ua_txn->get_netvc();
-    if (ua_txn->allow_half_open()) {
+    if (ua_txn->allow_half_open() || tunnel.has_consumer_besides_client()) {
       if (netvc) {
         netvc->do_io_shutdown(IO_SHUTDOWN_READ);
       }
@@ -1852,7 +1855,7 @@ HttpSM::state_read_server_response_header(int event, void *data)
     }
 
     // For requests that contain a body, we can cancel the ua inactivity timeout.
-    if (ua_txn && t_state.hdr_info.request_content_length) {
+    if (ua_txn && t_state.hdr_info.request_content_length > 0) {
       ua_txn->cancel_inactivity_timeout();
     }
   }
@@ -1988,7 +1991,8 @@ HttpSM::state_send_server_request_header(int event, void *data)
     server_entry->write_buffer = nullptr;
     method                     = t_state.hdr_info.server_request.method_get_wksidx();
     if (!t_state.api_server_request_body_set && method != HTTP_WKSIDX_TRACE &&
-        (t_state.hdr_info.request_content_length > 0 || t_state.client_info.transfer_encoding == HttpTransact::CHUNKED_ENCODING)) {
+        ua_txn->has_request_body(t_state.hdr_info.request_content_length,
+                                 t_state.client_info.transfer_encoding == HttpTransact::CHUNKED_ENCODING)) {
       if (post_transform_info.vc) {
         setup_transform_to_server_transfer();
       } else {
@@ -2890,7 +2894,13 @@ HttpSM::tunnel_handler_server(int event, HttpTunnelProducer *p)
 {
   STATE_ENTER(&HttpSM::tunnel_handler_server, event);
 
-  milestones[TS_MILESTONE_SERVER_CLOSE] = Thread::get_hrtime();
+  // An intercept handler may not set TS_MILESTONE_SERVER_CONNECT
+  // by default. Therefore we only set TS_MILESTONE_SERVER_CLOSE if
+  // TS_MILESTONE_SERVER_CONNECT is set (non-zero), lest certain time
+  // statistics are calculated from epoch time.
+  if (0 != milestones[TS_MILESTONE_SERVER_CONNECT]) {
+    milestones[TS_MILESTONE_SERVER_CLOSE] = Thread::get_hrtime();
+  }
 
   bool close_connection = false;
 
@@ -2952,7 +2962,7 @@ HttpSM::tunnel_handler_server(int event, HttpTunnelProducer *p)
       // the reason string being written to the client and a bad CL when reading from cache.
       // I didn't find anywhere this appended reason is being used, so commenting it out.
       /*
-        if (t_state.is_cacheable_and_negative_caching_is_enabled && p->bytes_read == 0) {
+        if (t_state.is_cacheable_due_to_negative_caching_configuration && p->bytes_read == 0) {
         int reason_len;
         const char *reason = t_state.hdr_info.server_response.reason_get(&reason_len);
         if (reason == NULL)
@@ -3007,8 +3017,8 @@ HttpSM::tunnel_handler_server(int event, HttpTunnelProducer *p)
   }
 
   // turn off negative caching in case there are multiple server contacts
-  if (t_state.is_cacheable_and_negative_caching_is_enabled) {
-    t_state.is_cacheable_and_negative_caching_is_enabled = false;
+  if (t_state.is_cacheable_due_to_negative_caching_configuration) {
+    t_state.is_cacheable_due_to_negative_caching_configuration = false;
   }
 
   // If we had a ground fill, check update our status
@@ -3406,6 +3416,10 @@ HttpSM::tunnel_handler_cache_write(int event, HttpTunnelConsumer *c)
     // All other events indicate problems
     ink_assert(0);
     break;
+  }
+
+  if (background_fill != BACKGROUND_FILL_NONE) {
+    server_response_body_bytes = c->bytes_written;
   }
 
   HTTP_DECREMENT_DYN_STAT(http_current_cache_connections_stat);
@@ -4792,8 +4806,8 @@ HttpSM::do_http_server_open(bool raw)
     set_server_session_private(true);
   }
 
-  if (raw == false && TS_SERVER_SESSION_SHARING_MATCH_NONE != t_state.txn_conf->server_session_sharing_match &&
-      (t_state.txn_conf->keep_alive_post_out == 1 || t_state.hdr_info.request_content_length == 0) && !is_private() &&
+  if ((raw == false) && TS_SERVER_SESSION_SHARING_MATCH_NONE != t_state.txn_conf->server_session_sharing_match &&
+      (t_state.txn_conf->keep_alive_post_out == 1 || t_state.hdr_info.request_content_length <= 0) && !is_private() &&
       ua_txn != nullptr) {
     HSMresult_t shared_result;
     shared_result = httpSessionManager.acquire_session(this,                                 // state machine
@@ -5604,7 +5618,8 @@ close_connection:
 void
 HttpSM::do_setup_post_tunnel(HttpVC_t to_vc_type)
 {
-  bool chunked       = (t_state.client_info.transfer_encoding == HttpTransact::CHUNKED_ENCODING);
+  bool chunked = t_state.client_info.transfer_encoding == HttpTransact::CHUNKED_ENCODING ||
+                 t_state.hdr_info.request_content_length == HTTP_UNDEFINED_CL;
   bool post_redirect = false;
 
   HttpTunnelProducer *p = nullptr;
@@ -5969,6 +5984,18 @@ HttpSM::attach_server_session(HttpServerSession *s)
     server_session->get_netvc()->set_active_timeout(HRTIME_MSECONDS(t_state.api_txn_active_timeout_value));
   } else {
     server_session->get_netvc()->set_active_timeout(HRTIME_SECONDS(t_state.txn_conf->transaction_active_timeout_out));
+  }
+
+  // Do we need Transfer_Encoding?
+  if (ua_txn->has_request_body(t_state.hdr_info.request_content_length,
+                               t_state.client_info.transfer_encoding == HttpTransact::CHUNKED_ENCODING)) {
+    // See if we need to insert a chunked header
+    if (!t_state.hdr_info.server_request.presence(MIME_PRESENCE_CONTENT_LENGTH)) {
+      // Stuff in a TE setting so we treat this as chunked, sort of.
+      t_state.server_info.transfer_encoding = HttpTransact::CHUNKED_ENCODING;
+      t_state.hdr_info.server_request.value_append(MIME_FIELD_TRANSFER_ENCODING, MIME_LEN_TRANSFER_ENCODING, HTTP_VALUE_CHUNKED,
+                                                   HTTP_LEN_CHUNKED, true);
+    }
   }
 
   if (plugin_tunnel_type != HTTP_NO_PLUGIN_TUNNEL || will_be_private_ss) {
@@ -6590,7 +6617,7 @@ HttpSM::setup_server_transfer()
 
   nbytes = server_transfer_init(buf, hdr_size);
 
-  if (t_state.is_cacheable_and_negative_caching_is_enabled &&
+  if (t_state.is_cacheable_due_to_negative_caching_configuration &&
       t_state.hdr_info.server_response.status_get() == HTTP_STATUS_NO_CONTENT) {
     int s = sizeof("No Content") - 1;
     buf->write("No Content", s);
@@ -7326,7 +7353,7 @@ HttpSM::set_next_state()
       // light of this dependency, TS must ensure that the client finishes
       // sending its request and for this reason, the inactivity timeout
       // cannot be cancelled.
-      if (ua_txn && !t_state.hdr_info.request_content_length) {
+      if (ua_txn && t_state.hdr_info.request_content_length <= 0) {
         ua_txn->cancel_inactivity_timeout();
       } else if (!ua_txn) {
         terminate_sm = true;
@@ -7371,7 +7398,7 @@ HttpSM::set_next_state()
       // light of this dependency, TS must ensure that the client finishes
       // sending its request and for this reason, the inactivity timeout
       // cannot be cancelled.
-      if (ua_txn && !t_state.hdr_info.request_content_length) {
+      if (ua_txn && t_state.hdr_info.request_content_length <= 0) {
         ua_txn->cancel_inactivity_timeout();
       } else if (!ua_txn) {
         terminate_sm = true;

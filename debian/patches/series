@@ -7,13 +7,4 @@
 0012-fix-spelling-checks.patch
 0013-fix-perl-interpreter-path.patch
 0014-use_system_yaml-cpp.patch
-0015-as-needed-fix.patch
 0016-fix_python_3.8.patch
-0017-fix_sphinx_3.0.patch
-0018-Fixes-7971.patch
-0019-CVE_2021_37147.patch
-0019-CVE_2021_37148.patch
-0019-CVE_2021_37149.patch
-0019-CVE_2021_38161.patch
-0019-CVE_2021_44040.patch
-0019-CVE_2021_44759.patch

@@ -4,7 +4,9 @@ include:
   - https://salsa.debian.org/salsa-ci-team/pipeline/raw/master/pipeline-jobs.yml
 
 variables:
+  RELEASE: 'stable'
   SALSA_CI_DISABLE_APTLY: 1
+  SALSA_CI_DISABLE_BUILD_PACKAGE_I386: 1
 
 reprotest:
   allow_failure: true

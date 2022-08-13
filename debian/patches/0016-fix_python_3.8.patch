@@ -6,11 +6,11 @@ Last-Update: 2020-02-03
 This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
 --- a/tests/bootstrap.py
 +++ b/tests/bootstrap.py
-@@ -81,7 +81,8 @@ def command_output(cmd_str):
+@@ -94,7 +94,8 @@ def command_output(cmd_str):
  
  
  def get_distro():
--    return platform.linux_distribution()
+-    return linux_distribution()
 +    import distro
 +    return distro.linux_distribution()
  

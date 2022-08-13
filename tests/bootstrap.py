@@ -22,11 +22,16 @@ from __future__ import absolute_import, division, print_function
 import argparse
 import os
 import subprocess
-import platform
 import sys
 
+try:
+    from distro import linux_distribution
+except ImportError:
+    from platform import linux_distribution
+
+
 pip_packages = [
-    "autest==1.8.0",
+    "autest==1.10.0",
     "hyper",
     "requests",
     "dnslib",
@@ -58,6 +63,10 @@ distro_packages = {
         "install rh-python36-python-virtualenv"
     ],
     "CentOS-8": [
+        "install epel-release",
+        "install python3-virtualenv"
+    ],
+    "Rocky": [
         "install epel-release",
         "install python3-virtualenv"
     ]
@@ -220,13 +229,10 @@ def main():
     dist = distro()
     cmds = []
 
-    # if centos 8 we must set crypto to legacy to allow tlsv1.0 tests
     if dist:
         if distro() == 'CentOS' and distro_version() > 7:
+            # if centos 8 we must set crypto to legacy to allow tlsv1.0 tests
             cmds += ["sudo update-crypto-policies --set LEGACY"]
-
-    if dist:
-        if distro() == 'CentOS' and distro_version() > 7:
             cmds += gen_package_cmds(distro_packages['CentOS-8'])
         else:
             cmds += gen_package_cmds(distro_packages[dist])

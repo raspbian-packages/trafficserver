@@ -1,4 +1,9 @@
 /** @file
+
+  This file used for catch based tests. It is the main() stub.
+
+  @section license License
+
   Licensed to the Apache Software Foundation (ASF) under one
   or more contributor license agreements.  See the NOTICE file
   distributed with this work for additional information
@@ -16,50 +21,24 @@
   limitations under the License.
  */
 
-#include "Data.h"
+#include "HTTP.h"
 
-#include <cassert>
-#include <chrono>
-#include <iostream>
-#include <mutex>
-#include <thread>
+#define CATCH_CONFIG_RUNNER
+#include "catch.hpp"
 
-namespace
+extern int cmd_disable_pfreelist;
+
+int
+main(int argc, char *argv[])
 {
-std::mutex mutex;
-int64_t inplay = 0;
-std::unique_ptr<std::thread> thread;
-} // namespace
+  // No thread setup, forbid use of thread local allocators.
+  cmd_disable_pfreelist = true;
+  // Get all of the HTTP WKS items populated.
+  http_init();
 
-void
-monitor()
-{
-  std::lock_guard<std::mutex> guard(mutex);
-  //	while (0 < inplay)
-  while (true) {
-    mutex.unlock();
-    std::this_thread::sleep_for(std::chrono::seconds(10));
-    std::cerr << "Inplay: " << inplay << std::endl;
-    mutex.lock();
-  }
-  //	thread.release();
-}
+  int result = Catch::Session().run(argc, argv);
 
-void
-incrData()
-{
-  std::lock_guard<std::mutex> const guard(mutex);
-  if (!thread) {
-    thread.reset(new std::thread(monitor));
-  }
+  // global clean-up...
 
-  ++inplay;
-}
-
-void
-decrData()
-{
-  std::lock_guard<std::mutex> const guard(mutex);
-  --inplay;
-  assert(0 <= inplay);
+  return result;
 }

@@ -136,7 +136,7 @@ rcv_data_frame(Http2ConnectionState &cstate, const Http2Frame &frame)
       return Http2Error(Http2ErrorClass::HTTP2_ERROR_CLASS_NONE);
     }
     if (!stream->payload_length_is_valid()) {
-      return Http2Error(Http2ErrorClass::HTTP2_ERROR_CLASS_CONNECTION, Http2ErrorCode::HTTP2_ERROR_PROTOCOL_ERROR,
+      return Http2Error(Http2ErrorClass::HTTP2_ERROR_CLASS_STREAM, Http2ErrorCode::HTTP2_ERROR_PROTOCOL_ERROR,
                         "recv data bad payload length");
     }
 
@@ -241,6 +241,9 @@ rcv_headers_frame(Http2ConnectionState &cstate, const Http2Frame &frame)
     if (stream == nullptr || !stream->has_trailing_header()) {
       return Http2Error(Http2ErrorClass::HTTP2_ERROR_CLASS_CONNECTION, Http2ErrorCode::HTTP2_ERROR_STREAM_CLOSED,
                         "recv headers cannot find existing stream_id");
+    } else if (stream->get_state() == Http2StreamState::HTTP2_STREAM_STATE_CLOSED) {
+      return Http2Error(Http2ErrorClass::HTTP2_ERROR_CLASS_CONNECTION, Http2ErrorCode::HTTP2_ERROR_STREAM_CLOSED,
+                        "recv_header to closed stream");
     }
   } else {
     // Create new stream
@@ -365,6 +368,12 @@ rcv_headers_frame(Http2ConnectionState &cstate, const Http2Frame &frame)
         return Http2Error(Http2ErrorClass::HTTP2_ERROR_CLASS_STREAM, Http2ErrorCode::HTTP2_ERROR_PROTOCOL_ERROR,
                           "recv headers malformed request");
       }
+    }
+
+    // Check Content-Length & payload length when END_STREAM flag is true
+    if (stream->recv_end_stream && !stream->payload_length_is_valid()) {
+      return Http2Error(Http2ErrorClass::HTTP2_ERROR_CLASS_STREAM, Http2ErrorCode::HTTP2_ERROR_PROTOCOL_ERROR,
+                        "recv data bad payload length");
     }
 
     // Set up the State Machine
@@ -925,6 +934,12 @@ rcv_continuation_frame(Http2ConnectionState &cstate, const Http2Frame &frame)
         return Http2Error(Http2ErrorClass::HTTP2_ERROR_CLASS_CONNECTION, Http2ErrorCode::HTTP2_ERROR_PROTOCOL_ERROR,
                           "continuation malformed request");
       }
+    }
+
+    // Check Content-Length & payload length when END_STREAM flag is true
+    if (stream->recv_end_stream && !stream->payload_length_is_valid()) {
+      return Http2Error(Http2ErrorClass::HTTP2_ERROR_CLASS_STREAM, Http2ErrorCode::HTTP2_ERROR_PROTOCOL_ERROR,
+                        "recv data bad payload length");
     }
 
     // Set up the State Machine
@@ -1784,6 +1799,7 @@ Http2ConnectionState::send_push_promise_frame(Http2Stream *stream, URL &url, con
   stream->change_state(HTTP2_FRAME_TYPE_PUSH_PROMISE, HTTP2_FLAGS_PUSH_PROMISE_END_HEADERS);
   stream->set_request_headers(h2_hdr);
   stream->new_transaction();
+  stream->recv_end_stream = true; // No more data with the request
   stream->send_request(*this);
 
   h2_hdr.destroy();
