@@ -1,0 +1,18 @@
+Description: skip shpinx version check to workaround #995365
+ configure tries to import sphinxcontrib.plantuml to ensure it's
+ installed. Currently, import fails due to #995365. This patch disable
+ sphinxcontrib.plantuml check as it's listed as dependency in d/control
+Author: Jean Baptiste Favre <jbfavre@debian.org>
+Last-Update: 2021-10-16
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+--- a/doc/checkvers.py
++++ b/doc/checkvers.py
+@@ -61,7 +61,6 @@ if __name__ == '__main__':
+ 
+         print('checking for sphinxcontrib.plantuml...', end="")
+         try:
+-            import sphinxcontrib.plantuml
+             print('yes')
+         except Exception as e:
+             print(e)
