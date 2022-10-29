@@ -541,6 +541,7 @@ public:
   int64_t pushed_response_body_bytes = 0;
   bool client_tcp_reused             = false;
   // Info about client's SSL connection.
+  bool is_internal                = false;
   bool client_ssl_reused          = false;
   bool client_connection_is_ssl   = false;
   const char *client_protocol     = "-";
