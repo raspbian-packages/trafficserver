@@ -1,0 +1,9 @@
+0003-reproductible-build.patch
+0006-fix-doc-build.patch
+0008-fix-python-check-unused-dependencies.patch
+0013-fix-perl-interpreter-path.patch
+0014-use_system_yaml-cpp.patch
+0015-workaround-python3-sphinxcontrib.plantuml-bug
+0016-fix-manpages-generation.patch
+0017-add-missing-man-pages.patch
+0019-fix-test_http_proxy.patch

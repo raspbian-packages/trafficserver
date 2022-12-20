@@ -1,0 +1,20 @@
+Description: Improve OpenSSL 3 compatibility
+Author: Jered Floyd <jered@redhat.com> and Bryan Call <bcall@apache.org>
+Origin: upstream
+Applied-Upstream: https://github.com/apache/trafficserver/commit/cea26fe72406963fa7648a9bef3099a1a545f838 https://github.com/apache/trafficserver/commit/8ca74ee27cc14f27a1480a88fc453fbabc954e4e
+Last-Update: 2022-06-17
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+--- a/configure.ac
++++ b/configure.ac
+@@ -1253,6 +1253,10 @@ TS_CHECK_CRYPTO_VERSION
+ TS_CHECK_OPENSSL3
+ AM_CONDITIONAL([OPENSSL_IS_OPENSSL3], [test -n "$openssl_is_openssl3"])
+ 
++# Check for OpenSSL Version 3 and add compatiblity define if needed
++TS_CHECK_OPENSSL3
++AM_CONDITIONAL([OPENSSL_IS_OPENSSL3], [test -n "$openssl_is_openssl3"])
++
+ # Check for openssl ASYNC jobs
+ TS_CHECK_CRYPTO_ASYNC
+ 
