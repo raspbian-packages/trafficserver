@@ -1,9 +1,19 @@
-trafficserver (8.1.5+ds-1~deb11u1+rpi1) bullseye-staging; urgency=medium
+trafficserver (8.1.6+ds-1~deb11u1+rpi1) bullseye-staging; urgency=medium
 
   [changes brought forward from 8.0.1-4+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Sat, 19 Jan 2019 12:42:48 +0000]
   * Use -latomic on raspbian too.
 
- -- Raspbian forward porter <root@raspbian.org>  Sat, 13 Aug 2022 03:52:49 +0000
+ -- Raspbian forward porter <root@raspbian.org>  Tue, 10 Jan 2023 22:24:18 +0000
+
+trafficserver (8.1.6+ds-1~deb11u1) bullseye-security; urgency=high
+
+  * Update d/u/signing-key for 8.1.x serie
+  * New upstream version 8.1.6+ds
+  * Multiple CVE fixes for 8.1.x
+    + CVE-2022-32749: Improper Check for Unusual or Exceptional Conditions vulnerability
+    + CVE-2022-37392: Improper Check for Unusual or Exceptional Conditions vulnerability
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Wed, 04 Jan 2023 09:22:58 +0100
 
 trafficserver (8.1.5+ds-1~deb11u1) bullseye-security; urgency=high
 
