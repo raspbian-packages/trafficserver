@@ -46,6 +46,7 @@
 #include <termios.h>
 #include <vector>
 #include "P_SNIActionPerformer.h"
+#include "P_SSLSNI.h"
 
 #if HAVE_OPENSSL_EVP_H
 #include <openssl/evp.h>
@@ -406,6 +407,75 @@ ssl_verify_client_callback(int preverify_ok, X509_STORE_CTX *ctx)
   return SSL_TLSEXT_ERR_OK;
 }
 
+#if TS_USE_CERT_CB || TS_USE_HELLO_CB
+static int
+PerformAction(Continuation *cont, const char *servername)
+{
+  SNIConfig::scoped_config params;
+  const actionVector *actionvec = params->get(servername);
+  if (!actionvec) {
+    Debug("ssl_sni", "%s not available in the map", servername);
+  } else {
+    for (auto &&item : *actionvec) {
+      auto ret = item->SNIAction(cont);
+      if (ret != SSL_TLSEXT_ERR_OK) {
+        return ret;
+      }
+    }
+  }
+  return SSL_TLSEXT_ERR_OK;
+}
+#endif
+
+#if TS_USE_HELLO_CB
+// Pausable callback
+static int
+ssl_client_hello_callback(SSL *s, int *al, void *arg)
+{
+  const char *servername = nullptr;
+  const unsigned char *p;
+  size_t remaining, len;
+  // Parse the servrer name if the get extension call succeeds and there are more than 2 bytes to parse
+  if (SSL_client_hello_get0_ext(s, TLSEXT_TYPE_server_name, &p, &remaining) && remaining > 2) {
+    // Parse to get to the name, originally from test/handshake_helper.c in openssl tree
+    /* Extract the length of the supplied list of names. */
+    len = *(p++) << 8;
+    len += *(p++);
+    if (len + 2 == remaining) {
+      remaining = len;
+      /*
+       * The list in practice only has a single element, so we only consider
+       * the first one.
+       */
+      if (remaining != 0 && *p++ == TLSEXT_NAMETYPE_host_name) {
+        remaining--;
+        /* Now we can finally pull out the byte array with the actual hostname. */
+        if (remaining > 2) {
+          len = *(p++) << 8;
+          len += *(p++);
+          if (len + 2 <= remaining) {
+            remaining  = len;
+            servername = reinterpret_cast<const char *>(p);
+          }
+        }
+      }
+    }
+  }
+
+  SSLNetVConnection *netvc = SSLNetVCAccess(s);
+
+  netvc->serverName = servername ? servername : "";
+  int ret           = PerformAction(netvc, netvc->serverName);
+  if (ret != SSL_TLSEXT_ERR_OK) {
+    return SSL_CLIENT_HELLO_ERROR;
+  }
+  if (netvc->protocol_mask_set) {
+    setTLSValidProtocols(s, netvc->protocol_mask, TLSValidProtocols::max_mask);
+  }
+  return SSL_CLIENT_HELLO_SUCCESS;
+}
+#endif
+
 // Use the certificate callback for openssl 1.0.2 and greater
 // otherwise use the SNI callback
 #if TS_USE_CERT_CB
@@ -448,17 +518,21 @@ extern SNIActionPerformer sni_action_performer;
 static int
 ssl_servername_only_callback(SSL *ssl, int * /* ad */, void * /*arg*/)
 {
-  int ret                  = SSL_TLSEXT_ERR_OK;
   SSLNetVConnection *netvc = SSLNetVCAccess(ssl);
-  const char *servername   = SSL_get_servername(ssl, TLSEXT_NAMETYPE_host_name);
-  Debug("ssl", "Requested servername is %s", servername);
-  if (servername != nullptr) {
-    ret = sni_action_performer.PerformAction(netvc, servername);
-  }
-  if (ret != SSL_TLSEXT_ERR_OK)
-    return SSL_TLSEXT_ERR_ALERT_FATAL;
-
   netvc->callHooks(TS_EVENT_SSL_SERVERNAME);
+
+  netvc->serverName = SSL_get_servername(ssl, TLSEXT_NAMETYPE_host_name);
+  if (nullptr == netvc->serverName) {
+    netvc->serverName = "";
+  }
+
+#if !TS_USE_HELLO_CB
+  // Only call the SNI actions here if not already performed in the HELLO_CB
+  int ret = PerformAction(netvc, netvc->serverName);
+  if (ret != SSL_TLSEXT_ERR_OK) {
+    return SSL_TLSEXT_ERR_ALERT_FATAL;
+  }
+#endif
   return SSL_TLSEXT_ERR_OK;
 }
 
@@ -955,7 +1029,7 @@ SSLInitializeLibrary()
   }
 #endif
 
-#ifdef TS_USE_TLS_OCSP
+#if TS_USE_TLS_OCSP
   ssl_stapling_ex_init();
 #endif /* TS_USE_TLS_OCSP */
 
@@ -1345,12 +1419,17 @@ SSLDefaultServerContext()
 static bool
 SSLPrivateKeyHandler(SSL_CTX *ctx, const SSLConfigParams *params, const std::string &completeServerCertPath, const char *keyPath)
 {
+#ifndef OPENSSL_IS_BORINGSSL
   ENGINE *e = ENGINE_get_default_RSA();
   if (e != nullptr) {
     const char *argkey = (keyPath == nullptr || keyPath[0] == '\0') ? completeServerCertPath.c_str() : keyPath;
     if (!SSL_CTX_use_PrivateKey(ctx, ENGINE_load_private_key(e, argkey, nullptr, nullptr))) {
       SSLError("failed to load server private key from engine");
     }
+#else
+  ENGINE *e = nullptr;
+  if (false) {
+#endif
   } else if (!keyPath) {
     // assume private key is contained in cert obtained from multicert file.
     if (!SSL_CTX_use_PrivateKey_file(ctx, completeServerCertPath.c_str(), SSL_FILETYPE_PEM)) {
@@ -1486,7 +1565,7 @@ ssl_index_certificate(SSLCertLookup *lookup, SSLCertContext const &cc, X509 *cer
       if (name->type == GEN_DNS) {
         ats_scoped_str dns(asn1_strdup(name->d.dNSName));
         // only try to insert if the alternate name is not the main name
-        if (strcmp(dns, subj_name) != 0) {
+        if (subj_name == nullptr || strcmp(dns, subj_name) != 0) {
           Debug("ssl", "mapping '%s' to certificates %s", (const char *)dns, certname);
           if (lookup->insert(dns, cc) >= 0) {
             inserted = true;
@@ -1558,6 +1637,16 @@ ssl_set_handshake_callbacks(SSL_CTX *ctx)
 #else
   SSL_CTX_set_tlsext_servername_callback(ctx, ssl_servername_and_cert_callback);
 #endif
+#if TS_USE_HELLO_CB
+  SSL_CTX_set_client_hello_cb(ctx, ssl_client_hello_callback, nullptr);
+#endif
+}
+
+void
+setTLSValidProtocols(SSL *ssl, unsigned long proto_mask, unsigned long max_mask)
+{
+  SSL_set_options(ssl, proto_mask);
+  SSL_clear_options(ssl, max_mask & ~proto_mask);
 }
 
 void
@@ -1700,16 +1789,18 @@ SSLInitServerContext(const SSLConfigParams *params, const ssl_user_config *sslMu
           X509_free(cert);
           goto fail;
         }
-        certList.push_back(cert);
-        if (SSLConfigParams::load_ssl_file_cb) {
-          SSLConfigParams::load_ssl_file_cb(completeServerCertPath.c_str(), CONFIG_FLAG_UNVERSIONED);
-        }
+
         // Load up any additional chain certificates
         SSL_CTX_add_extra_chain_cert_bio(ctx, bio);
 
         const char *keyPath = key_tok.getNext();
         if (!SSLPrivateKeyHandler(ctx, params, completeServerCertPath, keyPath)) {
           goto fail;
+        }
+
+        certList.push_back(cert);
+        if (SSLConfigParams::load_ssl_file_cb) {
+          SSLConfigParams::load_ssl_file_cb(completeServerCertPath.c_str(), CONFIG_FLAG_UNVERSIONED);
         }
 
         // Must load all the intermediate certificates before starting the next chain
@@ -1788,13 +1879,8 @@ SSLInitServerContext(const SSLConfigParams *params, const ssl_user_config *sslMu
     SSL_CTX_set_verify_depth(ctx, params->verify_depth); // might want to make configurable at some point.
   }
 
-  // Set the list of CA's to send to client if we ask for a client
-  // certificate
   if (params->serverCACertFilename) {
     ca_list = SSL_load_client_CA_file(params->serverCACertFilename);
-    if (ca_list) {
-      SSL_CTX_set_client_CA_list(ctx, ca_list);
-    }
   }
 
   if (EVP_DigestInit_ex(digest, evp_md_func, nullptr) == 0) {
@@ -1821,6 +1907,9 @@ SSLInitServerContext(const SSLConfigParams *params, const ssl_user_config *sslMu
         goto fail;
       }
     }
+
+    // Set the list of CA's to send to client if we ask for a client certificate
+    SSL_CTX_set_client_CA_list(ctx, ca_list);
   }
 
   if (EVP_DigestFinal_ex(digest, hash_buf, &hash_len) == 0) {
@@ -1883,7 +1972,7 @@ SSLInitServerContext(const SSLConfigParams *params, const ssl_user_config *sslMu
   SSL_CTX_set_alpn_select_cb(ctx, SSLNetVConnection::select_next_protocol, nullptr);
 #endif /* TS_USE_TLS_ALPN */
 
-#ifdef TS_USE_TLS_OCSP
+#if TS_USE_TLS_OCSP
   if (SSLConfigParams::ssl_ocsp_enabled) {
     Debug("ssl", "SSL OCSP Stapling is enabled");
     SSL_CTX_set_tlsext_status_cb(ctx, ssl_callback_ocsp_stapling);
@@ -1989,7 +2078,7 @@ ssl_store_ssl_context(const SSLConfigParams *params, SSLCertLookup *lookup, cons
   }
 #endif
 
-#ifdef TS_USE_TLS_OCSP
+#if TS_USE_TLS_OCSP
   if (SSLConfigParams::ssl_ocsp_enabled) {
     Debug("ssl", "SSL OCSP Stapling is enabled");
     SSL_CTX_set_tlsext_status_cb(ctx, ssl_callback_ocsp_stapling);

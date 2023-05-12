@@ -470,7 +470,7 @@ RANDOM
 
     cond %{RANDOM:<n>} <operand>
 
-Generates a random integer between ``0`` and ``<n>``, inclusive.
+Generates a random integer from ``0`` up to (but not including) ``<n>``. Mathmatically, ``[0,n)`` or ``0 <= r < n``.
 
 STATUS
 ~~~~~~
@@ -527,6 +527,24 @@ being evaluated.
 Refer to `Requests vs. Responses`_ for more information on determining the
 context in which the transaction's URL is evaluated.  The ``<part>`` may be
 specified according to the options documented in `URL Parts`_.
+
+SSN-TXN-COUNT
+~~~~~~~~~~~~~
+::
+
+    cond %{SSN-TXN-COUNT} <operand>
+
+Returns the number of transactions between the Traffic Server proxy and the origin server from a single session.
+Any value greater than zero indicates connection reuse.
+
+TCP-INFO
+~~~~~~~~
+::
+
+	cond %{<name>}
+        add-header @PropertyName "%{TCP-INFO}"
+
+This operation records TCP Info struct field values as an Internal remap as well as global header at the event hook specified by the condition. Supported hook conditions include TXN_START_HOOK, SEND_RESPONSE_HEADER_HOOK and TXN_CLOSE_HOOK in the Global plugin and REMAP_PSEUDO_HOOK, SEND_RESPONSE_HEADER_HOOK and TXN_CLOSE_HOOK in the Remap plugin. Conditions supported as request headers include TXN_START_HOOK and REMAP_PSEUDO_HOOK. The other conditions are supported as response headers. TCP Info fields currently recorded include rtt, rto, snd_cwnd and all_retrans. This operation is not supported on transactions originated within Traffic Server (for e.g using the |TS| :c:func:`TSHttpTxnIsInternal`)
 
 Condition Operands
 ------------------
@@ -804,11 +822,20 @@ L      Last rule, do not continue.
 QSA    Append the results of the rule to the query string.
 ====== ========================================================================
 
-Variable Expansion
-------------------
+Values and Variable Expansion
+-----------------------------
 
-Only limited variable expansion is supported in `add-header`_ and `set-header`_ . Supported
-substitutions are currently:
+You can concatenate values using strings, condition values and variable expansions on the same line.
+
+    add-header CustomHeader "Hello from %{IP:SERVER}:%<INBOUND:LOCAL-PORT>"
+
+However, the above example is somewhat contrived to show the old tags, it should instead be written as
+
+    add-header CustomHeader "Hello from %{IP:SERVER}:%{INBOUND:LOCAL-PORT}"
+
+Concatenation is not supported in condition testing.
+
+Supported substitutions are currently:
 
 ======================= ==================================================================================
 Variable                Description
@@ -832,12 +859,6 @@ Variable                Description
 %<INBOUND:IP-FAMILY>    The IP family of the inbound connection (either "ipv4" or "ipv6").
 %<INBOUND:STACK>        The full protocol stack of the inbound connection separated by ','.
 ======================= ==================================================================================
-
-Variables to be expanded must be enclosed in double quotes ``"``, as in this example using the arbitrary header
-``Custom-Client-IP``::
-
-    set-header Custom-Client-IP "%<chi>"
-
 
 Header Values
 -------------
@@ -991,6 +1012,15 @@ Evaluates rulesets just prior to sending the client response, but after any
 cache updates may have been performed. This hook context provides a means to
 modify aspects of the response sent to a client, while still caching the
 original versions of those attributes delivered by the origin server.
+
+TXN_START_HOOK
+~~~~~~~~~~~~~~
+Rulesets are evaluated when |TS| receives a request and accepts it. This hook context indicates that a HTTP transaction is initiated and therefore, can only be enabled as a global plugin.
+
+TXN_CLOSE_HOOK
+~~~~~~~~~~~~~~
+
+Rulesets are evaluated when |TS| completes a transaction, i.e., after a response has been sent to the client. Therefore, header modifications at this hook condition only makes sense for internal headers.
 
 Affected Conditions
 -------------------

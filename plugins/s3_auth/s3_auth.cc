@@ -202,9 +202,7 @@ public:
       }
     } else {
       /* 4 == _version */
-      if (_virt_host_modified) {
-        TSError("[%s] virtual host not used with AWS auth v4, parameter ignored", PLUGIN_NAME);
-      }
+      // NOTE: virtual host not used with AWS auth v4, parameter ignored
     }
     return true;
   }
@@ -594,6 +592,7 @@ S3Request::set_header(const char *header, int header_len, const char *val, int v
     bool first = true;
 
     while (field_loc) {
+      tmp = TSMimeHdrFieldNextDup(_bufp, _hdr_loc, field_loc);
       if (first) {
         first = false;
         if (TS_SUCCESS == TSMimeHdrFieldValueStringSet(_bufp, _hdr_loc, field_loc, -1, val, val_len)) {
@@ -602,7 +601,6 @@ S3Request::set_header(const char *header, int header_len, const char *val, int v
       } else {
         TSMimeHdrFieldDestroy(_bufp, _hdr_loc, field_loc);
       }
-      tmp = TSMimeHdrFieldNextDup(_bufp, _hdr_loc, field_loc);
       TSHandleMLocRelease(_bufp, _hdr_loc, field_loc);
       field_loc = tmp;
     }
@@ -620,10 +618,10 @@ S3Request::set_header(const char *header, int header_len, const char *val, int v
 static size_t
 str_concat(char *dst, size_t dst_len, const char *src, size_t src_len)
 {
-  size_t to_copy = (src_len < dst_len) ? src_len : dst_len;
+  size_t to_copy = std::min(dst_len, src_len);
 
   if (to_copy > 0) {
-    (void)strncat(dst, src, to_copy);
+    strncat(dst, src, to_copy);
   }
 
   return to_copy;

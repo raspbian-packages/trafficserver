@@ -56,6 +56,8 @@ HttpDebugNames::get_server_state_name(HttpTransact::ServerState_t state)
     return "TRANSACTION_COMPLETE";
   case HttpTransact::PARENT_RETRY:
     return "PARENT_RETRY";
+  case HttpTransact::OUTBOUND_CONGESTION:
+    return "OUTBOUND_CONGESTION";
   }
 
   return ("unknown state name");
@@ -464,8 +466,8 @@ HttpDebugNames::get_api_hook_name(TSHttpHookID t)
     return "TS_SSL_CERT_HOOK";
   case TS_SSL_SERVERNAME_HOOK:
     return "TS_SSL_SERVERNAME_HOOK";
-  case TS_SSL_SERVER_VERIFY_HOOK:
-    return "TS_SSL_SERVER_VERIFY_HOOK";
+  case TS_SSL_VERIFY_SERVER_HOOK:
+    return "TS_SSL_VERIFY_SERVER_HOOK";
   case TS_SSL_VERIFY_CLIENT_HOOK:
     return "TS_SSL_VERIFY_CLIENT_HOOK";
   case TS_SSL_SESSION_HOOK:

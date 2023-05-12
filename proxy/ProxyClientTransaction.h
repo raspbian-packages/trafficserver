@@ -47,7 +47,7 @@ public:
   virtual void set_inactivity_timeout(ink_hrtime timeout_in) = 0;
   virtual void cancel_inactivity_timeout()                   = 0;
 
-  virtual void attach_server_session(HttpServerSession *ssession, bool transaction_done = true);
+  virtual bool attach_server_session(HttpServerSession *ssession, bool transaction_done = true);
 
   // See if we need to schedule on the primary thread for the transaction or change the thread that is associated with the VC.
   // If we reschedule, the scheduled action is returned.  Otherwise, NULL is returned
@@ -144,12 +144,6 @@ public:
     host_res_style = style;
   }
 
-  const AclRecord *
-  get_acl_record() const
-  {
-    return parent ? parent->acl_record : nullptr;
-  }
-
   // Indicate we are done with this transaction
   virtual void release(IOBufferReader *r);
 
@@ -196,12 +190,6 @@ public:
   {
   }
 
-  virtual bool
-  ignore_keep_alive()
-  {
-    return true;
-  }
-
   virtual void destroy();
 
   virtual void transaction_done() = 0;
@@ -235,7 +223,12 @@ public:
     return current_reader;
   }
 
+  virtual int get_transaction_priority_weight() const;
+  virtual int get_transaction_priority_dependence() const;
   virtual bool allow_half_open() const = 0;
+
+  // Returns true if there is a request body for this request
+  virtual bool has_request_body(int64_t content_length, bool is_chunked_set) const;
 
   virtual const char *
   get_protocol_string()

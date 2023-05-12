@@ -3236,6 +3236,16 @@ TSMimeHdrFieldValueDateGet(TSMBuffer bufp, TSMLoc hdr, TSMLoc field)
   return mime_parse_date(value_str, value_str + value_len);
 }
 
+time_t
+TSMimeParseDate(char const *const value_str, int const value_len)
+{
+  if (value_str == nullptr) {
+    return (time_t)0;
+  }
+
+  return mime_parse_date(value_str, value_str + value_len);
+}
+
 int
 TSMimeHdrFieldValueIntGet(TSMBuffer bufp, TSMLoc hdr, TSMLoc field, int idx)
 {
@@ -3332,6 +3342,21 @@ TSMimeHdrFieldValueDateSet(TSMBuffer bufp, TSMLoc hdr, TSMLoc field, time_t valu
   // idx is ignored and we overwrite all existing values
   // TSMimeFieldValueSet(bufp, field_obj, idx, tmp, len);
   TSMimeFieldValueSet(bufp, field, -1, tmp, len);
+  return TS_SUCCESS;
+}
+
+TSReturnCode
+TSMimeFormatDate(time_t const value_time, char *const value_str, int *const value_length)
+{
+  if (value_length == nullptr) {
+    return TS_ERROR;
+  }
+
+  if (*value_length < 33) {
+    return TS_ERROR;
+  }
+
+  *value_length = mime_format_date(value_str, value_time);
   return TS_SUCCESS;
 }
 
@@ -4739,6 +4764,16 @@ TSHttpTxnPristineUrlGet(TSHttpTxn txnp, TSMBuffer *bufp, TSMLoc *url_loc)
   return TS_ERROR;
 }
 
+int
+TSHttpTxnServerSsnTransactionCount(TSHttpTxn txnp)
+{
+  sdk_assert(sdk_sanity_check_txn(txnp) == TS_SUCCESS);
+
+  HttpSM *sm = (HttpSM *)txnp;
+  // Any value greater than zero indicates connection reuse.
+  return sm->server_transact_count;
+}
+
 // Shortcut to just get the URL.
 // The caller is responsible to free memory that is allocated for the string
 // that is returned.
@@ -5220,6 +5255,15 @@ TSHttpTxnServerRespNoStoreSet(TSHttpTxn txnp, int flag)
   s->api_server_response_no_store = (flag != 0);
 
   return TS_SUCCESS;
+}
+
+bool
+TSHttpTxnServerRespNoStoreGet(TSHttpTxn txnp)
+{
+  sdk_assert(sdk_sanity_check_txn(txnp) == TS_SUCCESS);
+
+  HttpTransact::State *s = &(((HttpSM *)txnp)->t_state);
+  return s->api_server_response_no_store;
 }
 
 TSReturnCode
@@ -7129,10 +7173,10 @@ TSTextLogObjectCreate(const char *filename, int mode, TSTextLogObject *new_objec
     return TS_ERROR;
   }
 
-  TextLogObject *tlog =
-    new TextLogObject(filename, Log::config->logfile_dir, (bool)mode & TS_LOG_MODE_ADD_TIMESTAMP, nullptr,
-                      Log::config->rolling_enabled, Log::config->collation_preproc_threads, Log::config->rolling_interval_sec,
-                      Log::config->rolling_offset_hr, Log::config->rolling_size_mb);
+  TextLogObject *tlog = new TextLogObject(
+    filename, Log::config->logfile_dir, (bool)mode & TS_LOG_MODE_ADD_TIMESTAMP, nullptr, Log::config->rolling_enabled,
+    Log::config->collation_preproc_threads, Log::config->rolling_interval_sec, Log::config->rolling_offset_hr,
+    Log::config->rolling_size_mb, Log::config->rolling_max_count, Log::config->rolling_allow_empty);
   if (tlog == nullptr) {
     *new_object = nullptr;
     return TS_ERROR;
@@ -8121,9 +8165,6 @@ _conf_to_memberp(TSOverridableConfigKey conf, OverridableHttpConfigParams *overr
   case TS_CONFIG_PARENT_FAILURES_UPDATE_HOSTDB:
     ret = _memberp_to_generic(&overridableHttpConfig->parent_failures_update_hostdb, typep);
     break;
-  case TS_CONFIG_SSL_CLIENT_VERIFY_SERVER:
-    ret = _memberp_to_generic(&overridableHttpConfig->ssl_client_verify_server, typep);
-    break;
   case TS_CONFIG_HTTP_CACHE_ENABLE_DEFAULT_VARY_HEADER:
     ret = _memberp_to_generic(&overridableHttpConfig->cache_enable_default_vary_headers, typep);
     break;
@@ -8477,8 +8518,6 @@ TSHttpTxnConfigFind(const char *name, int length, TSOverridableConfigKey *conf, 
       if (!strncmp(name, "proxy.config.http.response_server_str", length)) {
         cnf = TS_CONFIG_HTTP_RESPONSE_SERVER_STR;
         typ = TS_RECORDDATATYPE_STRING;
-      } else if (!strncmp(name, "proxy.config.ssl.client.verify.server", length)) {
-        cnf = TS_CONFIG_SSL_CLIENT_VERIFY_SERVER;
       }
       break;
     case 't':
@@ -9163,6 +9202,10 @@ TSVConnSSLConnectionGet(TSVConn sslp)
 tsapi TSSslContext
 TSSslContextFindByName(const char *name)
 {
+  if (nullptr == name || 0 == strlen(name)) {
+    // an empty name is an invalid input
+    return nullptr;
+  }
   TSSslContext ret      = nullptr;
   SSLCertLookup *lookup = SSLCertificateConfig::acquire();
   if (lookup != nullptr) {
@@ -9198,7 +9241,7 @@ TSSslServerContextCreate(TSSslX509 cert, const char *certname)
   SSLConfigParams *config = SSLConfig::acquire();
   if (config != nullptr) {
     ret = reinterpret_cast<TSSslContext>(SSLCreateServerContext(config));
-#ifdef TS_USE_TLS_OCSP
+#if TS_USE_TLS_OCSP
     if (ret && SSLConfigParams::ssl_ocsp_enabled && cert && certname) {
       if (SSL_CTX_set_tlsext_status_cb(reinterpret_cast<SSL_CTX *>(ret), ssl_callback_ocsp_stapling)) {
         if (!ssl_stapling_init_cert(reinterpret_cast<SSL_CTX *>(ret), reinterpret_cast<X509 *>(cert), certname)) {

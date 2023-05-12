@@ -23,9 +23,9 @@
     _a < _b ? _a : _b;      \
   })
 
-#include "tscore/ink_defs.h"
 #include "url_sig.h"
 
+#include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -165,11 +165,11 @@ TSRemapNewInstance(int argc, char *argv[], void **ih, char *errbuf, int errbuf_s
       return TS_ERROR;
     }
     if (strncmp(line, "key", 3) == 0) {
-      if (strncmp((char *)(line + 3), "0", 1) == 0) {
+      if (strncmp(line + 3, "0", 1) == 0) {
         keynum = 0;
       } else {
         TSDebug(PLUGIN_NAME, ">>> %s <<<", line + 3);
-        keynum = atoi((char *)(line + 3));
+        keynum = atoi(line + 3);
         if (keynum == 0) {
           keynum = -1; // Not a Number
         }
@@ -330,14 +330,43 @@ getAppQueryString(const char *query_string, int query_length)
   }
 }
 
+/** fixedBufferWrite safely writes no more than *dest_len bytes to *dest_end
+ * from src. If copying src_len bytes to *dest_len would overflow, it returns
+ * zero. *dest_end is advanced and *dest_len is decremented to account for the
+ * written data. No null-terminators are written automatically (though they
+ * could be copied with data).
+ */
+static int
+fixedBufferWrite(char **dest_end, int *dest_len, const char *src, int src_len)
+{
+  if (src_len > *dest_len) {
+    return 0;
+  }
+  memcpy(*dest_end, src, src_len);
+  *dest_end += src_len;
+  *dest_len -= src_len;
+  return 1;
+}
+
 static char *
-urlParse(char *url, char *anchor, char *new_path_seg, int new_path_seg_len, char *signed_seg, unsigned int signed_seg_len)
+urlParse(char const *const url_in, char *anchor, char *new_path_seg, int new_path_seg_len, char *signed_seg,
+         unsigned int signed_seg_len)
 {
   char *segment[MAX_SEGMENTS];
+  char url[8192]                     = {'\0'};
   unsigned char decoded_string[2048] = {'\0'};
-  char new_url[8192]                 = {'\0'};
+  char new_url[8192]; /* new_url is not null_terminated */
   char *p = NULL, *sig_anchor = NULL, *saveptr = NULL;
-  int i = 0, numtoks = 0, cp_len = 0, l, decoded_len = 0, sig_anchor_seg = 0;
+  int i = 0, numtoks = 0, sig_anchor_seg = 0;
+  size_t decoded_len = 0;
+
+  strncat(url, url_in, sizeof(url) - strlen(url) - 1);
+
+  char *new_url_end    = new_url;
+  int new_url_len_left = sizeof(new_url);
+
+  char *new_path_seg_end    = new_path_seg;
+  int new_path_seg_len_left = new_path_seg_len;
 
   char *skip = strchr(url, ':');
   if (!skip || skip[1] != '/' || skip[2] != '/') {
@@ -345,8 +374,11 @@ urlParse(char *url, char *anchor, char *new_path_seg, int new_path_seg_len, char
   }
   skip += 3;
   // preserve the scheme in the new_url.
-  strncat(new_url, url, skip - url);
-  TSDebug(PLUGIN_NAME, "%s:%d - new_url: %s\n", __FILE__, __LINE__, new_url);
+  if (!fixedBufferWrite(&new_url_end, &new_url_len_left, url, skip - url)) {
+    TSError("insufficient space to copy schema into new_path_seg buffer.");
+    return NULL;
+  }
+  TSDebug(PLUGIN_NAME, "%s:%d - new_url: %.*s\n", __FILE__, __LINE__, (int)(new_url_end - new_url), new_url);
 
   // parse the url.
   if ((p = strtok_r(skip, "/", &saveptr)) != NULL) {
@@ -387,19 +419,18 @@ urlParse(char *url, char *anchor, char *new_path_seg, int new_path_seg_len, char
       // last path segment so skip them.
       continue;
     }
-    l = strlen(segment[i]);
-    if (l + 1 > new_path_seg_len) {
-      TSError("insuficient space to copy into new_path_seg buffer.");
+    if (!fixedBufferWrite(&new_path_seg_end, &new_path_seg_len_left, segment[i], strlen(segment[i]))) {
+      TSError("insufficient space to copy into new_path_seg buffer.");
       return NULL;
-    } else {
-      memcpy(new_path_seg, segment[i], l);
-      new_path_seg[l] = '\0';
-      if (i != numtoks - 1) {
-        strncat(new_path_seg, "/", 1);
+    }
+    if (i != numtoks - 1) {
+      if (!fixedBufferWrite(&new_path_seg_end, &new_path_seg_len_left, "/", 1)) {
+        TSError("insufficient space to copy into new_path_seg buffer.");
+        return NULL;
       }
-      cp_len += l + 1;
     }
   }
+  *new_path_seg_end = '\0';
   TSDebug(PLUGIN_NAME, "new_path_seg: %s", new_path_seg);
 
   // save the encoded signing parameter data
@@ -422,36 +453,64 @@ urlParse(char *url, char *anchor, char *new_path_seg, int new_path_seg_len, char
   // no signature anchor was found so decode and save the signing parameters assumed
   // to be in the last path segment.
   if (sig_anchor == NULL) {
-    if (TSBase64Decode(segment[numtoks - 2], strlen(segment[numtoks - 2]), decoded_string, sizeof(decoded_string),
-                       (size_t *)&decoded_len) != TS_SUCCESS) {
+    if (TSBase64Decode(segment[numtoks - 2], strlen(segment[numtoks - 2]), decoded_string, sizeof(decoded_string), &decoded_len) !=
+        TS_SUCCESS) {
       TSDebug(PLUGIN_NAME, "Unable to decode the  path parameter string.");
     }
   } else {
-    if (TSBase64Decode(sig_anchor, strlen(sig_anchor), decoded_string, sizeof(decoded_string), (size_t *)&decoded_len) !=
-        TS_SUCCESS) {
+    if (TSBase64Decode(sig_anchor, strlen(sig_anchor), decoded_string, sizeof(decoded_string), &decoded_len) != TS_SUCCESS) {
       TSDebug(PLUGIN_NAME, "Unable to decode the  path parameter string.");
     }
   }
   TSDebug(PLUGIN_NAME, "decoded_string: %s", decoded_string);
 
-  for (i = 0; i < numtoks; i++) {
-    // cp the base64 decoded string.
-    if (i == sig_anchor_seg && sig_anchor != NULL) {
-      memcpy(new_url, segment[i], strlen(segment[i]));
-      memcpy(new_url, (char *)decoded_string, strlen((char *)decoded_string));
-      strncat(new_url, "/", 1);
-      continue;
-    } else if (i == numtoks - 2 && sig_anchor == NULL) {
-      memcpy(new_url, (char *)decoded_string, strlen((char *)decoded_string));
-      strncat(new_url, "/", 1);
-      continue;
+  {
+    int oob = 0; /* Out Of Buffer */
+
+    for (i = 0; i < numtoks; i++) {
+      // cp the base64 decoded string.
+      if (i == sig_anchor_seg && sig_anchor != NULL) {
+        if (!fixedBufferWrite(&new_url_end, &new_url_len_left, segment[i], strlen(segment[i]))) {
+          oob = 1;
+          break;
+        }
+        if (!fixedBufferWrite(&new_url_end, &new_url_len_left, (char *)decoded_string, strlen((char *)decoded_string))) {
+          oob = 1;
+          break;
+        }
+        if (!fixedBufferWrite(&new_url_end, &new_url_len_left, "/", 1)) {
+          oob = 1;
+          break;
+        }
+
+        continue;
+      } else if (i == numtoks - 2 && sig_anchor == NULL) {
+        if (!fixedBufferWrite(&new_url_end, &new_url_len_left, (char *)decoded_string, strlen((char *)decoded_string))) {
+          oob = 1;
+          break;
+        }
+        if (!fixedBufferWrite(&new_url_end, &new_url_len_left, "/", 1)) {
+          oob = 1;
+          break;
+        }
+        continue;
+      }
+      if (!fixedBufferWrite(&new_url_end, &new_url_len_left, segment[i], strlen(segment[i]))) {
+        oob = 1;
+        break;
+      }
+      if (i < numtoks - 1) {
+        if (!fixedBufferWrite(&new_url_end, &new_url_len_left, "/", 1)) {
+          oob = 1;
+          break;
+        }
+      }
     }
-    memcpy(new_url, segment[i], strlen(segment[i]));
-    if (i < numtoks - 1) {
-      strncat(new_url, "/", 1);
+    if (oob) {
+      TSError("insufficient space to copy into new_url.");
     }
   }
-  return TSstrndup(new_url, strlen(new_url));
+  return TSstrndup(new_url, new_url_end - new_url);
 }
 
 TSRemapStatus
@@ -483,7 +542,7 @@ TSRemapDoRemap(void *ih, TSHttpTxn txnp, TSRemapRequestInfo *rri)
   char sig_string[2 * MAX_SIG_SIZE + 1];
 
   if (current_url_len >= MAX_REQ_LEN - 1) {
-    err_log(url, "URL string too long");
+    err_log(current_url, "Request Url string too long");
     goto deny;
   }
 
@@ -500,14 +559,11 @@ TSRemapDoRemap(void *ih, TSHttpTxn txnp, TSRemapRequestInfo *rri)
       err_log(url, "Pristine URL string too long.");
       goto deny;
     }
-
   } else {
     url_len = current_url_len;
   }
 
   TSDebug(PLUGIN_NAME, "%s", url);
-
-  const char *query = strchr(url, '?');
 
   if (cfg->regex) {
     const int offset = 0, options = 0;
@@ -525,19 +581,30 @@ TSRemapDoRemap(void *ih, TSHttpTxn txnp, TSRemapRequestInfo *rri)
     }
   }
 
+  const char *query = strchr(url, '?');
+
   // check for path params.
   if (query == NULL || strstr(query, "E=") == NULL) {
-    if ((url = urlParse(url, cfg->sig_anchor, new_path, 8192, path_params, 8192)) == NULL) {
-      err_log(url, "Has no signing query string or signing path parameters.");
+    char *const parsed = urlParse(url, cfg->sig_anchor, new_path, 8192, path_params, 8192);
+    if (parsed == NULL) {
+      err_log(url, "Unable to parse/decode new url path parameters");
       goto deny;
     }
+
     has_path_params = true;
-    query           = strstr(url, ";");
+    query           = strstr(parsed, ";");
 
     if (query == NULL) {
       err_log(url, "Has no signing query string or signing path parameters.");
+      TSfree(parsed);
       goto deny;
     }
+
+    if (url != current_url) {
+      TSfree(url);
+    }
+
+    url = parsed;
   }
 
   /* first, parse the query string */

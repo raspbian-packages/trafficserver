@@ -157,8 +157,10 @@ typedef unsigned int in_addr_t;
 #include <sys/sysinfo.h>
 #endif
 
+#if defined(darwin) || defined(freebsd)
 #ifdef HAVE_SYS_SYSCTL_H
 #include <sys/sysctl.h>
+#endif
 #endif
 
 #ifdef HAVE_SYS_SYSTEMINFO_H
@@ -189,4 +191,13 @@ typedef unsigned int in_addr_t;
   4096 // instead of PATH_MAX which is inconsistent
        // on various OSs (linux-4096,osx/bsd-1024,
        //                 windows-260,etc)
+#endif
+
+// This is a little bit of a hack for now, until MPTCP has landed upstream in Linux land.
+#ifndef MPTCP_ENABLED
+#if defined(linux)
+#define MPTCP_ENABLED 42
+#else
+#define MPTCP_ENABLED 0
+#endif
 #endif

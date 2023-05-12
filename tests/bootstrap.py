@@ -22,23 +22,30 @@ from __future__ import absolute_import, division, print_function
 import argparse
 import os
 import subprocess
-import platform
 import sys
 
+try:
+    from distro import linux_distribution
+except ImportError:
+    from platform import linux_distribution
+
+
 pip_packages = [
-    "autest==1.7.0",
+    "autest==1.10.0",
     "hyper",
     "requests",
     "dnslib",
     "httpbin",
+    "gunicorn",
+    "traffic-replay"  # this should install TRLib, MicroServer, MicroDNS, Traffic-Replay
 ]
 
 
 distro_packages = {
     "RHEL": [
         "install epel-release",
-        "install python35",
-        "install rh-python35-python-virtualenv"
+        "install python36",
+        "install rh-python36-python-virtualenv"
     ],
     "Fedora": [
         "install python3",
@@ -53,7 +60,15 @@ distro_packages = {
     ],
     "CentOS": [
         "install epel-release",
-        "install rh-python35-python-virtualenv"
+        "install rh-python36-python-virtualenv"
+    ],
+    "CentOS-8": [
+        "install epel-release",
+        "install python3-virtualenv"
+    ],
+    "Rocky": [
+        "install epel-release",
+        "install python3-virtualenv"
     ]
 }
 
@@ -79,7 +94,8 @@ def command_output(cmd_str):
 
 
 def get_distro():
-    return platform.linux_distribution()
+    import distro
+    return distro.linux_distribution()
 
 
 def distro_version():
@@ -166,8 +182,8 @@ def gen_package_cmds(packages):
 
 
 extra = ''
-if distro() == 'RHEL' or distro() == 'CentOS':
-    extra = ". /opt/rh/rh-python35/enable ;"
+if distro() == 'RHEL' or (distro() == 'CentOS' and distro_version() < 8):
+    extra = ". /opt/rh/rh-python36/enable ;"
 
 
 def venv_cmds(path):
@@ -179,7 +195,7 @@ def venv_cmds(path):
     return [
         # first command only needed for rhel and centos systems at this time
         extra + " virtualenv --python=python3 {0}".format(path),
-        extra + " {0}/bin/pip install pip --upgrade".format(path)
+        extra + " {0}/bin/pip install pip setuptools --upgrade".format(path)
     ]
 
 
@@ -212,8 +228,14 @@ def main():
     # do we know of packages to install for the given platform
     dist = distro()
     cmds = []
+
     if dist:
-        cmds = gen_package_cmds(distro_packages[dist])
+        if distro() == 'CentOS' and distro_version() > 7:
+            # if centos 8 we must set crypto to legacy to allow tlsv1.0 tests
+            cmds += ["sudo update-crypto-policies --set LEGACY"]
+            cmds += gen_package_cmds(distro_packages['CentOS-8'])
+        else:
+            cmds += gen_package_cmds(distro_packages[dist])
 
     # test to see if we should use a certain version of pip
     path_to_pip = None

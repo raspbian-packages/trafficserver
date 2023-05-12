@@ -62,6 +62,7 @@ Plugins that are considered stable are installed by default in |TS| releases.
    Regex Remap <regex_remap.en>
    Regex Revalidate <regex_revalidate.en>
    Remap Purge <remap_purge.en>
+   Slice <slice.en>
    Stats over HTTP <stats_over_http.en>
    TCPInfo <tcpinfo.en>
    XDebug <xdebug.en>
@@ -75,8 +76,8 @@ Plugins that are considered stable are installed by default in |TS| releases.
 :doc:`Background Fetch <background_fetch.en>`
    Proactively fetch content from Origin in a way that it will fill the object into cache.
 
-:doc:`Cache Key Manipulation <cachekey.en>`
-   Allows some common cache key manipulations based on various HTTP request elements.
+:doc:`Cache Key and Parent Selection URL Manipulation <cachekey.en>`
+   Allows some common cache key or parent selection URL manipulations based on various HTTP request elements.
 
 :doc:`Cache Promotion Policies <cache_promote.en>`
    Allows for control over which assets should be written to cache, or not.
@@ -117,6 +118,11 @@ Plugins that are considered stable are installed by default in |TS| releases.
 :doc:`Regex Revalidate <regex_revalidate.en>`
    Configurable rules for forcing cache object revalidations using regular expressions.
 
+:doc:`Slicer <slice.en>`
+   Slice full file or range based requests into deterministic chunks,
+   allowing large files to be spread across multiple cache stripes. Allows
+   range requests to be satisfied by stitching these chunks together.
+
 :doc:`Stats over HTTP <stats_over_http.en>`
     Provide an HTTP interface to all |TS| statistics.
 
@@ -144,6 +150,7 @@ directory of the |TS| source tree. Experimental plugins can be compiled by passi
    Access Control <access_control.en>
    Balancer <balancer.en>
    Buffer Upload <buffer_upload.en>
+   Cache Fill <cache_fill.en>
    Certifier <certifier.en>
    Collapsed-Forwarding <collapsed_forwarding.en>
    GeoIP ACL <geoip_acl.en>
@@ -155,6 +162,7 @@ directory of the |TS| source tree. Experimental plugins can be compiled by passi
    Metalink <metalink.en>
    Money Trace <money_trace.en>
    MP4 <mp4.en>
+   Multiplexer <multiplexer.en>
    MySQL Remap <mysql_remap.en>
    Signed URLs <url_sig.en>
    SSL Headers <sslheaders.en>
@@ -198,14 +206,23 @@ directory of the |TS| source tree. Experimental plugins can be compiled by passi
 :doc:`Metalink <metalink.en>`
    Implements the Metalink download description format in order to try not to download the same file twice.
 
-:doc:`Money Trace <metalink.en>`
+:doc:`Money Trace <money_trace.en>`
    Allows Trafficserver to participate in a distributed tracing system based upon the Comcast Money library.
 
 :doc:`MP4 <mp4.en>`
    MP4 streaming media.
 
+:doc:`Multiplexer <multiplexer.en>`
+   Multiplex inbound requests to multiple upstream destinations. This is useful for requests that
+   are beacons or other metric gathering requests, to report to multiple upstreams. Alternatively
+   this can be used to do A/B testing by sending a duplicated slice of inbound production traffic to
+   experimental upstreams.
+
 :doc:`MySQL Remap <mysql_remap.en>`
    Allows dynamic remaps from a MySQL database.
+
+:doc:`Prefetch <prefetch.en>`
+   Pre-fetch objects based on the requested URL path pattern.
 
 :doc:`Remap Purge <remap_purge.en>`
    This remap plugin allows the administrator to easily setup remotely
@@ -216,11 +233,6 @@ directory of the |TS| source tree. Experimental plugins can be compiled by passi
 
 :doc:`SSL Headers <sslheaders.en>`
    Populate request headers with SSL session information.
-
-:doc:`Stale While Revalidate <stale_while_revalidate.en>`
-   :deprecated:
-
-   Refresh content asynchronously while serving stale data.
 
 :doc:`System Stats <system_stats.en>`
     Inserts system statistics in to the stats list

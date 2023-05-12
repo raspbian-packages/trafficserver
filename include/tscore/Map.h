@@ -427,7 +427,7 @@ Vec<C, A, S>::move_internal(Vec<C, A, S> &vv)
   n = vv.n;
   i = vv.i;
   if (vv.v == &vv.e[0]) {
-    memcpy(e, &vv.e[0], sizeof(e));
+    memcpy(static_cast<void *>(e), &vv.e[0], sizeof(e));
     v = e;
   } else
     v = vv.v;
@@ -449,7 +449,7 @@ Vec<C, A, S>::copy(const Vec<C, A, S> &vv)
   n = vv.n;
   i = vv.i;
   if (vv.v == &vv.e[0]) {
-    memcpy(e, &vv.e[0], sizeof(e));
+    memcpy(static_cast<void *>(e), &vv.e[0], sizeof(e));
     v = e;
   } else {
     if (vv.v)
@@ -1150,6 +1150,7 @@ public:
   MapElem(K const &akey, C const &avalue) : key(akey), value(avalue) {}
   MapElem(MapElem const &e) : key(e.key), value(e.value) {}
   MapElem() : key(), value() {}
+  MapElem &operator=(MapElem const &that) = default;
 };
 
 template <class K, class C, class A = DefaultAlloc> class Map : public Vec<MapElem<K, C>, A>

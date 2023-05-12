@@ -64,8 +64,10 @@ SNIConfigParams::loadSNIConfig()
     auto wildcard = w_Matcher.match(servername);
 
     // set SNI based actions to be called in the ssl_servername_only callback
-    auto ai1 = new DisableH2();
-    aiVec->push_back(ai1);
+    if (item.disable_h2) {
+      aiVec->push_back(new DisableH2);
+    }
+
     auto ai2 = new VerifyClient(item.verify_client_level);
     aiVec->push_back(ai2);
     if (wildcard) {
@@ -76,6 +78,9 @@ SNIConfigParams::loadSNIConfig()
       }
     } else {
       sni_action_map.put(ats_strdup(servername), aiVec);
+    }
+    if (!item.protocol_unset) {
+      aiVec->push_back(new TLSValidProtocols(item.protocol_mask));
     }
 
     if (item.tunnel_destination.length()) {
@@ -199,7 +204,7 @@ SNIConfigParams::cleanup()
   keys.free_and_clear();
 
   wild_next_hop_table.get_keys(keys);
-  for (int i = 0; static_cast<int>(keys.length()); i++) {
+  for (int i = 0; i < static_cast<int>(keys.length()); i++) {
     auto *nps = wild_next_hop_table.get(keys.get(i));
     delete (nps);
   }

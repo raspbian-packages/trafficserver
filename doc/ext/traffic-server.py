@@ -31,7 +31,7 @@ from docutils.parsers import rst
 from docutils.parsers.rst import directives
 from sphinx.domains import Domain, ObjType, std
 from sphinx.roles import XRefRole
-from sphinx.locale import l_, _
+from sphinx.locale import _
 import sphinx
 
 import subprocess
@@ -301,8 +301,8 @@ class TrafficServerDomain(Domain):
     data_version = 2
 
     object_types = {
-        'cv': ObjType(l_('configuration variable'), 'cv'),
-        'stat': ObjType(l_('statistic'), 'stat')
+        'cv': ObjType(_('configuration variable'), 'cv'),
+        'stat': ObjType(_('statistic'), 'stat')
     }
 
     directives = {
@@ -409,7 +409,7 @@ def setup(app):
     app.add_crossref_type('configfile', 'file',
                           objname='Configuration file',
                           indextemplate='pair: %s; Configuration files')
-    
+
     # Very ugly, but as of Sphinx 1.8 it must be done. There is an `override` option to add_crossref_type
     # but it only applies to the directive, not the role (`file` in this case). If this isn't cleared
     # explicitly the build will fail out due to the conflict. In this case, since the role action is the

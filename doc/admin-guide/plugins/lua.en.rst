@@ -127,6 +127,60 @@ If it is used as remap plugin, we can write the following in remap.config to def
 
     map http://a.tbcdn.cn/ http://inner.tbcdn.cn/ @plugin=/XXX/tslua.so @pparam=--states=64 @pparam=/XXX/test_hdr.lua
 
+The maximum number of allowed states is set to 256 which is also the
+default states value.  The default value can be globally changed by
+adding a configuration option to records.config.
+
+::
+
+    CONFIG proxy.config.plugin.lua.max_states INT 64
+
+Any per plugin --states value overrides this default value but must be less than or equal to this value.  This setting is not reloadable since it must be applied when all the lua states are first initialized.
+
+Profiling
+=========
+
+The lua module collects runtime statistics about the lua states, for remap
+and global instances.  Per state stats are constantly maintained and are
+made available through a lifecycle hook.  These may be accessed through:
+
+::
+
+    traffic_ctl plugin msg ts_lua stats_print
+
+Sample output:
+
+::
+
+    [Feb  5 19:00:15.072] ts_lua (remap) id:    0 gc_kb:   2508 gc_kb_max:   3491 threads:  417 threads_max:  438
+    [Feb  5 19:00:15.072] ts_lua (remap) id:    1 gc_kb:   1896 gc_kb_max:   3646 threads:  417 threads_max:  446
+    [Feb  5 19:00:15.072] ts_lua (remap) id:    2 gc_kb:   3376 gc_kb_max:   3740 threads:  417 threads_max:  442
+
+Max values may be reset at any time by running:
+
+::
+
+    traffic_ctl plugin msg ts_lua stats_reset
+
+
+Summary statistics are aggregated every 5s and are available as metrics.
+
+::
+
+    traffic_ctl metric match lua
+
+Sample output:
+
+::
+
+    plugin.lua.global.states 8
+    plugin.lua.remap.gc_bytes_min 4804608
+    plugin.lua.remap.gc_bytes_mean 5552537
+    plugin.lua.remap.gc_bytes_max 5779456
+    plugin.lua.remap.threads_min 31
+    plugin.lua.remap.threads_mean 44
+    plugin.lua.remap.threads_max 146
+
 TS API for Lua
 ==============
 
@@ -1782,6 +1836,83 @@ ts.server_request.set_url_scheme
 
 `TOP <#ts-lua-plugin>`_
 
+ts.server_request.get_method
+----------------------------
+**syntax:** *ts.server_request.get_method()*
+
+**context:** function @ TS_LUA_HOOK_SEND_REQUEST_HDR hook point or later
+
+**description:** This function can be used to retrieve the current server request's method name. String like "GET" or "POST" is returned.
+
+Here is an example:
+
+::
+
+    function send_request()
+        local method = ts.server_request.get_method()
+        ts.debug(method)
+    end
+
+    function do_remap()
+        ts.hook(TS_LUA_HOOK_SEND_REQUEST_HDR, send_request)
+        return 0
+    end
+
+Then ``HEAD /`` will yield the output:
+
+``HEAD``
+
+:ref:`TOP <admin-plugins-ts-lua>`
+
+ts.server_request.set_method
+----------------------------
+**syntax:** *ts.server_request.set_method()*
+
+**context:** function @ TS_LUA_HOOK_SEND_REQUEST_HDR hook point or later
+
+**description:** This function can be used to override the current server request's method with METHOD_NAME.
+
+::
+    ts.server_request.set_method('HEAD')
+
+:ref:`TOP <admin-plugins-ts-lua>`
+
+ts.server_request_get_version
+------------------------------
+**syntax:** *ver = ts.server_request.get_version()*
+
+**context:** function @ TS_LUA_HOOK_SEND_REQUEST_HDR hook point or later.
+
+**description:** Return the http version string of the server request.
+
+Current possible values are 1.0, 1.1, and 0.9.
+::
+    function send_request()
+        local version = ts.server_request.get_version()
+        ts.debug(version)
+    end
+
+    function do_remap()
+        ts.hook(TS_LUA_HOOK_SEND_REQUEST_HDR, send_request)
+        return 0
+    end
+
+:ref:`TOP <admin-plugins-ts-lua>`
+
+ts.server_request.set_version
+------------------------------
+**syntax:** *ts.server_request.set_version(VERSION_STR)*
+
+**context:** function @ TS_LUA_HOOK_READ_RESPONSE_HDR hook point
+
+**description:** Set the http version of the server request with the VERSION_STR
+
+::
+
+    ts.server_request.set_version('1.0')
+
+:ref:`TOP <admin-plugins-ts-lua>`
+
 ts.server_response.get_status
 -----------------------------
 **syntax:** *status = ts.server_response.get_status()*
@@ -2233,6 +2364,30 @@ Here is an example:
         ts.http.resp_cache_untransformed(1)
         return 0
     end
+
+`TOP <#ts-lua-plugin>`_
+
+ts.http.resp_transform.get_upstream_watermark_bytes
+---------------------------------------------------
+**syntax:** *ts.http.resp_transform.get_upstream_watermark_bytes()*
+
+**context:** transform handler
+
+**description**: This function can be used to retrive the current watermark bytes for the upstream transform buffer.
+
+
+`TOP <#ts-lua-plugin>`_
+
+ts.http.resp_transform.set_upstream_watermark_bytes
+---------------------------------------------------
+**syntax:** *ts.http.resp_transform.set_upstream_watermark_bytes(NUMBER)*
+
+**context:** transform handler
+
+**description**: This function can be used to set the watermark bytes of the upstream transform buffer.
+
+Setting the watermark bytes above 32kb may improve the performance of the transform handler.
+
 
 `TOP <#ts-lua-plugin>`_
 
@@ -3360,7 +3515,7 @@ Here is an example:
 ::
 
     function do_remap()
-        ts.http.timeout_set(TS_LUA_TIMEOUT_DNS, 30)    -- 30 seconds
+        ts.http.timeout_set(TS_LUA_TIMEOUT_DNS, 30)    -- 30 ms
         return 0
     end
 
@@ -3742,4 +3897,3 @@ More docs
 * https://github.com/portl4t/ts-lua
 
 `TOP <#ts-lua-plugin>`_
-

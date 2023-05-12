@@ -515,6 +515,9 @@ HttpTunnel::has_cache_writer() const
   return false;
 }
 
+/**
+   Return false if there is only a consumer for client
+ */
 inline bool
 HttpTunnel::has_consumer_besides_client() const
 {

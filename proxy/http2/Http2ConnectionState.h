@@ -23,10 +23,12 @@
 
 #pragma once
 
+#include <atomic>
 #include "HTTP2.h"
 #include "HPACK.h"
 #include "Http2Stream.h"
 #include "Http2DependencyTree.h"
+#include "Http2FrequencyCounter.h"
 
 class Http2ClientSession;
 
@@ -85,7 +87,7 @@ public:
     if (0 < id && id < HTTP2_SETTINGS_MAX) {
       return this->settings[indexof(id)] = value;
     } else {
-      ink_assert(!"Bad Settings Identifier");
+      // Do nothing - 6.5.2 Unsupported parameters MUST be ignored
     }
 
     return 0;
@@ -133,7 +135,9 @@ public:
 
     local_hpack_handle  = new HpackHandle(HTTP2_HEADER_TABLE_SIZE);
     remote_hpack_handle = new HpackHandle(HTTP2_HEADER_TABLE_SIZE);
-    dependency_tree     = new DependencyTree(Http2::max_concurrent_streams_in);
+    if (Http2::stream_priority_enabled) {
+      dependency_tree = new DependencyTree(Http2::max_concurrent_streams_in);
+    }
   }
 
   void
@@ -141,6 +145,7 @@ public:
   {
     if (shutdown_cont_event) {
       shutdown_cont_event->cancel();
+      shutdown_cont_event = nullptr;
     }
     cleanup_streams();
 
@@ -173,7 +178,6 @@ public:
   bool delete_stream(Http2Stream *stream);
   void release_stream(Http2Stream *stream);
   void cleanup_streams();
-
   void restart_receiving(Http2Stream *stream);
   void update_initial_rwnd(Http2WindowSize new_size);
 
@@ -228,11 +232,18 @@ public:
   get_stream_error_rate() const
   {
     int total = get_stream_requests();
-    if (total > 0) {
+
+    if (total >= (1 / Http2::stream_error_rate_threshold)) {
       return (double)stream_error_count / (double)total;
     } else {
       return 0;
     }
+  }
+
+  Http2ErrorCode
+  get_shutdown_reason() const
+  {
+    return shutdown_reason;
   }
 
   // HTTP/2 frame sender
@@ -277,9 +288,10 @@ public:
   }
 
   void
-  set_shutdown_state(Http2ShutdownState state)
+  set_shutdown_state(Http2ShutdownState state, Http2ErrorCode reason = Http2ErrorCode::HTTP2_ERROR_NO_ERROR)
   {
-    shutdown_state = state;
+    shutdown_state  = state;
+    shutdown_reason = reason;
   }
 
   // noncopyable
@@ -303,6 +315,8 @@ public:
     }
   }
 
+  void increment_received_settings_count(uint32_t count);
+  uint32_t get_received_settings_count();
   void increment_received_settings_frame_count();
   uint32_t get_received_settings_frame_count();
   void increment_received_ping_frame_count();
@@ -329,16 +343,31 @@ private:
   Queue<Http2Stream> stream_list;
   Http2StreamId latest_streamid_in  = 0;
   Http2StreamId latest_streamid_out = 0;
-  int stream_requests               = 0;
+  std::atomic<int> stream_requests  = 0;
 
   // Counter for current active streams which is started by client
-  uint32_t client_streams_in_count = 0;
+  std::atomic<uint32_t> client_streams_in_count = 0;
 
   // Counter for current acive streams which is started by server
-  uint32_t client_streams_out_count = 0;
+  std::atomic<uint32_t> client_streams_out_count = 0;
 
   // Counter for current active streams and streams in the process of shutting down
-  uint32_t total_client_streams_count = 0;
+  std::atomic<uint32_t> total_client_streams_count = 0;
+
+  // Counter for stream errors ATS sent
+  uint32_t stream_error_count = 0;
+
+  // Connection level window size
+  ssize_t _client_rwnd = HTTP2_INITIAL_WINDOW_SIZE;
+  ssize_t _server_rwnd = 0;
+
+  std::vector<size_t> _recent_rwnd_increment = {SIZE_MAX, SIZE_MAX, SIZE_MAX, SIZE_MAX, SIZE_MAX};
+  int _recent_rwnd_increment_index           = 0;
+
+  Http2FrequencyCounter _received_settings_counter;
+  Http2FrequencyCounter _received_settings_frame_counter;
+  Http2FrequencyCounter _received_ping_frame_counter;
+  Http2FrequencyCounter _received_priority_frame_counter;
 
   // NOTE: Id of stream which MUST receive CONTINUATION frame.
   //   - [RFC 7540] 6.2 HEADERS
@@ -352,27 +381,8 @@ private:
   bool fini_received                = false;
   int recursion                     = 0;
   Http2ShutdownState shutdown_state = HTTP2_SHUTDOWN_NONE;
+  Http2ErrorCode shutdown_reason    = Http2ErrorCode::HTTP2_ERROR_MAX;
   Event *shutdown_cont_event        = nullptr;
   Event *fini_event                 = nullptr;
   Event *zombie_event               = nullptr;
-
-  // Counter for stream errors ATS sent
-  uint32_t stream_error_count;
-
-  // Connection level window size
-  ssize_t _client_rwnd = HTTP2_INITIAL_WINDOW_SIZE;
-  ssize_t _server_rwnd = 0;
-
-  std::vector<size_t> _recent_rwnd_increment = {SIZE_MAX, SIZE_MAX, SIZE_MAX, SIZE_MAX, SIZE_MAX};
-  int _recent_rwnd_increment_index           = 0;
-
-  // Counters for frames received within last 60 seconds
-  // Each item in an array holds a count for 30 seconds.
-  uint16_t settings_frame_count[2]            = {0};
-  ink_hrtime settings_frame_count_last_update = 0;
-  uint16_t ping_frame_count[2]                = {0};
-  ink_hrtime ping_frame_count_last_update     = 0;
-  uint16_t priority_frame_count[2]            = {0};
-  ink_hrtime priority_frame_count_last_update = 0;
-
 };

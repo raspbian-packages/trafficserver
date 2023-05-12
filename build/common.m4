@@ -196,17 +196,17 @@ AC_DEFUN([TS_TRY_COMPILE_NO_WARNING],
 ])
 
 dnl
-dnl TS_LINK_WITH_FLAGS_IFELSE(LDFLAGS, FUNCTION-BODY,
+dnl TS_LINK_WITH_FLAGS_IFELSE(LIBS, FUNCTION-BODY,
 dnl                           [ACTIONS-IF-LINKS], [ACTIONS-IF-LINK-FAILS])
 dnl
 dnl Tries a link test with the provided flags.
 dnl
 
 AC_DEFUN([TS_LINK_WITH_FLAGS_IFELSE],
-[ats_save_LDFLAGS=$LDFLAGS
- LDFLAGS="$LDFLAGS $1"
+[ats_save_LIBS=$LIBS
+ LIBS="$LIBS $1"
  AC_LINK_IFELSE([$2],[$3],[$4])
- LDFLAGS=$ats_save_LDFLAGS
+ LIBS=$ats_save_LIBS
 ])
 
 
@@ -323,7 +323,7 @@ AC_DEFUN([TS_LAYOUT], [
     eval "val=\"\$$var\""
     case $val in
       *+)
-        val=`echo $val | sed -e 's;\+$;;'`
+        val=`echo $val | sed -e 's;[\+]$;;'`
         eval "$var=\"\$val\""
         autosuffix=yes
         ;;
@@ -350,7 +350,7 @@ AC_DEFUN([TS_LAYOUT], [
     eval "val=\"\$$var\""
     case $val in
       *+)
-        val=`echo $val | sed -e 's;\+$;;'`
+        val=`echo $val | sed -e 's;[\+]$;;'`
         eval "$var=\"\$val\""
         autosuffix=yes
         ;;

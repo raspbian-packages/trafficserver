@@ -546,10 +546,11 @@ HttpTunnel::reset()
   }
 #endif
 
+  call_sm       = false;
   num_producers = 0;
   num_consumers = 0;
-  memset(consumers, 0, sizeof(consumers));
-  memset(producers, 0, sizeof(producers));
+  memset(static_cast<void *>(consumers), 0, sizeof(consumers));
+  memset(static_cast<void *>(producers), 0, sizeof(producers));
 }
 
 void
@@ -848,8 +849,7 @@ HttpTunnel::producer_run(HttpTunnelProducer *p)
       // initialize a reader to chunked buffer start before writing to keep ref count
       chunked_buffer_start = p->chunked_handler.chunked_buffer->alloc_reader();
       p->chunked_handler.chunked_buffer->write(p->buffer_start, p->chunked_handler.skip_bytes);
-    }
-    if (p->do_dechunking) {
+    } else if (p->do_dechunking) {
       // bz57413
       Debug("http_tunnel", "[producer_run] do_dechunking p->chunked_handler.chunked_reader->read_avail() = %" PRId64 "",
             p->chunked_handler.chunked_reader->read_avail());
@@ -975,6 +975,11 @@ HttpTunnel::producer_run(HttpTunnelProducer *p)
   for (c = p->consumer_list.head; c; c = c->link.next) {
     int64_t c_write = consumer_n;
 
+    // Don't bother to set up the consumer if it is dead
+    if (!c->alive) {
+      continue;
+    }
+
     if (!p->alive) {
       // Adjust the amount of chunked data to write if the only data was in the initial read
       // The amount to write in some cases is dependent on the type of the consumer, so this
@@ -1061,16 +1066,18 @@ HttpTunnel::producer_handler_dechunked(int event, HttpTunnelProducer *p)
 
   // We only interested in translating certain events
   switch (event) {
-  case VC_EVENT_READ_READY:
   case VC_EVENT_READ_COMPLETE:
   case HTTP_TUNNEL_EVENT_PRECOMPLETE:
   case VC_EVENT_EOS:
+    p->alive = false; // Update the producer state for final_consumer_bytes_to_write
+    /* fallthrough */
+  case VC_EVENT_READ_READY:
     p->last_event = p->chunked_handler.last_server_event = event;
     if (p->chunked_handler.generate_chunked_content()) { // We are done, make sure the consumer is activated
       HttpTunnelConsumer *c;
       for (c = p->consumer_list.head; c; c = c->link.next) {
         if (c->alive) {
-          c->write_vio->nbytes = p->chunked_handler.chunked_size;
+          c->write_vio->nbytes = final_consumer_bytes_to_write(p, c);
           // consumer_handler(VC_EVENT_WRITE_COMPLETE, c);
         }
       }

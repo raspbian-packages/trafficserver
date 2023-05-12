@@ -135,6 +135,11 @@ Http1ClientSession::free()
   // Free the transaction resources
   this->trans.super_type::destroy();
 
+  if (client_vc) {
+    client_vc->do_io_close();
+    client_vc = nullptr;
+  }
+
   super::free();
   THREAD_FREE(this, http1ClientSessionAllocator, this_thread());
 }
@@ -503,7 +508,7 @@ Http1ClientSession::new_transaction()
   trans.new_transaction();
 }
 
-void
+bool
 Http1ClientSession::attach_server_session(HttpServerSession *ssession, bool transaction_done)
 {
   if (ssession) {
@@ -541,4 +546,17 @@ Http1ClientSession::attach_server_session(HttpServerSession *ssession, bool tran
     bound_ss     = nullptr;
     slave_ka_vio = nullptr;
   }
+  return true;
+}
+
+void
+Http1ClientSession::increment_current_active_client_connections_stat()
+{
+  HTTP_INCREMENT_DYN_STAT(http_current_active_client_connections_stat);
+}
+
+void
+Http1ClientSession::decrement_current_active_client_connections_stat()
+{
+  HTTP_DECREMENT_DYN_STAT(http_current_active_client_connections_stat);
 }

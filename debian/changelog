@@ -1,24 +1,52 @@
-trafficserver (8.0.2+ds-1+rpi1+deb10u7) buster-staging; urgency=medium
+trafficserver (8.1.6+ds-1~deb10u1+rpi1) buster-staging; urgency=medium
 
   [changes brought forward from 8.0.1-4+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Sat, 19 Jan 2019 12:42:48 +0000]
   * Use -latomic on raspbian too.
 
- -- Raspbian forward porter <root@raspbian.org>  Sun, 22 Jan 2023 18:24:32 +0000
+ -- Raspbian forward porter <root@raspbian.org>  Fri, 12 May 2023 07:35:43 +0000
 
-trafficserver (8.0.2+ds-1+deb10u7) buster-security; urgency=medium
+trafficserver (8.1.6+ds-1~deb10u1) buster-security; urgency=high
 
-  * Non-maintainer upload by the Debian LTS Team.
-  * Multiple CVE fixes 
+  * Non-maintainer upload by the LTS team.
+  * Backport upstream version 8.1.6 to Buster.
+  * Fix CVE-2022-31778, CVE-2022-31779, CVE-2022-32749, CVE-2022-37392.
+    Several vulnerabilities were discovered in Apache Traffic Server, a reverse
+    and forward proxy server, which could result in HTTP request smuggling,
+    cache poisoning or information disclosure.
+
+ -- Markus Koschany <apo@debian.org>  Wed, 05 Apr 2023 22:24:05 +0200
+
+trafficserver (8.1.6+ds-1~deb11u1) bullseye-security; urgency=high
+
+  * Update d/u/signing-key for 8.1.x serie
+  * New upstream version 8.1.6+ds
+  * Multiple CVE fixes for 8.1.x
+    + CVE-2022-32749: Improper Check for Unusual or Exceptional Conditions vulnerability
+    + CVE-2022-37392: Improper Check for Unusual or Exceptional Conditions vulnerability
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Wed, 04 Jan 2023 09:22:58 +0100
+
+trafficserver (8.1.5+ds-1~deb11u1) bullseye-security; urgency=high
+
+  * Update d/watch to stick to 8.1.X serie
+  * Update upstream gpg keys
+  * UPdate d/salsa-ci.yaml
+  * New upstream version 8.1.5+ds
+  * Patches refresh for 8.1.5
+  * Update experimental plugins list
+  * Multiple CVE fixes for 8.1.x
     + CVE-2021-37150: Protocol vs scheme mismatch
-    + CVE-2022-25763 Improper input validation on HTTP/2 headers
-    + CVE-2022-28129  Insufficient Validation of HTTP/1.x Headers
-    + CVE-2022-31780 HTTP/2 framing vulnerabilities
+    + CVE-2022-25763: Improper input validation on HTTP/2 headers
+    + CVE-2022-28129: Insufficient Validation of HTTP/1.x Headers
+    + CVE-2022-31778: Transfer-Encoding not treated as hop-by-hop
+    + CVE-2022-31779: Improper HTTP/2 scheme and method validation
+    + CVE-2022-31780: HTTP/2 framing vulnerabilities 
 
- -- Abhijith PA <abhijith@debian.org>  Sat, 29 Oct 2022 18:03:47 +0530
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Fri, 12 Aug 2022 09:16:08 +0200
 
-trafficserver (8.0.2+ds-1+deb10u6) buster-security; urgency=high
+trafficserver (8.1.1+ds-1.1+deb11u1) bullseye-security; urgency=high
 
-  * Multiple CVE fixes for 8.0.x
+  * Multiple CVE fixes for 8.1.x
     + CVE-2021-37147: Improper input validation vulnerability
     + CVE-2021-37148: Improper input validation vulnerability
     + CVE-2021-37149: Improper Input Validation vulnerability
@@ -26,45 +54,154 @@ trafficserver (8.0.2+ds-1+deb10u6) buster-security; urgency=high
     + CVE-2021-44040: Improper Input Validation vulnerability in request line parsing
     + CVE-2021-44759: Improper Authentication vulnerability in TLS origin validation
 
- -- Jean Baptiste Favre <debian@jbfavre.org>  Sat, 21 May 2022 21:14:28 +0200
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Sat, 21 May 2022 19:28:31 +0200
 
-trafficserver (8.0.2+ds-1+deb10u5) buster-security; urgency=medium
+trafficserver (8.1.1+ds-1.1) unstable; urgency=medium
 
-  * CVE-2021-35474 CVE-2021-32567 CVE-2021-32566 CVE_2021-32565
-    CVE-2021-27577 (Closes: #990303)
+  * Non-maintainer upload.
+  * Address CVE-2021-27577, CVE-2021-32565, CVE-2021-32566, CVE-2021-32567 and
+    CVE-2021-35474.
+    - CVE-2021-27577: Incorrect handling of url fragment leads to cache
+      poisoning
+    - CVE-2021-32565: HTTP Request Smuggling, content length with invalid
+      charters
+    - CVE-2021-32566: Specific sequence of HTTP/2 frames can cause ATS to
+      crash
+    - CVE-2021-32567: Reading HTTP/2 frames too many times
+    - CVE-2021-35474: Dynamic stack buffer overflow in cachekey plugin
+    (Closes: #990303)
 
- -- Moritz Mühlenhoff <jmm@debian.org>  Mon, 26 Jul 2021 22:59:59 +0200
+ -- Salvatore Bonaccorso <carnil@debian.org>  Thu, 15 Jul 2021 21:48:17 +0200
 
-trafficserver (8.0.2+ds-1+deb10u4) buster-security; urgency=high
+trafficserver (8.1.1+ds-1) unstable; urgency=medium
 
-  * Add fix from upstream for CVE-2020-17508
-  * Add fix from upstream for CVE-2020-17509
+  * New upstream version 8.1.0+ds
+  * Update d/watch
+  * Update d/upstream/signing-key.asc
+  * New upstream version 8.1.1+ds
+  * Update Debian Standards-Version
 
- -- Jean Baptiste Favre <debian@jbfavre.org>  Sun, 06 Dec 2020 17:00:17 +0100
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Sun, 06 Dec 2020 16:26:39 +0100
 
-trafficserver (8.0.2+ds-1+deb10u3) buster-security; urgency=high
+trafficserver (8.1.1+ds-1) unstable; urgency=medium
 
-  * Add fix from upstream for CVE-2020-9494 (Closes: #963629)
+  * New upstream version 8.1.0+ds
+  * Update d/watch
+  * Update d/upstream/signing-key.asc
+  * New upstream version 8.1.1+ds
 
- -- Jean Baptiste Favre <debian@jbfavre.org>  Thu, 25 Jun 2020 19:58:34 +0200
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Sun, 06 Dec 2020 15:43:35 +0100
 
-trafficserver (8.0.2+ds-1+deb10u2) buster-security; urgency=medium
+trafficserver (8.1.0+ds-2) unstable; urgency=medium
 
-  * Add fix from upstream for CVE-2019-17559
-  * Add fix from upstream for CVE-2019-17565
-  * Add fix from upstream for CVE-2020-1944
-  * Add fix from upstream for CVE-2020-9481
+  * Remove autopkgtest (Closes: #974683)
 
- -- Jean Baptiste Favre <debian@jbfavre.org>  Thu, 16 Apr 2020 21:36:40 +0200
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Sun, 22 Nov 2020 18:24:18 +0100
 
-trafficserver (8.0.2+ds-1+deb10u1) buster-security; urgency=high
+trafficserver (8.1.0+ds-1) unstable; urgency=medium
 
-  * Add patch for security backport from 8.0.4 for CVE-2019-9512,
-       CVE-2019-9514, and CVE-2019-9515. (Closes: #934887)
-  * Add patch for security backport from 8.0.5 for fixes
-       CVE-2019-9518 (Closes: #935314)
+  * Remove lintian-overrides for trafficserver-experimental-plugins
+  * Fix Salsa CI
+  * Update d/upstream/signing-key.asc
+  * New upstream version 8.1.0+ds
+  * d/patches refresh for 8.1.0
+  * Update experimental plugins list
 
- -- Jean Baptiste Favre <debian@jbfavre.org>  Mon, 26 Aug 2019 13:55:33 +0200
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Tue, 01 Sep 2020 19:55:21 +0200
+
+trafficserver (8.0.8+ds-3) UNRELEASED; urgency=low
+
+  * Fix day-of-week for changelog entry 2.1.5-unstable-1.
+
+ -- Debian Janitor <janitor@jelmer.uk>  Sat, 22 Aug 2020 17:48:33 -0000
+
+trafficserver (8.0.8+ds-2) unstable; urgency=medium
+
+  * Backport upstream patch to fix FTBFS with Sphinx >= 3.0 (Closes: #963664)
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Wed, 29 Jul 2020 08:40:43 +0200
+
+trafficserver (8.0.8+ds-1) unstable; urgency=medium
+
+  * New upstream version 8.0.8+ds
+  * Includes fix for CVE-2020-9494 (Closes: #963629)
+  * Update debhelper-compat version in d/control
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Thu, 25 Jun 2020 10:01:51 +0200
+
+trafficserver (8.0.7+ds-1) unstable; urgency=medium
+
+  * New upstream version 8.0.7+ds
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Thu, 16 Apr 2020 18:32:04 +0200
+
+trafficserver (8.0.6+ds-1) unstable; urgency=medium
+
+  * Update d/watch after upstream changes
+  * Update d/gbp.conf
+  * Update d/gbp.conf
+  * New upstream version 8.0.6+ds
+  * Patches refresh for 8.0.6
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Tue, 03 Mar 2020 09:06:18 +0100
+
+trafficserver (8.0.5+ds-3) unstable; urgency=medium
+
+  * Bump Standards-Version
+  * Add patch for Python 3.8 compatibility (Closes: #950245)
+  * Update build & test dependencies for Python 3.8
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Mon, 03 Feb 2020 11:45:17 +0100
+
+trafficserver (8.0.5+ds-2) unstable; urgency=medium
+
+  * Bump Debian Policy version
+  * Remove Build-Depends against python2 modules (Closes: #943248)
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Wed, 23 Oct 2019 10:07:42 +0200
+
+trafficserver (8.0.5+ds-1) unstable; urgency=medium
+
+  * New upstream release
+    - Changes introduced with 8.0.4 include fixes for CVE-2019-9512,
+      CVE-2019-9514, and CVE-2019-9515. (Closes: #934887)
+    - 8.0.5 fixes CVE-2019-9518 (Closes: #935314)
+
+ -- Emanuele Rocca <ema@debian.org>  Sat, 24 Aug 2019 09:00:22 +0200
+
+trafficserver (8.0.3+ds-4) unstable; urgency=medium
+
+  * Fix lintian warning 'skip-systemd-native-flag-missing-pre-depends'
+  * Use debhelper-compat instead of debian/compat
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Fri, 02 Aug 2019 09:07:31 +0200
+
+trafficserver (8.0.3+ds-3) unstable; urgency=medium
+
+  * Run upstream testsuite with autopkgtest.
+  * Enable CI tests on salsa (see debian/salsa-ci.yml).
+  * Set debhelper compatibility level to 12.
+  * Add myself to the Uploaders field.
+  * Set Standards-Version to 4.4.0.
+
+ -- Emanuele Rocca <ema@debian.org>  Wed, 31 Jul 2019 11:11:59 +0200
+
+trafficserver (8.0.3+ds-2) unstable; urgency=medium
+
+  * Fix hardeing updating 0015-as-needed-fix.patch from Ubuntu
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Tue, 26 Mar 2019 08:44:17 +0100
+
+trafficserver (8.0.3+ds-1) unstable; urgency=medium
+
+  * Use secure URI in Homepage field.
+  * Re-export upstream signing key without extra signatures.
+  * Drop unnecessary dependency on dh-autoconf.
+  * New upstream version 8.0.3+ds
+  * Patches update for 8.0.3
+  * Add as-needed patch from Ubuntu
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Mon, 25 Mar 2019 10:29:35 +0100
 
 trafficserver (8.0.2+ds-1) unstable; urgency=medium
 
@@ -838,4 +975,4 @@ trafficserver (2.1.5-unstable-1) unstable; urgency=low
     + Split source into three packages (core, plug-in, SDK)
     + Ship our own init script
 
- -- Arno Toell <debian@toell.net>  Tue, 13 Jan 2011 11:49:18 +0100
+ -- Arno Toell <debian@toell.net>  Thu, 13 Jan 2011 11:49:18 +0100

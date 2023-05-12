@@ -3057,6 +3057,7 @@ REGRESSION_TEST(SDK_API_TSContSchedule)(RegressionTest *test, int /* atype ATS_U
 //                    TSHttpTxnNextHopAddrGet
 //                    TSHttpTxnClientProtocolStackGet
 //                    TSHttpTxnClientProtocolStackContains
+//                    TSHttpTxnServerSsnTransactionCount
 //////////////////////////////////////////////////////////////////////////////
 
 #define HTTP_HOOK_TEST_REQUEST_ID 1
@@ -3398,6 +3399,22 @@ checkHttpTxnServerRespGet(SocketTest *test, void *data)
   return TS_EVENT_CONTINUE;
 }
 
+// This func is called by us from mytest_handler to test TSHttpTxnServerSsnTransactionCount
+static int
+checkHttpTxnServerSsnTransactionCount(SocketTest *test, void *data)
+{
+  TSHttpTxn txnp = (TSHttpTxn)data;
+
+  int count = TSHttpTxnServerSsnTransactionCount(txnp);
+  if (count < 0) {
+    SDK_RPRINT(test->regtest, "TSHttpTxnServerSsnTransactionCount", "TestCase1", TC_FAIL, "invalid count value '%d'", count);
+  } else {
+    SDK_RPRINT(test->regtest, "TSHttpTxnServerSsnTransactionCount", "TestCase1", TC_PASS, "ok - count='%d'", count);
+  }
+
+  return count;
+}
+
 // This func is called both by us when scheduling EVENT_IMMEDIATE
 // And by HTTP SM for registered hooks
 // Depending on the timing of the DNS response, OS_DNS can happen before or after CACHE_LOOKUP.
@@ -3478,6 +3495,7 @@ mytest_handler(TSCont contp, TSEvent event, void *data)
       test->hook_mask |= 32;
     }
     checkHttpTxnServerRespGet(test, data);
+    checkHttpTxnServerSsnTransactionCount(test, data);
 
     TSHttpTxnReenable((TSHttpTxn)data, TS_EVENT_HTTP_CONTINUE);
     test->reenable_mask |= 32;
@@ -3490,7 +3508,7 @@ mytest_handler(TSCont contp, TSEvent event, void *data)
 
     checkHttpTxnClientRespGet(test, data);
 
-    TSHttpTxnReenable((TSHttpTxn)data, TS_EVENT_HTTP_CONTINUE);
+    TSHttpTxnReenable(static_cast<TSHttpTxn>(data), TS_EVENT_HTTP_CONTINUE);
     test->reenable_mask |= 64;
     break;
 
@@ -3836,7 +3854,7 @@ REGRESSION_TEST(SDK_API_TSUrl)(RegressionTest *test, int /* atype ATS_UNUSED */,
     SDK_RPRINT(test, "TSUrlPasswordSet", "TestCase1", TC_FAIL, "Returned TS_ERROR");
   } else {
     password_get = TSUrlPasswordGet(bufp1, url_loc1, &length);
-    if (((password_get == nullptr) && (password == nullptr)) || (strncmp(password_get, password, length) == 0)) {
+    if ((password_get == nullptr) || (strncmp(password_get, password, length) == 0)) {
       SDK_RPRINT(test, "TSUrlPasswordSet&Get", "TestCase1", TC_PASS, "ok");
       test_passed_password = true;
     } else {
@@ -6622,7 +6640,7 @@ typedef enum {
   ORIG_TS_VCONN_CLOSE_HOOK,
   ORIG_TS_SSL_SNI_HOOK,
   ORIG_TS_SSL_SERVERNAME_HOOK,
-  ORIG_TS_SSL_SERVER_VERIFY_HOOK,
+  ORIG_TS_SSL_VERIFY_SERVER_HOOK,
   ORIG_TS_SSL_VERIFY_CLIENT_HOOK,
   ORIG_TS_SSL_SESSION_HOOK,
   ORIG_TS_SSL_LAST_HOOK                          = ORIG_TS_SSL_SESSION_HOOK,
@@ -8670,7 +8688,6 @@ const char *SDK_Overridable_Configs[TS_CONFIG_LAST_ENTRY] = {"proxy.config.url_r
                                                              "proxy.config.ssl.client.cert.filename",
                                                              "proxy.config.ssl.client.cert.path",
                                                              "proxy.config.http.parent_proxy.mark_down_hostdb",
-                                                             "proxy.config.ssl.client.verify.server",
                                                              "proxy.config.http.cache.enable_default_vary_headers",
                                                              "proxy.config.http.cache.vary_default_text",
                                                              "proxy.config.http.cache.vary_default_images",

@@ -68,19 +68,20 @@ ts.Disk.records_config.update({
 ts.Disk.logging_yaml.AddLines(
     '''
 formats:
-  # Extended Log Format.
   - name: access
-    format: |-
-[%<cqtn>] %<cqtx> %<cqpv> %<cqssv> %<cqssc> %<crc> %<pssc> %<pscl>
-
+    format: '[%<cqtn>] %<cqtx> %<cqpv> %<cqssv> %<cqssc> %<crc> %<pssc> %<pscl>'
 logs:
   - filename: access
     format: access
-}
 '''.split("\n")
 )
 
 Test.Disk.File(os.path.join(ts.Variables.LOGDIR, 'access.log'), exists=True, content='gold/httpbin_access.gold')
+
+# TODO: when httpbin 0.8.0 or later is released, remove below json pretty print hack
+json_printer = '''
+python -c "import sys,json; print(json.dumps(json.load(sys.stdin), indent=2, separators=(',', ': ')))"
+'''
 
 # ----
 # Test Cases
@@ -88,12 +89,14 @@ Test.Disk.File(os.path.join(ts.Variables.LOGDIR, 'access.log'), exists=True, con
 
 # Test Case 0: Basic request and resposne
 test_run = Test.AddTestRun()
-test_run.Processes.Default.Command = 'curl -vs -k --http2 https://127.0.0.1:{0}/get'.format(ts.Variables.ssl_port)
+test_run.Processes.Default.Command = "curl -vs -k --http2 https://127.0.0.1:{0}/get | {1}".format(
+    ts.Variables.ssl_port, json_printer)
 test_run.Processes.Default.ReturnCode = 0
 test_run.Processes.Default.StartBefore(httpbin, ready=When.PortOpen(httpbin.Variables.Port))
 test_run.Processes.Default.StartBefore(Test.Processes.ts, ready=When.PortOpen(ts.Variables.ssl_port))
 test_run.Processes.Default.Streams.stdout = "gold/httpbin_0_stdout.gold"
-test_run.Processes.Default.Streams.stderr = "gold/httpbin_0_stderr.gold"
+# Different versions of curl will have different cases for HTTP/2 field names.
+test_run.Processes.Default.Streams.stderr = Testers.GoldFile("gold/httpbin_0_stderr.gold", case_insensitive=True)
 test_run.StillRunningAfter = httpbin
 
 # Test Case 1: Empty response body
@@ -101,7 +104,8 @@ test_run = Test.AddTestRun()
 test_run.Processes.Default.Command = 'curl -vs -k --http2 https://127.0.0.1:{0}/bytes/0'.format(ts.Variables.ssl_port)
 test_run.Processes.Default.ReturnCode = 0
 test_run.Processes.Default.Streams.stdout = "gold/httpbin_1_stdout.gold"
-test_run.Processes.Default.Streams.stderr = "gold/httpbin_1_stderr.gold"
+# Different versions of curl will have different cases for HTTP/2 field names.
+test_run.Processes.Default.Streams.stderr = Testers.GoldFile("gold/httpbin_1_stderr.gold", case_insensitive=True)
 test_run.StillRunningAfter = httpbin
 
 # Test Case 2: Chunked
@@ -110,8 +114,20 @@ test_run.Processes.Default.Command = 'curl -vs -k --http2 https://127.0.0.1:{0}/
     ts.Variables.ssl_port)
 test_run.Processes.Default.ReturnCode = 0
 test_run.Processes.Default.Streams.stdout = "gold/httpbin_2_stdout.gold"
-test_run.Processes.Default.Streams.stderr = "gold/httpbin_2_stderr.gold"
+# Different versions of curl will have different cases for HTTP/2 field names.
+test_run.Processes.Default.Streams.stderr = Testers.GoldFile("gold/httpbin_2_stderr.gold", case_insensitive=True)
 test_run.StillRunningAfter = httpbin
+
+# Test Case 3: Expect 100-Continue
+test_run = Test.AddTestRun()
+test_run.Processes.Default.Command = "curl -vs -k --http2 https://127.0.0.1:{0}/post --data 'key=value' -H 'Expect: 100-continue' --expect100-timeout 1 --max-time 5 | {1}".format(
+    ts.Variables.ssl_port, json_printer)
+test_run.Processes.Default.ReturnCode = 0
+test_run.Processes.Default.Streams.stdout = "gold/httpbin_3_stdout.gold"
+# Different versions of curl will have different cases for HTTP/2 field names.
+test_run.Processes.Default.Streams.stderr = Testers.GoldFile("gold/httpbin_3_stderr.gold", case_insensitive=True)
+test_run.StillRunningAfter = httpbin
+
 
 # Check Logging
 test_run = Test.AddTestRun()

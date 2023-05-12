@@ -24,6 +24,8 @@
 #include <cstring>
 #include <zlib.h>
 
+#include "ink_autoconf.h"
+
 #if HAVE_BROTLI_ENCODE_H
 #include <brotli/encode.h>
 #endif
@@ -659,6 +661,16 @@ transformable(TSHttpTxn txnp, bool server, HostConfiguration *host_configuration
     info("http response status [%d] is not compressible", resp_status);
     TSHandleMLocRelease(bufp, TS_NULL_MLOC, hdr_loc);
     return 0;
+  }
+
+  // We got a server response but it was a 304
+  // we need to update our data to come from cache instead of
+  // the 304 response which does not need to include all headers
+  if ((server) && (resp_status == TS_HTTP_STATUS_NOT_MODIFIED)) {
+    TSHandleMLocRelease(bufp, TS_NULL_MLOC, hdr_loc);
+    if (TS_SUCCESS != TSHttpTxnCachedRespGet(txnp, &bufp, &hdr_loc)) {
+      return 0;
+    }
   }
 
   if (TS_SUCCESS != TSHttpTxnClientReqGet(txnp, &cbuf, &chdr)) {

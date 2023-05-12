@@ -154,6 +154,7 @@ enum SquidLogCode {
   SQUID_LOG_ERR_NO_RELAY              = 'C',
   SQUID_LOG_ERR_DISK_IO               = 'D',
   SQUID_LOG_ERR_ZERO_SIZE_OBJECT      = 'E',
+  SQUID_LOG_TCP_CF_HIT                = 'F', // Collapsed forwarding HIT also known as Read while write hit
   SQUID_LOG_ERR_PROXY_DENIED          = 'G',
   SQUID_LOG_ERR_WEBFETCH_DETECTED     = 'H',
   SQUID_LOG_ERR_FUTURE_1              = 'I',
@@ -234,7 +235,8 @@ enum SquidHitMissCode {
   SQUID_HIT_SSD     = SQUID_HIT_LEVEL_2,
   SQUID_HIT_DISK    = SQUID_HIT_LEVEL_3,
   SQUID_HIT_CLUSTER = SQUID_HIT_LEVEL_4,
-  SQUID_HIT_NET     = SQUID_HIT_LEVEL_5
+  SQUID_HIT_NET     = SQUID_HIT_LEVEL_5,
+  SQUID_HIT_RWW     = SQUID_HIT_LEVEL_6
 };
 
 enum HTTPType {
@@ -468,14 +470,15 @@ HTTPValTE *http_parse_te(const char *buf, int len, Arena *arena);
 class HTTPVersion
 {
 public:
-  HTTPVersion();
+  HTTPVersion()                        = default;
+  HTTPVersion(HTTPVersion const &that) = default;
   explicit HTTPVersion(int32_t version);
   HTTPVersion(int ver_major, int ver_minor);
 
   void set(HTTPVersion ver);
   void set(int ver_major, int ver_minor);
 
-  HTTPVersion &operator=(const HTTPVersion &hv);
+  HTTPVersion &operator=(const HTTPVersion &hv) = default;
   int operator==(const HTTPVersion &hv) const;
   int operator!=(const HTTPVersion &hv) const;
   int operator>(const HTTPVersion &hv) const;
@@ -484,7 +487,7 @@ public:
   int operator<=(const HTTPVersion &hv) const;
 
 public:
-  int32_t m_version;
+  int32_t m_version{HTTP_VERSION(1, 0)};
 };
 
 class IOBufferReader;
@@ -617,7 +620,7 @@ public:
   /// header internals, they must be able to do this.
   void mark_target_dirty() const;
 
-  HTTPStatus status_get();
+  HTTPStatus status_get() const;
   void status_set(HTTPStatus status);
 
   const char *reason_get(int *length);
@@ -634,6 +637,7 @@ public:
   bool is_cache_control_set(const char *cc_directive_wks);
   bool is_pragma_no_cache_set();
   bool is_keep_alive_set() const;
+  bool expect_final_response() const;
   HTTPKeepAlive keep_alive_get() const;
 
 protected:
@@ -661,11 +665,6 @@ private:
 /*-------------------------------------------------------------------------
   -------------------------------------------------------------------------*/
 
-inline HTTPVersion::HTTPVersion() : m_version(HTTP_VERSION(1, 0)) {}
-
-/*-------------------------------------------------------------------------
-  -------------------------------------------------------------------------*/
-
 inline HTTPVersion::HTTPVersion(int32_t version) : m_version(version) {}
 
 /*-------------------------------------------------------------------------
@@ -689,17 +688,6 @@ inline void
 HTTPVersion::set(int ver_major, int ver_minor)
 {
   m_version = HTTP_VERSION(ver_major, ver_minor);
-}
-
-/*-------------------------------------------------------------------------
-  -------------------------------------------------------------------------*/
-
-inline HTTPVersion &
-HTTPVersion::operator=(const HTTPVersion &hv)
-{
-  m_version = hv.m_version;
-
-  return *this;
 }
 
 /*-------------------------------------------------------------------------
@@ -1019,6 +1007,24 @@ HTTPHdr::is_keep_alive_set() const
   return this->keep_alive_get() == HTTP_KEEPALIVE;
 }
 
+/**
+   Check the status code is informational and expecting final response
+   - e.g. "100 Continue", "103 Early Hints"
+
+   Please note that "101 Switching Protocol" is not included.
+ */
+inline bool
+HTTPHdr::expect_final_response() const
+{
+  switch (this->status_get()) {
+  case HTTP_STATUS_CONTINUE:
+  case HTTP_STATUS_EARLY_HINTS:
+    return true;
+  default:
+    return false;
+  }
+}
+
 /*-------------------------------------------------------------------------
   -------------------------------------------------------------------------*/
 
@@ -1169,7 +1175,7 @@ http_hdr_status_get(HTTPHdrImpl *hh)
   -------------------------------------------------------------------------*/
 
 inline HTTPStatus
-HTTPHdr::status_get()
+HTTPHdr::status_get() const
 {
   ink_assert(valid());
 
@@ -1389,6 +1395,7 @@ public:
   inkcoreapi int marshal_length();
   inkcoreapi int marshal(char *buf, int len);
   static int unmarshal(char *buf, int len, RefCountObj *block_ref);
+  static int unmarshal_v24_1(char *buf, int len, RefCountObj *block_ref);
   void set_buffer_reference(RefCountObj *block_ref);
   int get_handle(char *buf, int len);
 

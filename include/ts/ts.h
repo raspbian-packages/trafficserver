@@ -1261,6 +1261,15 @@ tsapi TSReturnCode TSHttpTxnCachedRespGet(TSHttpTxn txnp, TSMBuffer *bufp, TSMLo
 
 tsapi TSReturnCode TSHttpTxnPristineUrlGet(TSHttpTxn txnp, TSMBuffer *bufp, TSMLoc *url_loc);
 
+/**
+ * @brief Gets  the number of transactions between the Traffic Server proxy and the origin server from a single session.
+ *        Any value greater than zero indicates connection reuse.
+ *
+ * @param txnp The transaction
+ * @return int The number of transactions between the Traffic Server proxy and the origin server from a single session
+ */
+tsapi int TSHttpTxnServerSsnTransactionCount(TSHttpTxn txnp);
+
 /** Get the effective URL for the transaction.
     The effective URL is the URL taking in to account both the explicit
     URL in the request and the HOST field.
@@ -1291,6 +1300,13 @@ tsapi void TSHttpTxnReqCacheableSet(TSHttpTxn txnp, int flag);
 */
 tsapi TSReturnCode TSHttpTxnServerRespNoStoreSet(TSHttpTxn txnp, int flag);
 
+/** Get flag indicating whether or not to cache the server response for
+    given TSHttpTxn
+    @param txnp The transaction whose server response you do not want to store.
+
+    @return TS_SUCCESS.
+*/
+tsapi bool TSHttpTxnServerRespNoStoreGet(TSHttpTxn txnp);
 tsapi TSReturnCode TSFetchPageRespGet(TSHttpTxn txnp, TSMBuffer *bufp, TSMLoc *offset);
 tsapi char *TSFetchRespGet(TSHttpTxn txnp, int *length);
 tsapi TSReturnCode TSHttpTxnCacheLookupStatusGet(TSHttpTxn txnp, int *lookup_status);

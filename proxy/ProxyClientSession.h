@@ -36,7 +36,6 @@
 #define SsnDebug(ssn, tag, ...) SpecificDebug((ssn)->debug(), tag, __VA_ARGS__)
 
 class ProxyClientTransaction;
-struct AclRecord;
 
 enum class ProxyErrorClass {
   NONE,
@@ -69,6 +68,9 @@ struct ProxyError {
   uint32_t code       = 0;
 };
 
+// A little ugly, but this global is tracked by traffic_server.
+extern bool ts_is_draining;
+
 class ProxyClientSession : public VConnection
 {
 public:
@@ -81,7 +83,6 @@ public:
   virtual void new_connection(NetVConnection *new_vc, MIOBuffer *iobuf, IOBufferReader *reader, bool backdoor) = 0;
 
   virtual NetVConnection *get_netvc() const = 0;
-  virtual void release_netvc()              = 0;
 
   virtual int get_transact_count() const = 0;
 
@@ -153,11 +154,7 @@ public:
   bool
   is_draining() const
   {
-    RecInt draining;
-    if (RecGetRecordInt("proxy.node.config.draining", &draining) != REC_ERR_OKAY) {
-      return false;
-    }
-    return draining != 0;
+    return ts_is_draining;
   }
 
   // Initiate an API hook invocation.
@@ -215,9 +212,10 @@ public:
     return con_id;
   }
 
-  virtual void
+  virtual bool
   attach_server_session(HttpServerSession *ssession, bool transaction_done = true)
   {
+    return false;
   }
 
   virtual HttpServerSession *
@@ -269,6 +267,8 @@ public:
 
   void set_session_active();
   void clear_session_active();
+  virtual void increment_current_active_client_connections_stat() = 0;
+  virtual void decrement_current_active_client_connections_stat() = 0;
 
   static int64_t next_connection_id();
 
@@ -284,9 +284,6 @@ public:
     NetVConnection *netvc = get_netvc();
     return netvc ? netvc->get_local_addr() : nullptr;
   }
-
-  /// acl record - cache IpAllow::match() call
-  const AclRecord *acl_record = nullptr;
 
   /// Local address for outbound connection.
   IpAddr outbound_ip4;

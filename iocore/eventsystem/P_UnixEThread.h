@@ -33,7 +33,7 @@
 #include "I_EThread.h"
 #include "I_EventProcessor.h"
 
-const int DELAY_FOR_RETRY = HRTIME_MSECONDS(10);
+const ink_hrtime DELAY_FOR_RETRY = HRTIME_MSECONDS(10);
 
 TS_INLINE Event *
 EThread::schedule_imm(Continuation *cont, int callback_event, void *cookie)
@@ -133,9 +133,9 @@ EThread::schedule_every_local(Continuation *cont, ink_hrtime t, int callback_eve
   e->callback_event = callback_event;
   e->cookie         = cookie;
   if (t < 0) {
-    return schedule(e->init(cont, t, t));
+    return schedule_local(e->init(cont, t, t));
   } else {
-    return schedule(e->init(cont, get_hrtime() + t, t));
+    return schedule_local(e->init(cont, get_hrtime() + t, t));
   }
 }
 

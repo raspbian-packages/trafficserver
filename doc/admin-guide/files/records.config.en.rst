@@ -277,6 +277,31 @@ System Variables
    Specifies at what size to roll the output log at.
 
 
+.. ts:cv:: CONFIG proxy.config.output.logfile.rolling_max_count INT 0
+   :reloadable:
+
+   Specifies the maximum count of rolled output logs to keep. This value will be used by the
+   auto-deletion (if enabled) to trim the number of rolled log files every time the log is rolled.
+   A default value of 0 means auto-deletion will not try to limit the number of output logs.
+   See :doc:`../logging/rotation.en` for an use-case for this option.
+
+.. ts:cv:: CONFIG proxy.config.output.logfile.rolling_allow_empty INT 0
+   :reloadable:
+
+   While rolling default behavior is to rename, close and re-open the log file *only* when/if there is
+   something to log to the log file. This option opens a new log file right after rolling even if there
+   is nothing to log (i.e. nothing to be logged due to lack of requests to the server)
+   which may lead to 0-sized log files while rollong. See :doc:`../logging/rotation.en` for an use-case
+   for this option.
+
+   ===== ======================================================================
+   Value Description
+   ===== ======================================================================
+   ``0`` No empty log files created and rolloed if there was nothing to log
+   ``1`` Allow empty log files to be created and  rolled even if there was nothing to log
+   ===== ======================================================================
+
+
 Thread Variables
 ----------------
 
@@ -614,6 +639,7 @@ HTTP Engine
    tr-in                       Inbound transparent.
    tr-out                      Outbound transparent.
    tr-pass                     Pass through enabled.
+   mptcp                       Multipath TCP.
    =========== =============== ========================================
 
 *number*
@@ -684,6 +710,11 @@ ip-resolve
    Set the :ts:cv:`host resolution style <proxy.config.hostdb.ip_resolve>` for transactions on this proxy port.
 
    Not compatible with: ``tr-out`` - this option requires a value of ``client;none`` which is forced and should not be explicitly specified.
+
+mptcp
+   Enable Multipath TCP on this proxy port.
+
+   Requires custom Linux kernel available at https://multipath-tcp.org.
 
 .. topic:: Example
 
@@ -867,17 +898,6 @@ ip-resolve
          origin server has previously returned HTTP/1.1.
    ===== ======================================================================
 
-.. note::
-
-   If HTTP/1.1 is used, then |TS| can use keep-alive connections with
-   pipelining to origin servers.
-
-   If HTTP/1.0 is used, then |TS| can use keep-alive connections without
-   pipelining to origin servers.
-
-   If HTTP/0.9 is used, then |TS| does not use keep-alive connections to
-   origin servers.
-
 .. ts:cv:: CONFIG proxy.config.http.chunking.size INT 4096
    :overridable:
 
@@ -976,7 +996,9 @@ ip-resolve
 .. ts:cv:: CONFIG proxy.config.http.attach_server_session_to_client INT 0
    :overridable:
 
-   Control the re-use of an server session by a user agent (client) session.
+   Control the re-use of an server session by a user agent (client) session. Currently only applies to user
+   agents using HTTP/1.0 or HTTP/1.1. For other HTTP versions, the origin connection is always returned to the
+   session sharing pool or closed.
 
    If a user agent performs more than one HTTP transaction on its connection to Traffic Server a server session must be
    obtained for the second (and subsequent) transaction as for the first. This settings affects how that server session
@@ -1320,6 +1342,8 @@ HTTP Redirection
    This setting determines the maximum number of times Trafficserver does a redirect follow location on receiving a 3XX Redirect response
    for a given client request.
 
+   .. note:: In previous versions proxy.config.http.redirection_enabled had to be set to 1 before this setting was evaluated.  Now setting :ts:cv:`proxy.config.http.number_of_redirections` to a value greater than zero is sufficient to cause |TS| to follow redirects.
+
 .. ts:cv:: CONFIG proxy.config.http.redirect_host_no_port INT 1
 
    This setting enables Trafficserver to not include the port in the Host header in the redirect follow request for default/standard ports
@@ -1367,7 +1391,7 @@ Origin Server Connect Attempts
    :reloadable:
    :overridable:
 
-   Limits the number of socket connections per origin server to the value specified. To enable, set to one (``1``).
+   Limits the number of socket connections per origin server to the value specified. To disable, set to zero (``0``).
 
 .. ts:cv:: CONFIG proxy.config.http.origin_max_connections_queue INT -1
    :reloadable:
@@ -1518,14 +1542,35 @@ Negative Response Caching
    to network or HTTP errors. If it is enabled, rather than caching the negative response, the
    current stale content is preserved and served. Note this is considered only on a revalidation of
    already cached content. A revalidation failure means a connection failure or a 50x response code.
+   When considering replying with a stale response in these negative revalidating circumstances,
+   |TS| will respect the :ts:cv:`proxy.config.http.cache.max_stale_age` configuration and will not
+   use a cached response older than ``max_stale_age`` seconds.
 
    A value of ``0`` disables serving stale content and a value of ``1`` enables keeping and serving stale content if revalidation fails.
 
 .. ts:cv:: CONFIG proxy.config.http.negative_revalidating_lifetime INT 1800
 
-   How long, in seconds, to consider a stale cached document valid if If
-   :ts:cv:`proxy.config.http.negative_revalidating_enabled` is enabled and |TS| receives a negative
-   (``5xx`` only) response from the origin server during revalidation.
+   When replying with a stale cached response in negative revalidating circumstances (see
+   :ts:cv:`proxy.config.http.negative_revalidating_enabled`), |TS| includes an ``Expires:`` HTTP
+   header field in the cached response with a future time so that upstream caches will not try to
+   revalidate their respective stale objects. This configuration specifies how many seconds in the
+   future |TS| will calculate the value of this inserted ``Expires:`` header field.
+
+   There is a limitation to this method to be aware of: per specification (see IETF RFC 7234,
+   section 4.2.1), ``Cache-Control:`` response directives take precedence over the ``Expires:``
+   header field when determining object freshness. Thus if the cached response contains either a
+   ``max-age`` or an ``s-maxage`` ``Cache-Control:`` response directive, then these directives would
+   take precedence for the upstream caches over the inserted ``Expires:`` field, rendering the
+   ``Expires:`` header ineffective in specifying the configured freshness lifetime.
+
+   Finally, be aware that the only way this configuration is used is as input into calculating the
+   value of these inserted ``Expires:`` header fields. This configuration does not direct |TS|
+   behavior with regard to whether it considers a stale object to be fresh enough to serve out of
+   cache when revalidation fails. As mentioned above in
+   :ts:cv:`proxy.config.http.negative_revalidating_enabled`,
+   :ts:cv:`proxy.config.http.cache.max_stale_age` is used for that determination.
+
+   This configuration defaults to 1,800 seconds (30 minutes).
 
 Proxy User Variables
 ====================
@@ -1908,7 +1953,21 @@ Cache Control
    :reloadable:
    :overridable:
 
-   The maximum age allowed for a stale response before it cannot be cached.
+   The maximum age in seconds allowed for a stale response before it cannot be cached.
+
+.. ts:cv:: CONFIG proxy.config.http.cache.guaranteed_min_lifetime INT 0
+   :reloadable:
+   :overridable:
+
+   Establishes a guaranteed minimum lifetime boundary for object freshness.
+   Setting this to ``0`` (default) disables the feature.
+
+.. ts:cv:: CONFIG proxy.config.http.cache.guaranteed_max_lifetime INT 31536000
+   :reloadable:
+   :overridable:
+
+   Establishes a guaranteed maximum lifetime boundary for object freshness.
+   Setting this to ``0`` disables the feature.
 
 .. ts:cv:: CONFIG proxy.config.http.cache.range.lookup INT 1
    :overridable:
@@ -2071,10 +2130,10 @@ RAM Cache
 
 .. ts:cv:: CONFIG proxy.config.cache.ram_cache.algorithm INT 1
 
-   Two distinct RAM caches are supported, the default (0) being the **CLFUS**
-   (*Clocked Least Frequently Used by Size*). As an alternative, a simpler
-   **LRU** (*Least Recently Used*) cache is also available, by changing this
-   configuration to 1.
+   Two distinct RAM caches are supported, the default (1) being the simpler
+   **LRU** (*Least Recently Used*) cache. As an alternative, the **CLFUS**
+   (*Clocked Least Frequently Used by Size*) is also available, by changing this
+   configuration to 0.
 
 .. ts:cv:: CONFIG proxy.config.cache.ram_cache.use_seen_filter INT 1
 
@@ -2131,73 +2190,6 @@ Heuristic Expiration
    The aging factor for freshness computations. |TS| stores an object for this
    percentage of the time that elapsed since it last changed.
 
-.. ts:cv:: CONFIG proxy.config.http.cache.guaranteed_min_lifetime INT 0
-   :reloadable:
-   :overridable:
-
-   Establishes a guaranteed minimum lifetime boundary for freshness heuristics.
-   When heuristics are used, and the :ts:cv:`proxy.config.http.cache.heuristic_lm_factor`
-   aging factor is applied, the final minimum age calculated will never be
-   lower than the value in this variable.
-
-.. ts:cv:: CONFIG proxy.config.http.cache.guaranteed_max_lifetime INT 31536000
-   :reloadable:
-   :overridable:
-
-   Establishes a guaranteed maximum lifetime boundary for freshness heuristics.
-   When heuristics are used, and the :ts:cv:`proxy.config.http.cache.heuristic_lm_factor`
-   aging factor is applied, the final maximum age calculated will never be
-   higher than the value in this variable.
-
-.. ts:cv:: CONFIG proxy.config.http.cache.fuzz.time INT 0
-   :deprecated:
-   :reloadable:
-   :overridable:
-
-   How often |TS| checks for an early refresh, during the period before the
-   document stale time. The interval specified must be in seconds.
-
-.. note::
-
-   Previous versions of Apache Traffic Server defaulted this to 240s. This
-   feature is deprecated as of ATS v6.2.0.
-
-.. ts:cv:: CONFIG proxy.config.http.cache.fuzz.probability FLOAT 0.0
-   :deprecated:
-   :reloadable:
-   :overridable:
-
-   The probability that a refresh is made on a document during the fuzz time
-   specified in :ts:cv:`proxy.config.http.cache.fuzz.time`.
-
-.. note::
-
-   Previous versions of Apache Traffic Server defaulted this to 0.005 (0.5%).
-   This feature is deprecated as of ATS v6.2.0
-
-.. ts:cv:: CONFIG proxy.config.http.cache.fuzz.min_time INT 0
-   :deprecated:
-   :reloadable:
-   :overridable:
-
-   Handles requests with a TTL less than :ts:cv:`proxy.config.http.cache.fuzz.time`.
-   It allows for different times to evaluate the probability of revalidation
-   for small TTLs and big TTLs. Objects with small TTLs will start "rolling the
-   revalidation dice" near the ``fuzz.min_time``, while objects with large TTLs
-   would start at ``fuzz.time``. A logarithmic-like function between determines
-   the revalidation evaluation start time (which will be between
-   ``fuzz.min_time`` and ``fuzz.time``). As the object gets closer to expiring,
-   the window start becomes more likely. By default this setting is not enabled,
-   but should be enabled any time you have objects with small TTLs.
-
-.. note::
-
-    These fuzzing options are marked as deprecated as of v6.2.0, and will be
-    removed for v7.0.0. Instead, we recommend looking at the new
-    :ts:cv:`proxy.config.http.cache.open_write_fail_action` configuration and
-    the features around thundering heard avoidance (see
-    :ref:`http-proxy-caching` for details).
-
 Dynamic Content & Content Negotiation
 =====================================
 
@@ -2239,6 +2231,9 @@ all the different user-agent versions of documents it encounters.
 
     The number of times to attempt a cache open write upon failure to get a write lock.
 
+    This config is ignored when :ts:cv:`proxy.config.http.cache.open_write_fail_action` is
+    set to ``5``.
+
 .. ts:cv:: CONFIG proxy.config.http.cache.open_write_fail_action INT 0
    :reloadable:
    :overridable:
@@ -2261,6 +2256,12 @@ all the different user-agent versions of documents it encounters.
          :ts:cv:`proxy.config.http.cache.max_stale_age`. Otherwise, go to
          origin server.
    ``4`` Return a ``502`` error on either a cache miss or on a revalidation.
+   ``5`` Retry Cache Read on a Cache Write Lock failure. This option together
+         with `proxy.config.cache.enable_read_while_writer` configuration
+         allows to collapse concurrent requests without a need for any plugin.
+         Make sure to configure Read While Writer feature correctly following
+         the docs in Cache Basics section. Note that this option may result in
+         CACHE_LOOKUP_COMPLETE HOOK being called back more than once.
    ===== ======================================================================
 
 Customizable User Response Pages
@@ -2404,7 +2405,14 @@ DNS
    :reloadable:
    :overridable:
 
-   Indicates whether to use SRV records for origin server lookup.
+   Enables (``1``) or disables (``0``) the use of SRV records for origin server
+   lookup. |TS| will use weights found in the SRV record as a weighted round
+   robin in origin selection. Note that |TS| will lookup
+   ``_$scheme._$internet_protocol.$origin_name``. For instance, if the origin is
+   set to ``https://my.example.com``, |TS| would lookup ``_https._tcp.my.example.com``.
+   Also note that the port returned in the SRV record MUST match the port being
+   used for the origin (e.g. if the origin scheme is http and a default port, there
+   should be a SRV record with port 80).
 
 .. ts:cv:: CONFIG proxy.config.dns.dedicated_thread INT 0
 
@@ -2433,6 +2441,15 @@ DNS
    ``1`` TCP_RETRY: |TS| first UDP, retries with TCP if UDP response is truncated.
    ``2`` TCP_ONLY:  |TS| always talks to nameservers over TCP.
    ===== ======================================================================
+
+.. ts:cv:: CONFIG proxy.config.dns.local_ipv4 STRING NULL
+
+   Local IPV4 address to bind to in order to make DNS requests
+
+.. ts:cv:: CONFIG proxy.config.dns.local_ipv6 STRING NULL
+
+   Local IPV6 address to bind to in order to make DNS requests
+
 
 HostDB
 ======
@@ -2470,7 +2487,7 @@ HostDB
    For values above ``200000``, you must increase :ts:cv:`proxy.config.hostdb.max_size`
    by at least 44 bytes per entry.
 
-.. ts:cv:: proxy.config.hostdb.round_robin_max_count INT 16
+.. ts:cv:: CONFIG proxy.config.hostdb.round_robin_max_count INT 16
 
    The maximum count of DNS answers per round robin hostdb record. The default variable is 16.
 
@@ -2893,6 +2910,26 @@ Logging Configuration
    completion will cause its timing stats to be written to the :ts:cv:`debugging log file
    <proxy.config.output.logfile>`. This is identifying data about the transaction and all of the :c:type:`transaction milestones <TSMilestonesType>`.
 
+.. ts:cv:: CONFIG proxy.config.http2.connection.slow.log.threshold INT 0
+   :reloadable:
+   :units: milliseconds
+
+   If set to a non-zero value :arg:`N` then any HTTP/2 connection
+   that takes longer than :arg:`N` milliseconds from open to close will cause
+   its timing stats to be written to the :ts:cv:`debugging log file
+   <proxy.config.output.logfile>`. This is identifying data about the
+   transaction and all of the :c:type:`transaction milestones <TSMilestonesType>`.
+
+.. ts:cv:: CONFIG proxy.config.http2.stream.slow.log.threshold INT 0
+   :reloadable:
+   :units: milliseconds
+
+   If set to a non-zero value :arg:`N` then any HTTP/2 stream
+   that takes longer than :arg:`N` milliseconds from open to close will cause
+   its timing stats to be written to the :ts:cv:`debugging log file
+   <proxy.config.output.logfile>`. This is identifying data about the
+   transaction and all of the :c:type:`transaction milestones <TSMilestonesType>`.
+
 .. ts:cv:: CONFIG proxy.config.log.config.filename STRING logging.yaml
    :reloadable:
 
@@ -3134,6 +3171,10 @@ SSL Termination
 
    Enables (``1``) or disables (``0``) TLS v1.2.  If not specified, enabled by default.  [Requires OpenSSL v1.0.1 and higher]
 
+.. ts:cv:: CONFIG proxy.config.ssl.TLSv1_3 INT 1
+
+   Enables (``1``) or disables (``0``) TLS v1.3.  If not specified, enabled by default.  [Requires OpenSSL v1.1.1 and higher]
+
 .. ts:cv:: CONFIG proxy.config.ssl.client.certification_level INT 0
 
    Sets the client certification level:
@@ -3360,14 +3401,16 @@ Client-Related Configuration
 
 .. ts:cv:: CONFIG proxy.config.ssl.client.verify.server INT 0
    :reloadable:
-   :overridable:
 
    Configures Traffic Server to verify the origin server certificate
    with the Certificate Authority (CA). This configuration takes a value between 0 to 2.
 
+   You can override this global setting on a per domain basis in the ssl_servername.yaml file using the :ref:`verify_origin_server attribute<override-verify-origin-server>`.
+
 :0: Server Certificate will not be verified
 :1: Certificate will be verified and the connection will not be established if verification fails.
 :2: The provided certificate will be verified and the connection will be established irrespective of the verification result. If verification fails the name of the server will be logged.
+
 
 .. ts:cv:: CONFIG proxy.config.ssl.client.cert.filename STRING NULL
    :overridable:
@@ -3439,6 +3482,10 @@ Client-Related Configuration
 .. ts:cv:: CONFIG proxy.config.ssl.client.TLSv1_2 INT 1
 
    Enables (``1``) or disables (``0``) TLSv1_2 in the ATS client context. If not specified, enabled by default
+
+.. ts:cv:: CONFIG proxy.config.ssl.client.TLSv1_3 INT 1
+
+   Enables (``1``) or disables (``0``) TLSv1_3 in the ATS client context. If not specified, enabled by default
 
 .. ts:cv:: CONFIG proxy.config.ssl.async.handshake.enabled INT 0
 
@@ -3531,7 +3578,15 @@ HTTP/2 Configuration
    :reloadable:
 
    The maximum size of the header compression table used to decode header
-   blocks.
+   blocks. This value will be advertised as SETTINGS_HEADER_TABLE_SIZE.
+
+.. ts:cv:: CONFIG proxy.config.http2.header_table_size_limit INT 65536
+   :reloadable:
+
+   The maximum size of the header compression table ATS actually use when ATS
+   encodes headers. Setting 0 means ATS doesn't insert headers into HPACK
+   Dynamic Table, however, headers still can be encoded as indexable
+   representations. The upper limit is 65536.
 
 .. ts:cv:: CONFIG proxy.config.http2.max_header_list_size INT 4294967295
    :reloadable:
@@ -3587,6 +3642,27 @@ HTTP/2 Configuration
    HTTP/2 connection to avoid duplicate pushes on the same connection. If the
    maximum number is reached, new entries are not remembered.
 
+.. ts:cv:: CONFIG proxy.config.http2.stream_error_rate_threshold FLOAT 0.1
+   :reloadable:
+
+   This is the maximum stream error rate |TS| allows on an HTTP/2 connection.
+   |TS| gracefully closes connections that have stream error rates above this
+   setting by sending GOAWAY frames.
+
+.. ts:cv:: CONFIG proxy.config.http2.max_settings_per_frame INT 7
+   :reloadable:
+
+   Specifies how many settings in an HTTP/2 SETTINGS frame |TS| accepts.
+   Clients exceeded this limit will be immediately disconnected with an error
+   code of ENHANCE_YOUR_CALM.
+
+.. ts:cv:: CONFIG proxy.config.http2.max_settings_per_minute INT 14
+   :reloadable:
+
+   Specifies how many settings in HTTP/2 SETTINGS frames |TS| accept for a minute.
+   Clients exceeded this limit will be immediately disconnected with an error
+   code of ENHANCE_YOUR_CALM.
+
 .. ts:cv:: CONFIG proxy.config.http2.max_settings_frames_per_minute INT 14
    :reloadable:
 
@@ -3606,7 +3682,9 @@ HTTP/2 Configuration
 
    Specifies how many number of PRIORITY frames |TS| receives for a minute at maximum.
    Clients exceeded this limit will be immediately disconnected with an error
-   code of ENHANCE_YOUR_CALM.
+   code of ENHANCE_YOUR_CALM. If this is set to 0, the limit logic is disabled.
+   This limit only will be enforced if :ts:cv:`proxy.config.http2.stream_priority_enabled`
+   is set to 1.
 
 .. ts:cv:: CONFIG proxy.config.http2.min_avg_window_update FLOAT 2560.0
    :reloadable:
