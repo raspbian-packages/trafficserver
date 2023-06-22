@@ -58,6 +58,7 @@ Format
          - PURGE
          - PUSH
          - DELETE
+         - TRACE
      - apply: in
        ip_addrs: ::/0
        action: deny
@@ -65,6 +66,7 @@ Format
          - PURGE
          - PUSH
          - DELETE
+         - TRACE
 
 Each rule is a mapping. The YAML data must have a top level key of "ip_allow" and its value must
 be a mapping or a sequence of mappings, each of those being one rule.
@@ -104,7 +106,8 @@ the specified methods are denied and all other methods are allowed.
 For example, from the default configuration, the rule for ``127.0.0.1`` is ``allow`` with all
 methods. Therefore an inbound connection from the loopback address (127.0.0.1) is allowed to use any
 method. The general IPv4 rule, covering all IPv4 address, is a ``deny`` rule and therefore when it
-matches the methods "PURGE", "PUSH", and "DELETE", these methods are denied and any other method is allowed.
+matches the methods "PURGE", "PUSH", "DELETE", and "TRACE", these methods are denied and any other method
+is allowed.
 
 The rules are matched in order, by IP address, therefore the general IPv4 rule does not apply to the
 loopback address because the latter is matched first.
@@ -222,8 +225,8 @@ As a final example, here is the default configuration in compact form::
    ip_allow: [
      { apply: in, ip_addrs: 127.0.0.1, action: allow },
      { apply: in, ip_addrs: "::1", action: allow },
-     { apply: in, ip_addrs: 0/0, action: deny, methods: [ PURGE, PUSH, DELETE ] },
-     { apply: in, ip_addrs: "::/0", action: deny, methods: [ PURGE, PUSH, DELETE ] }
+     { apply: in, ip_addrs: 0/0, action: deny, methods: [ PURGE, PUSH, DELETE, TRACE ] },
+     { apply: in, ip_addrs: "::/0", action: deny, methods: [ PURGE, PUSH, DELETE, TRACE ] }
      ]
 
 .. note::
