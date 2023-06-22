@@ -2315,7 +2315,6 @@ AC_CONFIG_FILES([
   lib/records/Makefile
   src/wccp/Makefile
   lib/fastlz/Makefile
-  lib/yamlcpp/Makefile
   mgmt/Makefile
   mgmt/api/Makefile
   mgmt/api/include/Makefile
