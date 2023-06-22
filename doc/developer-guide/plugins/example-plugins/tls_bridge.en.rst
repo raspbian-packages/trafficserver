@@ -31,7 +31,6 @@ Description
 The tunnel is sustained by two instances of |TS|.
 
 .. uml::
-   :align: center
 
    hide empty members
 
@@ -197,7 +196,6 @@ intercept or change of the TLS exchange between the Client and the Service. The 
 this
 
 .. uml::
-   :align: center
 
    actor Client
    participant "Ingress TS" as Ingress
@@ -235,7 +233,6 @@ tunnel.
 The overall exchange looks like the following:
 
 .. uml::
-   :align: center
 
    @startuml
 
@@ -273,7 +270,6 @@ The overall exchange looks like the following:
 A detailed view of the plugin operation.
 
 .. figure:: ../../../uml/images/TLS-Bridge-Plugin.svg
-   :align: center
 
 A sequence diagram focusing on the request / response data flow. There is a :code:`NetVConn` for the
 connection to the Peer |TS| which is omitted for clarity.
@@ -288,7 +284,6 @@ means there was an error and the tunnel is shut down. To deal with the Client re
 response code is stored and used later during cleanup.
 
 .. figure:: ../../../uml/images/TLS-Bridge-Messages.svg
-   :align: center
 
 A restartable state machine is used to recognize the end of the Peer |TS| response. The initial part
 of the response is easy because all that is needed is to wait until there is sufficient data for a
@@ -296,7 +291,6 @@ minimal parse. The end can be an arbitrary distance in to the stream and may not
 socket read.
 
 .. uml::
-   :align: center
 
    @startuml
    [*] -r> State_0

@@ -54,7 +54,6 @@ overview illustrates how Traffic Server serves a request.
    below).
 
    .. figure:: /static/images/admin/cache_hit.jpg
-      :align: center
       :alt: A cache hit
 
       A cache hit
@@ -72,7 +71,6 @@ overview illustrates how Traffic Server serves a request.
    be served faster because the object is retrieved directly from cache.
 
    .. figure:: /static/images/admin/cache_miss.jpg
-      :align: center
       :alt: A cache miss
 
       A cache miss
