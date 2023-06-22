@@ -111,7 +111,8 @@ test_proxy_http_LDADD = \
 	$(top_builddir)/mgmt/libmgmt_p.la \
 	$(top_builddir)/iocore/utils/libinkutils.a \
 	@HWLOC_LIBS@ \
-	@LIBCAP@
+	@LIBCAP@ \
+	@YAMLCPP_LIBS@
 
 test_PreWarm_CPPFLAGS = \
 	$(AM_CPPFLAGS) \
