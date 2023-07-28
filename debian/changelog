@@ -1,9 +1,21 @@
-trafficserver (8.1.6+ds-1~deb10u1+rpi1) buster-staging; urgency=medium
+trafficserver (8.1.7-0+deb10u1+rpi1) buster-staging; urgency=medium
 
   [changes brought forward from 8.0.1-4+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Sat, 19 Jan 2019 12:42:48 +0000]
   * Use -latomic on raspbian too.
 
- -- Raspbian forward porter <root@raspbian.org>  Fri, 12 May 2023 07:35:43 +0000
+ -- Raspbian forward porter <root@raspbian.org>  Fri, 28 Jul 2023 00:00:41 +0000
+
+trafficserver (8.1.7-0+deb10u1) buster-security; urgency=medium
+
+  * Non-maintainer upload by the LTS Security Team.
+  * New upstream release.
+    - CVE-2022-47184: The TRACE method can be used to disclose
+      network information.
+    - CVE-2023-30631: Configuration option to block the PUSH method
+      in ATS didn't work.
+    - CVE-2023-33933: s3_auth plugin problem with hash calculation.
+
+ --  Adrian Bunk <bunk@debian.org>  Thu, 29 Jun 2023 18:41:23 +0300
 
 trafficserver (8.1.6+ds-1~deb10u1) buster-security; urgency=high
 
