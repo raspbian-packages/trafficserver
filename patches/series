@@ -1,0 +1,13 @@
+0001-Use-mcx16-on-x86-platforms-only.patch
+0003-reproductible-build.patch
+0006-fix-doc-build.patch
+0008-fix-python-check-unused-dependencies.patch
+0009-fix-mysql-8-build.patch
+0011-fix-segfault.patch
+0012-fix-spelling-checks.patch
+0013-fix-perl-interpreter-path.patch
+0014-use_system_yaml-cpp.patch
+0016-fix_python_3.8.patch
+0001-Correctly-handle-encoding-for-cache-hash-generation-.patch
+0002-8.1.x-Fix-a-crash-triggered-by-invalid-range-header-.patch
+0003-Remove-duplicate-slashes-at-the-beginning-of-the-inc.patch
