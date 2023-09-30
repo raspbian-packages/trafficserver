@@ -1,0 +1,26 @@
+From 1e99c5fc368fb42ee36da8a4c222664a29880d57 Mon Sep 17 00:00:00 2001
+From: Zhengxi Li <lzx404243@hotmail.com>
+Date: Tue, 1 Aug 2023 17:25:42 -0400
+Subject: 8.1.x: Fix a crash triggered by invalid range header (#10134)
+
+Co-authored-by: Katsutoshi Ikenoya <kikenoya@yahoo-corp.jp>
+---
+ proxy/http/HttpTransact.cc | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/proxy/http/HttpTransact.cc b/proxy/http/HttpTransact.cc
+index c5a37a3b2..c1d0cba06 100644
+--- a/proxy/http/HttpTransact.cc
++++ b/proxy/http/HttpTransact.cc
+@@ -2820,7 +2820,7 @@ HttpTransact::build_response_from_cache(State *s, HTTPWarningCode warning_code)
+           // this late.
+           TxnDebug("http_seq", "[HttpTransact::HandleCacheOpenReadHit] Out-of-order Range request - tunneling");
+           s->cache_info.action = CACHE_DO_NO_ACTION;
+-          if (s->force_dns) {
++          if (s->force_dns || s->dns_info.lookup_success) {
+             HandleCacheOpenReadMiss(s); // DNS is already completed no need of doing DNS
+           } else {
+             CallOSDNSLookup(s);
+-- 
+2.30.2
+
