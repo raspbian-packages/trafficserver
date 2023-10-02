@@ -8,3 +8,6 @@
 0013-fix-perl-interpreter-path.patch
 0014-use_system_yaml-cpp.patch
 0016-fix_python_3.8.patch
+0001-Correctly-handle-encoding-for-cache-hash-generation-.patch
+0002-8.1.x-Fix-a-crash-triggered-by-invalid-range-header-.patch
+0003-Remove-duplicate-slashes-at-the-beginning-of-the-inc.patch
