@@ -1,0 +1,20 @@
+--- a/doc/conf.py
++++ b/doc/conf.py
+@@ -67,7 +67,6 @@ extensions = [
+     'sphinx.ext.coverage',
+     'sphinx.ext.viewcode',
+     'sphinxcontrib.plantuml',
+-    'sphinxcontrib.jquery',
+     'traffic-server',
+ ]
+ 
+--- a/doc/Pipfile
++++ b/doc/Pipfile
+@@ -30,7 +30,6 @@ verify_ssl = true
+ sphinx = "==6.1.3"
+ 
+ sphinx-rtd-theme = ">=1.*"
+-sphinxcontrib-jquery = "*"
+ sphinxcontrib-plantuml = "*"
+ # i18n
+ sphinx-intl = "*"
