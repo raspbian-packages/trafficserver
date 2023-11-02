@@ -55,7 +55,6 @@ The general network structure that will be used in this documentation is
 shown in the following figure.
 
 .. figure:: ../../static/images/admin/ats-basic-traffic.png
-   :align: center
    :alt: ATS basic traffic flow of Transparent Proxy
 
    ATS basic traffic flow of Transparent Proxy

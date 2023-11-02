@@ -65,7 +65,6 @@ Example
 As an example, consider the following topology:
 
 .. figure:: ../../static/images/admin/proxy-protocol.png
-   :align: center
    :alt: PROXY protocol transformed into a Forwarded: header
 
    PROXY protocol header flow
