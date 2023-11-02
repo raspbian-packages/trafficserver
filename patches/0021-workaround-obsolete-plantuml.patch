@@ -1,0 +1,564 @@
+--- a/doc/admin-guide/configuration/cache-basics.en.rst
++++ b/doc/admin-guide/configuration/cache-basics.en.rst
+@@ -54,7 +54,6 @@ overview illustrates how Traffic Server
+    below).
+ 
+    .. figure:: /static/images/admin/cache_hit.jpg
+-      :align: center
+       :alt: A cache hit
+ 
+       A cache hit
+@@ -72,7 +71,6 @@ overview illustrates how Traffic Server
+    be served faster because the object is retrieved directly from cache.
+ 
+    .. figure:: /static/images/admin/cache_miss.jpg
+-      :align: center
+       :alt: A cache miss
+ 
+       A cache miss
+--- a/doc/admin-guide/configuration/hierarchical-caching.en.rst
++++ b/doc/admin-guide/configuration/hierarchical-caching.en.rst
+@@ -66,7 +66,6 @@ can now be served directly from the Traf
+ is stale or expired).
+ 
+ .. figure:: /static/images/admin/cachehrc.jpg
+-   :align: center
+    :alt: Parent caching
+ 
+    Parent caching
+--- a/doc/admin-guide/configuration/proxy-protocol.en.rst
++++ b/doc/admin-guide/configuration/proxy-protocol.en.rst
+@@ -65,7 +65,6 @@ Example
+ As an example, consider the following topology:
+ 
+ .. figure:: ../../static/images/admin/proxy-protocol.png
+-   :align: center
+    :alt: PROXY protocol transformed into a Forwarded: header
+ 
+    PROXY protocol header flow
+--- a/doc/admin-guide/configuration/redirecting-http-requests.en.rst
++++ b/doc/admin-guide/configuration/redirecting-http-requests.en.rst
+@@ -66,7 +66,6 @@ Traffic Server can act as the virtual or
+ origin servers, as shown in the figure below.
+ 
+ .. figure:: /static/images/admin/revproxy.jpg
+-   :align: center
+    :alt: Traffic Server as reverse proxy for a pair of origin servers
+ 
+    Traffic Server as reverse proxy for a pair of origin servers
+@@ -127,7 +126,6 @@ a web server. The figure below illustrat
+ proxy mode serves an HTTP request from a client browser.
+ 
+ .. figure:: /static/images/admin/httprvs.jpg
+-   :align: center
+    :alt: HTTP reverse proxy
+ 
+    HTTP reverse proxy
+--- a/doc/admin-guide/configuration/transparent-proxy.en.rst
++++ b/doc/admin-guide/configuration/transparent-proxy.en.rst
+@@ -55,7 +55,6 @@ The general network structure that will
+ shown in the following figure.
+ 
+ .. figure:: ../../static/images/admin/ats-basic-traffic.png
+-   :align: center
+    :alt: ATS basic traffic flow of Transparent Proxy
+ 
+    ATS basic traffic flow of Transparent Proxy
+--- a/doc/admin-guide/configuration/transparent-proxy/bridge.en.rst
++++ b/doc/admin-guide/configuration/transparent-proxy/bridge.en.rst
+@@ -58,7 +58,6 @@ Once the bridge is verified to work, thi
+ of interest.
+ 
+ .. figure:: ../../../static/images/admin/ats-traffic-bridge.png
+-   :align: center
+    :alt: Picture of traffic flow through a bridge with ATS
+ 
+    Picture of traffic flow through a bridge with ATS
+--- a/doc/admin-guide/configuring-traffic-server.en.rst
++++ b/doc/admin-guide/configuring-traffic-server.en.rst
+@@ -69,7 +69,6 @@ full restart of Traffic Server.
+ The following is a sample portion of :file:`records.config`:
+ 
+ .. figure:: ../static/images/admin/records.jpg
+-   :align: center
+    :alt: Sample records.config file
+ 
+    Sample records.config file
+--- a/doc/admin-guide/layer-4-routing.en.rst
++++ b/doc/admin-guide/layer-4-routing.en.rst
+@@ -29,7 +29,6 @@ destination. The initial data is then se
+ data read on one connection to the other and vice versa.
+ 
+ .. figure:: ../uml/images/l4-basic-sequence.svg
+-   :align: center
+ 
+ In this way it acts similarly to `nc <https://linux.die.net/man/1/nc>`__.
+ 
+@@ -82,7 +81,6 @@ services.
+ The basic set up is therefore
+ 
+ .. figure:: ../uml/images/l4-example-cdn-layout.svg
+-   :align: center
+ 
+    A Client connects to an edge |TS| which forwards the connection to the internal Service.
+    The Client then negotiates TLS with the Service.
+@@ -119,7 +117,6 @@ In addition to this, in the :file:`recor
+ The sequence of network activity for a Client connecting to ``service-2`` is
+ 
+ .. figure:: ../uml/images/l4-sni-routing-seq.svg
+-   :align: center
+ 
+ Note the destination for the outbound TCP connection and the HTTP ``CONNECT`` is the same. If this
+ is a problem (which it will be in general) a plugin is needed to change the URL in the ``CONNECT``.
+@@ -139,7 +136,6 @@ Pre-warming TLS Tunnel reduces the laten
+ Routing). When this feature is enabled, each ET_NET thread makes TLS connections pool per routing type, SNI, and ALPN.
+ 
+ .. figure:: ../uml/images/l4-pre-warming-overview.svg
+-   :align: center
+ 
+ Stats for connection pools are registered dynamically on start up. Details in :ref:`pre-warming-tls-tunnel-stats`.
+ 
+--- a/doc/admin-guide/logging/examples.en.rst
++++ b/doc/admin-guide/logging/examples.en.rst
+@@ -47,7 +47,6 @@ Netscape Common
+ The following figure shows a sample log entry in a Netscape Common log file.
+ 
+ .. figure:: /static/images/admin/netscape_common_format.jpg
+-   :align: center
+    :alt: Sample Netscape Common log entry
+ 
+ The numbered sections correspond to the following log fields in |TS|:
+@@ -82,7 +81,6 @@ Netscape Extended
+ The following figure shows a sample log entry in a Netscape Extended log file.
+ 
+ .. figure:: /static/images/admin/netscape_extended_format.jpg
+-   :align: center
+    :alt: Sample Netscape Extended log entry
+ 
+ In addition to fields 1-7 from the Netscape Common log format, the Extended
+@@ -129,7 +127,6 @@ Netscape Extended-2
+ The following figure shows a sample log entry in a Netscape Extended2 log file.
+ 
+ .. figure:: /static/images/admin/netscape_extended2_format.jpg
+-   :align: center
+    :alt: Sample Netscape Extended-2 log entry
+ 
+ In addition to fields 1-16 from the Netscape Common and Netscape Extended log
+@@ -168,7 +165,6 @@ Squid
+ The following figure shows a sample log entry in a Squid log file.
+ 
+ .. figure:: /static/images/admin/squid_format.jpg
+-   :align: center
+    :alt: Sample Squid log entry
+ 
+ The numbered sections correspond to the following log fields in |TS|:
+--- a/doc/admin-guide/monitoring/monitoring/third-party/circonus.en.rst
++++ b/doc/admin-guide/monitoring/monitoring/third-party/circonus.en.rst
+@@ -64,7 +64,6 @@ environment.
+ 
+    .. figure:: ../../../../static/images/admin/monitor/circonus/new-check-button.png
+       :alt: Circonus New Check button
+-      :align: center
+ 
+ #. For the check type, you should select *JSON* under the *Custom* list, and
+    then choose the *Pull* type. The broker you choose to use is entirely up to
+@@ -73,7 +72,6 @@ environment.
+ 
+    .. figure:: ../../../../static/images/admin/monitor/circonus/check-config-1.png
+       :alt: Choosing a check type
+-      :align: center
+ 
+ #. Click on *Configure Check* to proceed.
+ 
+@@ -85,7 +83,6 @@ environment.
+ 
+    .. figure:: ../../../../static/images/admin/monitor/circonus/check-config-2.png
+       :alt: Advanced check configuration
+-      :align: center
+ 
+ #. Click on *Test Check* to proceed.
+ 
+@@ -96,7 +93,6 @@ environment.
+ 
+    .. figure:: ../../../../static/images/admin/monitor/circonus/check-config-3.png
+       :alt: Check test
+-      :align: center
+ 
+ #. You may want to limit the metrics you actually track from |TS|, since so
+    many are made available. If so, simply uncheck those you aren't interested
+@@ -112,7 +108,6 @@ environment.
+ 
+    .. figure:: ../../../../static/images/admin/monitor/circonus/metric-grid.png
+       :alt: Circonus metric grid
+-      :align: center
+ 
+ Congratulations! You're now ready to begin setting up alerts, visualizations,
+ and dashboards for your |TS| statistics. You can repeat the above steps for any
+--- a/doc/admin-guide/plugins/certifier.en.rst
++++ b/doc/admin-guide/plugins/certifier.en.rst
+@@ -82,7 +82,6 @@ To use this plugin, enable it in a :file
+ One use case would be routing incoming CONNECT request to another port on |TS|. With the certifier generating a trusted certificate, other plugins can act with a similar behavior to Man-In-The-Middle (logging interesting data for example).
+ 
+ .. uml::
+-   :align: center
+ 
+    actor User
+    participant Traffic_Server
+--- a/doc/admin-guide/plugins/multiplexer.en.rst
++++ b/doc/admin-guide/plugins/multiplexer.en.rst
+@@ -102,7 +102,6 @@ a chunk to be consumed. The local variab
+ :code:`TSIOBufferBlock`. The "size states" are marked blue.
+ 
+ .. uml::
+-   :align: center
+ 
+    @startuml
+ 
+--- a/doc/admin-guide/plugins/prefetch.en.rst
++++ b/doc/admin-guide/plugins/prefetch.en.rst
+@@ -81,7 +81,6 @@ The initial Prefetch plugin deployment g
+ It is worth mentioning that a small percentage of the requests did not follow a predictable pattern and were not handled by the plugin.
+ 
+ .. figure:: ../../static/images/admin/prefetch_plugin_deployment.png
+-   :align: center
+    :alt: prefetch plugin initial deployment
+ 
+    Prefetch plugin initial deployment.
+--- a/doc/admin-guide/security/index.en.rst
++++ b/doc/admin-guide/security/index.en.rst
+@@ -72,7 +72,6 @@ termination option is enabled and config
+ Server connections only.
+ 
+ .. figure:: ../../static/images/admin/ssl_c.jpg
+-   :align: center
+    :alt: Client and |TS| communication using SSL termination
+ 
+    Client and |TS| communication using SSL termination
+@@ -164,7 +163,6 @@ origin server when the SSL termination o
+ Server/origin server connections.
+ 
+ .. figure:: ../../static/images/admin/ssl_os.jpg
+-   :align: center
+    :alt: |TS| and origin server communication using SSL termination
+ 
+    |TS| and origin server communication using SSL termination
+--- a/doc/developer-guide/cache-architecture/architecture.en.rst
++++ b/doc/developer-guide/cache-architecture/architecture.en.rst
+@@ -64,7 +64,6 @@ line in the file defines a :term:`cache
+ persistent store.
+ 
+ .. figure:: images/cache-spans.png
+-   :align: center
+ 
+    Two cache spans
+ 
+@@ -81,12 +80,10 @@ stripe is in a single cache span and par
+ If the cache volumes for the example cache spans were defined as:
+ 
+ .. figure:: images/ats-cache-volume-definition.png
+-   :align: center
+ 
+ Then the actual layout would look like:
+ 
+ .. figure:: images/cache-span-layout.png
+-   :align: center
+ 
+ Cache stripes are the fundamental unit of cache for the implementation. A
+ cached object is stored entirely in a single stripe, and therefore in a single
+@@ -116,7 +113,6 @@ file system. A cache stripe is structure
+ entire span block.
+ 
+ .. figure:: images/span-header.svg
+-   :align: center
+ 
+ Stripe Structure
+ ----------------
+@@ -179,7 +175,6 @@ volume size.  The exact memory allocated
+ seen if traffic_server is run with the 'cache_init' debug tag enabled.
+ 
+ .. figure:: images/cache-directory-structure.png
+-   :align: center
+ 
+ Each entry stores an offset in the stripe and a size. The size stored in the
+ directory entry is an :ref:`approximate size <dir-size>` which is at least as
+@@ -219,7 +214,6 @@ a stripe is chosen so that each segment
+ exceeding 65,535 (2\ :sup:`16`\ -1) entries in a segment.
+ 
+ .. figure:: images/dir-segment-bucket.png
+-   :align: center
+ 
+ Each directory entry has a previous and next index value which is used to link
+ entries in the same segment. Because no segment has more than 65,535 entries,
+@@ -241,7 +235,6 @@ bucket locality (that is, :term:`cache I
+ hash bucket will also tend to use the same directory bucket).
+ 
+ .. figure:: images/dir-bucket-assign.png
+-   :align: center
+ 
+ Entries are removed from the free list when used and returned when no longer in
+ use. When a :term:`fragment <cache fragment>` needs to be put in to the
+@@ -267,7 +260,6 @@ without the segment free lists. This mak
+ the directory but not that of the footer.
+ 
+ .. figure:: images/cache-stripe-layout.png
+-   :align: center
+ 
+ Each stripe has several values that describe its basic layout:
+ 
+@@ -297,7 +289,6 @@ The variable trailing section contains t
+ free lists for the segments.
+ 
+ .. figure:: images/stripe-header.svg
+-   :align: center
+ 
+ The trailing :member:`VolHeaderFooter::freelist` array overlays the disk storage with
+ an entry for every segment, even though the array is declared to have length `1`.
+@@ -331,7 +322,6 @@ Instead it will be noted if the object i
+ read of the fragment fails.
+ 
+ .. figure:: images/ats-cache-write-cursor.png
+-   :align: center
+ 
+    The write cursor and documents in the cache.
+ 
+@@ -385,7 +375,6 @@ area of the on disk image, followed by i
+ if needed to store the object.
+ 
+ .. figure:: images/cache-doc-layout-3-2-0.png
+-   :align: center
+ 
+    ``Doc`` layout 3.2.0
+ 
+@@ -396,7 +385,6 @@ metadata to being directly incorporated
+ yielding a layout of the following form.
+ 
+ .. figure:: images/cache-doc-layout-4-0-1.png
+-   :align: center
+ 
+    ``Doc`` layout 4.0.1
+ 
+@@ -448,7 +436,6 @@ of a single object are ordered they are
+ different objects are interleaved as the data arrives in |TS|.
+ 
+ .. figure:: images/cache-multi-fragment.png
+-   :align: center
+ 
+    Multi-alternate and multi-fragment object storage
+ 
+--- a/doc/developer-guide/cache-architecture/data-structures.en.rst
++++ b/doc/developer-guide/cache-architecture/data-structures.en.rst
+@@ -23,7 +23,6 @@ Data Structures
+ ***************
+ 
+ .. uml::
+-   :align: center
+ 
+    hide empty members
+ 
+--- a/doc/developer-guide/client-session-architecture.en.rst
++++ b/doc/developer-guide/client-session-architecture.en.rst
+@@ -37,7 +37,6 @@ ProxySession
+ ------------------
+ 
+ .. figure:: /static/images/sessions/session_hierarchy.png
+-   :align: center
+    :alt: ProxySession hierarchy
+ 
+ The ProxySession class abstracts the key features of a client session.  It contains zero or more ProxyTransaction objects.  It also has a reference to the associated NetVC (either UnixNetVConnection or SSLNetVConnection).  The session class is responsible for interfacing with the user agent protocol.
+@@ -50,7 +49,6 @@ ProxyTransaction
+ ----------------------
+ 
+ .. figure:: /static/images/sessions/transaction_hierarchy.png
+-   :align: center
+    :alt: ProxyTransaction hierarchy
+ 
+ The ProxyTransaction class abstracts the key features of a client transaction.  It has a reference to its
+@@ -65,7 +63,6 @@ HTTP/1.x Objects
+ ----------------
+ 
+ .. figure:: /static/images/sessions/http1_session_objects.png
+-   :align: center
+    :alt: HTTP1 session objects
+ 
+ This diagram shows the relationships between objects created as part of a HTTP/1.x session.  A NetVC
+@@ -88,7 +85,6 @@ HTTP/2 Objects
+ --------------
+ 
+ .. figure:: /static/images/sessions/http2_session_objects.png
+-   :align: center
+    :alt: HTTP/2 session objects
+ 
+ This diagram shows the relationships between objects created as part of a HTTP/2 session.  It is very similar
+--- a/doc/developer-guide/core-architecture/rpc.en.rst
++++ b/doc/developer-guide/core-architecture/rpc.en.rst
+@@ -45,7 +45,6 @@ Runtime Structure
+ =================
+ 
+ .. uml::
+-   :align: center
+ 
+    hide empty members
+ 
+@@ -232,7 +231,6 @@ RPC API for |TServer| and |TManager|
+ ====================================
+ 
+ .. figure:: ../../uml/images/RPC-states.svg
+-   :align: center
+ 
+ |LM| and |PM| follow similar workflows. A manager will poll the socket for any messages. If it is able to read a message, it will handle it based on the :arg:`msg_id` from the :class:`MgmtMessageHdr` and select a callback to run asynchoronously. The async callback will add a response, if any, to an outgoing event queue within the class. A manager will continue to poll and read on the socket as long as there are messages available. Two things can stop a manager from polling.
+ 
+--- a/doc/developer-guide/core-architecture/url_rewrite_architecture.en.rst
++++ b/doc/developer-guide/core-architecture/url_rewrite_architecture.en.rst
+@@ -57,4 +57,3 @@ Implementation
+       results can be efficiently assembled in to the output host name.
+ 
+ .. figure:: /uml/images/url_rewrite.svg
+-   :align: center
+--- a/doc/developer-guide/internal-libraries/AcidPtr.en.rst
++++ b/doc/developer-guide/internal-libraries/AcidPtr.en.rst
+@@ -99,7 +99,6 @@ Use Cases
+ Implemented for use |ACIDPTR| interface in :class:`Extendible`. But could be used elsewhere without modification.
+ 
+ .. uml::
+-   :align: center
+ 
+    title Read while Write
+ 
+@@ -119,7 +118,6 @@ Implemented for use |ACIDPTR| interface
+ When the writer is done, :func:`~AcidCommitPtr::~AcidCommitPtr()` is called and its |AcidPtr| is updated to point at the written copy, so that future read requests will use it. Existing reader will continue to use the old data.
+ 
+ .. uml::
+-   :align: center
+ 
+    title Write Finalize
+ 
+@@ -135,7 +133,6 @@ When the writer is done, :func:`~AcidCom
+ 
+ 
+ .. uml::
+-   :align: center
+ 
+    title AcidPtr Reader/Reader Contention
+    box "MemLock"
+@@ -166,7 +163,6 @@ When the writer is done, :func:`~AcidCom
+ 
+ 
+ .. uml::
+-   :align: center
+ 
+    Title AcidPtr Writer/Reader Contention
+    box "MemLock"
+@@ -214,7 +210,6 @@ When the writer is done, :func:`~AcidCom
+ 
+ 
+ .. uml::
+-   :align: center
+ 
+    Title AcidPtr Writer/Writer Contention
+    box "MemLock"
+--- a/doc/developer-guide/plugins/example-plugins/tls_bridge.en.rst
++++ b/doc/developer-guide/plugins/example-plugins/tls_bridge.en.rst
+@@ -31,7 +31,6 @@ Description
+ The tunnel is sustained by two instances of |TS|.
+ 
+ .. uml::
+-   :align: center
+ 
+    hide empty members
+ 
+@@ -197,7 +196,6 @@ intercept or change of the TLS exchange
+ this
+ 
+ .. uml::
+-   :align: center
+ 
+    actor Client
+    participant "Ingress TS" as Ingress
+@@ -235,7 +233,6 @@ tunnel.
+ The overall exchange looks like the following:
+ 
+ .. uml::
+-   :align: center
+ 
+    @startuml
+ 
+@@ -273,7 +270,6 @@ The overall exchange looks like the foll
+ A detailed view of the plugin operation.
+ 
+ .. figure:: ../../../uml/images/TLS-Bridge-Plugin.svg
+-   :align: center
+ 
+ A sequence diagram focusing on the request / response data flow. There is a :code:`NetVConn` for the
+ connection to the Peer |TS| which is omitted for clarity.
+@@ -288,7 +284,6 @@ means there was an error and the tunnel
+ response code is stored and used later during cleanup.
+ 
+ .. figure:: ../../../uml/images/TLS-Bridge-Messages.svg
+-   :align: center
+ 
+ A restartable state machine is used to recognize the end of the Peer |TS| response. The initial part
+ of the response is easy because all that is needed is to wait until there is sufficient data for a
+@@ -296,7 +291,6 @@ minimal parse. The end can be an arbitra
+ socket read.
+ 
+ .. uml::
+-   :align: center
+ 
+    @startuml
+    [*] -r> State_0
+--- a/doc/developer-guide/plugins/getting-started/index.en.rst
++++ b/doc/developer-guide/plugins/getting-started/index.en.rst
+@@ -83,7 +83,6 @@ call-back functions you've registered fo
+ .. _PluginProcess:
+ 
+ .. figure:: /static/images/sdk/plugin_process.jpg
+-   :align: center
+    :alt: Plugin Process
+ 
+    Plugin Process
+@@ -130,7 +129,6 @@ The figure below, :ref:`possibleTSplugin
+ .. _possibleTSplugins:
+ 
+ .. figure:: /static/images/sdk/Uses.jpg
+-   :align: center
+    :alt: Possible Traffic Server Plugins
+ 
+    Possible Traffic Server Plugins
+--- a/doc/developer-guide/plugins/hooks-and-transactions/trafficserver-timers.en.rst
++++ b/doc/developer-guide/plugins/hooks-and-transactions/trafficserver-timers.en.rst
+@@ -30,7 +30,6 @@ The picture only depicts the HTTP transa
+ states and other more detailed/internal timers in each individual state.
+ 
+ .. figure:: ../../../static/images/admin/transaction_states_timers.svg
+-   :align: center
+    :alt: Transaction Timers in various states
+ 
+    Transaction Timers in various states
+--- a/doc/developer-guide/plugins/http-transformations/index.en.rst
++++ b/doc/developer-guide/plugins/http-transformations/index.en.rst
+@@ -88,7 +88,6 @@ relationship between the transformation
+ 
+ .. figure:: /static/images/sdk/vconnection.jpg
+    :alt: A Transformation and its VIOs
+-   :align: center
+ 
+    **A Transformation and its VIOs**
+ 
+--- a/doc/release-notes/roadmap.en.rst
++++ b/doc/release-notes/roadmap.en.rst
+@@ -59,7 +59,6 @@ Current Release Schedule and support
+ ------------------------------------
+ 
+ .. figure:: images/roadmap.png
+-   :align: center
+ 
+ **Note:** These are examples, only the first minor release number of each
+ major LTS branch is guaranteed to be made. The dates for point releases
+@@ -76,7 +75,6 @@ it's pretty much business as usual, but
+ This git branch diagram shows an example how the git tree will be managed:
+ 
+ .. figure:: images/git-versions.svg
+-   :align: center
+ 
+ Burning release numbers, or how our release process works
+ ---------------------------------------------------------
