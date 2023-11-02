@@ -67,7 +67,6 @@ extensions = [
     'sphinx.ext.coverage',
     'sphinx.ext.viewcode',
     'sphinxcontrib.plantuml',
-    'sphinxcontrib.jquery',
     'traffic-server',
 ]
 
