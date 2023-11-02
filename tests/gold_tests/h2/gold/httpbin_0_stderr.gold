@@ -1,0 +1,14 @@
+``
+> GET /get HTTP/2
+> Host: ``
+> User-Agent: curl/``
+> Accept: */*
+``
+< HTTP/2 200 ``
+``
+< content-type: application/json; encoding=utf-8
+< date: ``
+< content-length: ``
+< age: ``
+< via: ``ApacheTrafficServer/``
+< server: ATS/``
