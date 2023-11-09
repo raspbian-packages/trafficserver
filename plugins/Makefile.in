@@ -978,6 +978,22 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+#  Licensed to the Apache Software Foundation (ASF) under one
+#  or more contributor license agreements.  See the NOTICE file
+#  distributed with this work for additional information
+#  regarding copyright ownership.  The ASF licenses this file
+#  to you under the Apache License, Version 2.0 (the
+#  "License"); you may not use this file except in compliance
+#  with the License.  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+
 #
 #  Licensed to the Apache Software Foundation (ASF) under one
 #  or more contributor license agreements.  See the NOTICE file
@@ -1109,6 +1125,7 @@ check_PROGRAMS = esi/docnode_test$(EXEEXT) esi/parser_test$(EXEEXT) \
 @BUILD_EXPERIMENTAL_PLUGINS_TRUE@am__append_3 = experimental/access_control/access_control.la \
 @BUILD_EXPERIMENTAL_PLUGINS_TRUE@	experimental/acme/acme.la \
 @BUILD_EXPERIMENTAL_PLUGINS_TRUE@	experimental/balancer/balancer.la \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@	experimental/block_errors/block_errors.la \
 @BUILD_EXPERIMENTAL_PLUGINS_TRUE@	experimental/buffer_upload/buffer_upload.la \
 @BUILD_EXPERIMENTAL_PLUGINS_TRUE@	experimental/cache_range_requests/cache_range_requests.la \
 @BUILD_EXPERIMENTAL_PLUGINS_TRUE@	experimental/certifier/certifier.la \
@@ -1347,6 +1364,14 @@ am__experimental_balancer_balancer_la_SOURCES_DIST =  \
 experimental_balancer_balancer_la_OBJECTS =  \
 	$(am_experimental_balancer_balancer_la_OBJECTS)
 @BUILD_EXPERIMENTAL_PLUGINS_TRUE@am_experimental_balancer_balancer_la_rpath =  \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@	-rpath $(pkglibdir)
+experimental_block_errors_block_errors_la_LIBADD =
+am__experimental_block_errors_block_errors_la_SOURCES_DIST =  \
+	experimental/block_errors/block_errors.cc
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@am_experimental_block_errors_block_errors_la_OBJECTS = experimental/block_errors/block_errors.lo
+experimental_block_errors_block_errors_la_OBJECTS =  \
+	$(am_experimental_block_errors_block_errors_la_OBJECTS)
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@am_experimental_block_errors_block_errors_la_rpath =  \
 @BUILD_EXPERIMENTAL_PLUGINS_TRUE@	-rpath $(pkglibdir)
 experimental_buffer_upload_buffer_upload_la_LIBADD =
 am__experimental_buffer_upload_buffer_upload_la_SOURCES_DIST =  \
@@ -1813,7 +1838,7 @@ lua_tslua_la_LIBADD =
 am__lua_tslua_la_SOURCES_DIST = lua/ts_lua.c \
 	lua/ts_lua_cached_response.c lua/ts_lua_client_request.c \
 	lua/ts_lua_client_response.c lua/ts_lua_context.c \
-	lua/ts_lua_hook.c lua/ts_lua_http.c \
+	lua/ts_lua_hook.c lua/ts_lua_vconn.c lua/ts_lua_http.c \
 	lua/ts_lua_http_intercept.c lua/ts_lua_log.c lua/ts_lua_misc.c \
 	lua/ts_lua_server_request.c lua/ts_lua_server_response.c \
 	lua/ts_lua_transform.c lua/ts_lua_util.c lua/ts_lua_remap.c \
@@ -1828,6 +1853,7 @@ am__lua_tslua_la_SOURCES_DIST = lua/ts_lua.c \
 @HAS_LUAJIT_TRUE@	lua/tslua_la-ts_lua_client_response.lo \
 @HAS_LUAJIT_TRUE@	lua/tslua_la-ts_lua_context.lo \
 @HAS_LUAJIT_TRUE@	lua/tslua_la-ts_lua_hook.lo \
+@HAS_LUAJIT_TRUE@	lua/tslua_la-ts_lua_vconn.lo \
 @HAS_LUAJIT_TRUE@	lua/tslua_la-ts_lua_http.lo \
 @HAS_LUAJIT_TRUE@	lua/tslua_la-ts_lua_http_intercept.lo \
 @HAS_LUAJIT_TRUE@	lua/tslua_la-ts_lua_log.lo \
@@ -2092,6 +2118,7 @@ am__depfiles_remade = authproxy/$(DEPDIR)/authproxy.Plo \
 	experimental/balancer/$(DEPDIR)/balancer.Plo \
 	experimental/balancer/$(DEPDIR)/hash.Plo \
 	experimental/balancer/$(DEPDIR)/roundrobin.Plo \
+	experimental/block_errors/$(DEPDIR)/block_errors.Plo \
 	experimental/buffer_upload/$(DEPDIR)/buffer_upload.Plo \
 	experimental/cache_fill/$(DEPDIR)/background_fetch.Plo \
 	experimental/cache_fill/$(DEPDIR)/cache_fill.Plo \
@@ -2236,6 +2263,7 @@ am__depfiles_remade = authproxy/$(DEPDIR)/authproxy.Plo \
 	lua/$(DEPDIR)/tslua_la-ts_lua_string.Plo \
 	lua/$(DEPDIR)/tslua_la-ts_lua_transform.Plo \
 	lua/$(DEPDIR)/tslua_la-ts_lua_util.Plo \
+	lua/$(DEPDIR)/tslua_la-ts_lua_vconn.Plo \
 	regex_remap/$(DEPDIR)/regex_remap.Plo \
 	regex_revalidate/$(DEPDIR)/regex_revalidate.Plo \
 	s3_auth/$(DEPDIR)/aws_auth_v4.Plo \
@@ -2295,6 +2323,7 @@ SOURCES = $(authproxy_authproxy_la_SOURCES) \
 	$(experimental_access_control_access_control_la_SOURCES) \
 	$(experimental_acme_acme_la_SOURCES) \
 	$(experimental_balancer_balancer_la_SOURCES) \
+	$(experimental_block_errors_block_errors_la_SOURCES) \
 	$(experimental_buffer_upload_buffer_upload_la_SOURCES) \
 	$(experimental_cache_fill_cache_fill_la_SOURCES) \
 	$(experimental_cache_key_genid_cache_key_genid_la_SOURCES) \
@@ -2368,6 +2397,7 @@ DIST_SOURCES = $(authproxy_authproxy_la_SOURCES) \
 	$(am__experimental_access_control_access_control_la_SOURCES_DIST) \
 	$(am__experimental_acme_acme_la_SOURCES_DIST) \
 	$(am__experimental_balancer_balancer_la_SOURCES_DIST) \
+	$(am__experimental_block_errors_block_errors_la_SOURCES_DIST) \
 	$(am__experimental_buffer_upload_buffer_upload_la_SOURCES_DIST) \
 	$(am__experimental_cache_fill_cache_fill_la_SOURCES_DIST) \
 	$(am__experimental_cache_key_genid_cache_key_genid_la_SOURCES_DIST) \
@@ -2659,6 +2689,7 @@ am__DIST_COMMON = $(srcdir)/Makefile.in \
 	$(srcdir)/experimental/access_control/Makefile.inc \
 	$(srcdir)/experimental/acme/Makefile.inc \
 	$(srcdir)/experimental/balancer/Makefile.inc \
+	$(srcdir)/experimental/block_errors/Makefile.inc \
 	$(srcdir)/experimental/buffer_upload/Makefile.inc \
 	$(srcdir)/experimental/cache_fill/Makefile.inc \
 	$(srcdir)/experimental/cache_key_genid/Makefile.inc \
@@ -3305,6 +3336,7 @@ libloader_libloader_la_SOURCES = \
 @HAS_LUAJIT_TRUE@  lua/ts_lua_client_response.c \
 @HAS_LUAJIT_TRUE@  lua/ts_lua_context.c \
 @HAS_LUAJIT_TRUE@  lua/ts_lua_hook.c \
+@HAS_LUAJIT_TRUE@  lua/ts_lua_vconn.c \
 @HAS_LUAJIT_TRUE@  lua/ts_lua_http.c \
 @HAS_LUAJIT_TRUE@  lua/ts_lua_http_intercept.c \
 @HAS_LUAJIT_TRUE@  lua/ts_lua_log.c \
@@ -3367,6 +3399,9 @@ test_cppapi_test_cppapi_la_SOURCES = test_cppapi/test_cppapi.cc
 @BUILD_EXPERIMENTAL_PLUGINS_TRUE@  experimental/balancer/roundrobin.cc \
 @BUILD_EXPERIMENTAL_PLUGINS_TRUE@  experimental/balancer/hash.cc \
 @BUILD_EXPERIMENTAL_PLUGINS_TRUE@  experimental/balancer/balancer.h
+
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@experimental_block_errors_block_errors_la_SOURCES = \
+@BUILD_EXPERIMENTAL_PLUGINS_TRUE@  experimental/block_errors/block_errors.cc
 
 @BUILD_EXPERIMENTAL_PLUGINS_TRUE@experimental_buffer_upload_buffer_upload_la_SOURCES = \
 @BUILD_EXPERIMENTAL_PLUGINS_TRUE@  experimental/buffer_upload/buffer_upload.cc
@@ -3669,7 +3704,7 @@ all: all-recursive
 
 .SUFFIXES:
 .SUFFIXES: .c .cc .lo .log .o .obj .test .test$(EXEEXT) .trs
-$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(top_srcdir)/build/plugins.mk $(top_srcdir)/build/tidy.mk $(srcdir)/authproxy/Makefile.inc $(srcdir)/background_fetch/Makefile.inc $(srcdir)/cachekey/Makefile.inc $(srcdir)/cache_promote/Makefile.inc $(srcdir)/conf_remap/Makefile.inc $(srcdir)/escalate/Makefile.inc $(srcdir)/esi/Makefile.inc $(srcdir)/generator/Makefile.inc $(srcdir)/compress/Makefile.inc $(srcdir)/header_rewrite/Makefile.inc $(srcdir)/healthchecks/Makefile.inc $(srcdir)/libloader/Makefile.inc $(srcdir)/lua/Makefile.inc $(srcdir)/regex_remap/Makefile.inc $(srcdir)/regex_revalidate/Makefile.inc $(srcdir)/s3_auth/Makefile.inc $(srcdir)/stats_over_http/Makefile.inc $(srcdir)/tcpinfo/Makefile.inc $(srcdir)/xdebug/Makefile.inc $(srcdir)/test_cppapi/Makefile.inc $(srcdir)/experimental/access_control/Makefile.inc $(srcdir)/experimental/acme/Makefile.inc $(srcdir)/experimental/balancer/Makefile.inc $(srcdir)/experimental/buffer_upload/Makefile.inc $(srcdir)/experimental/cache_range_requests/Makefile.inc $(srcdir)/experimental/certifier/Makefile.inc $(srcdir)/experimental/cache_fill/Makefile.inc $(srcdir)/experimental/collapsed_forwarding/Makefile.inc $(srcdir)/experimental/custom_redirect/Makefile.inc $(srcdir)/experimental/fq_pacing/Makefile.inc $(srcdir)/experimental/geoip_acl/Makefile.inc $(srcdir)/experimental/header_freq/Makefile.inc $(srcdir)/experimental/header_normalize/Makefile.inc $(srcdir)/experimental/hipes/Makefile.inc $(srcdir)/experimental/hook-trace/Makefile.inc $(srcdir)/experimental/inliner/Makefile.inc $(srcdir)/experimental/memcache/Makefile.inc $(srcdir)/experimental/metalink/Makefile.inc $(srcdir)/experimental/money_trace/Makefile.inc $(srcdir)/experimental/mp4/Makefile.inc $(srcdir)/experimental/multiplexer/Makefile.inc $(srcdir)/experimental/remap_purge/Makefile.inc $(srcdir)/experimental/server_push_preload/Makefile.inc $(srcdir)/experimental/slice/Makefile.inc $(srcdir)/experimental/ssl_cert_loader/Makefile.inc $(srcdir)/experimental/sslheaders/Makefile.inc $(srcdir)/experimental/stale_while_revalidate/Makefile.inc $(srcdir)/experimental/stream_editor/Makefile.inc $(srcdir)/experimental/system_stats/Makefile.inc $(srcdir)/experimental/traffic_dump/Makefile.inc $(srcdir)/experimental/tls_bridge/Makefile.inc $(srcdir)/experimental/url_sig/Makefile.inc $(srcdir)/experimental/prefetch/Makefile.inc $(srcdir)/experimental/uri_signing/Makefile.inc $(srcdir)/experimental/memcached_remap/Makefile.inc $(srcdir)/experimental/remap_stats/Makefile.inc $(srcdir)/experimental/cache_key_genid/Makefile.inc $(srcdir)/experimental/webp_transform/Makefile.inc $(srcdir)/experimental/magick/Makefile.inc $(srcdir)/experimental/mysql_remap/Makefile.inc $(am__configure_deps)
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(top_srcdir)/build/plugins.mk $(top_srcdir)/build/tidy.mk $(srcdir)/authproxy/Makefile.inc $(srcdir)/background_fetch/Makefile.inc $(srcdir)/cachekey/Makefile.inc $(srcdir)/cache_promote/Makefile.inc $(srcdir)/conf_remap/Makefile.inc $(srcdir)/escalate/Makefile.inc $(srcdir)/esi/Makefile.inc $(srcdir)/generator/Makefile.inc $(srcdir)/compress/Makefile.inc $(srcdir)/header_rewrite/Makefile.inc $(srcdir)/healthchecks/Makefile.inc $(srcdir)/libloader/Makefile.inc $(srcdir)/lua/Makefile.inc $(srcdir)/regex_remap/Makefile.inc $(srcdir)/regex_revalidate/Makefile.inc $(srcdir)/s3_auth/Makefile.inc $(srcdir)/stats_over_http/Makefile.inc $(srcdir)/tcpinfo/Makefile.inc $(srcdir)/xdebug/Makefile.inc $(srcdir)/test_cppapi/Makefile.inc $(srcdir)/experimental/access_control/Makefile.inc $(srcdir)/experimental/acme/Makefile.inc $(srcdir)/experimental/balancer/Makefile.inc $(srcdir)/experimental/block_errors/Makefile.inc $(srcdir)/experimental/buffer_upload/Makefile.inc $(srcdir)/experimental/cache_range_requests/Makefile.inc $(srcdir)/experimental/certifier/Makefile.inc $(srcdir)/experimental/cache_fill/Makefile.inc $(srcdir)/experimental/collapsed_forwarding/Makefile.inc $(srcdir)/experimental/custom_redirect/Makefile.inc $(srcdir)/experimental/fq_pacing/Makefile.inc $(srcdir)/experimental/geoip_acl/Makefile.inc $(srcdir)/experimental/header_freq/Makefile.inc $(srcdir)/experimental/header_normalize/Makefile.inc $(srcdir)/experimental/hipes/Makefile.inc $(srcdir)/experimental/hook-trace/Makefile.inc $(srcdir)/experimental/inliner/Makefile.inc $(srcdir)/experimental/memcache/Makefile.inc $(srcdir)/experimental/metalink/Makefile.inc $(srcdir)/experimental/money_trace/Makefile.inc $(srcdir)/experimental/mp4/Makefile.inc $(srcdir)/experimental/multiplexer/Makefile.inc $(srcdir)/experimental/remap_purge/Makefile.inc $(srcdir)/experimental/server_push_preload/Makefile.inc $(srcdir)/experimental/slice/Makefile.inc $(srcdir)/experimental/ssl_cert_loader/Makefile.inc $(srcdir)/experimental/sslheaders/Makefile.inc $(srcdir)/experimental/stale_while_revalidate/Makefile.inc $(srcdir)/experimental/stream_editor/Makefile.inc $(srcdir)/experimental/system_stats/Makefile.inc $(srcdir)/experimental/traffic_dump/Makefile.inc $(srcdir)/experimental/tls_bridge/Makefile.inc $(srcdir)/experimental/url_sig/Makefile.inc $(srcdir)/experimental/prefetch/Makefile.inc $(srcdir)/experimental/uri_signing/Makefile.inc $(srcdir)/experimental/memcached_remap/Makefile.inc $(srcdir)/experimental/remap_stats/Makefile.inc $(srcdir)/experimental/cache_key_genid/Makefile.inc $(srcdir)/experimental/webp_transform/Makefile.inc $(srcdir)/experimental/magick/Makefile.inc $(srcdir)/experimental/mysql_remap/Makefile.inc $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -3689,7 +3724,7 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__maybe_remake_depfiles)'; \
 	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__maybe_remake_depfiles);; \
 	esac;
-$(top_srcdir)/build/plugins.mk $(top_srcdir)/build/tidy.mk $(srcdir)/authproxy/Makefile.inc $(srcdir)/background_fetch/Makefile.inc $(srcdir)/cachekey/Makefile.inc $(srcdir)/cache_promote/Makefile.inc $(srcdir)/conf_remap/Makefile.inc $(srcdir)/escalate/Makefile.inc $(srcdir)/esi/Makefile.inc $(srcdir)/generator/Makefile.inc $(srcdir)/compress/Makefile.inc $(srcdir)/header_rewrite/Makefile.inc $(srcdir)/healthchecks/Makefile.inc $(srcdir)/libloader/Makefile.inc $(srcdir)/lua/Makefile.inc $(srcdir)/regex_remap/Makefile.inc $(srcdir)/regex_revalidate/Makefile.inc $(srcdir)/s3_auth/Makefile.inc $(srcdir)/stats_over_http/Makefile.inc $(srcdir)/tcpinfo/Makefile.inc $(srcdir)/xdebug/Makefile.inc $(srcdir)/test_cppapi/Makefile.inc $(srcdir)/experimental/access_control/Makefile.inc $(srcdir)/experimental/acme/Makefile.inc $(srcdir)/experimental/balancer/Makefile.inc $(srcdir)/experimental/buffer_upload/Makefile.inc $(srcdir)/experimental/cache_range_requests/Makefile.inc $(srcdir)/experimental/certifier/Makefile.inc $(srcdir)/experimental/cache_fill/Makefile.inc $(srcdir)/experimental/collapsed_forwarding/Makefile.inc $(srcdir)/experimental/custom_redirect/Makefile.inc $(srcdir)/experimental/fq_pacing/Makefile.inc $(srcdir)/experimental/geoip_acl/Makefile.inc $(srcdir)/experimental/header_freq/Makefile.inc $(srcdir)/experimental/header_normalize/Makefile.inc $(srcdir)/experimental/hipes/Makefile.inc $(srcdir)/experimental/hook-trace/Makefile.inc $(srcdir)/experimental/inliner/Makefile.inc $(srcdir)/experimental/memcache/Makefile.inc $(srcdir)/experimental/metalink/Makefile.inc $(srcdir)/experimental/money_trace/Makefile.inc $(srcdir)/experimental/mp4/Makefile.inc $(srcdir)/experimental/multiplexer/Makefile.inc $(srcdir)/experimental/remap_purge/Makefile.inc $(srcdir)/experimental/server_push_preload/Makefile.inc $(srcdir)/experimental/slice/Makefile.inc $(srcdir)/experimental/ssl_cert_loader/Makefile.inc $(srcdir)/experimental/sslheaders/Makefile.inc $(srcdir)/experimental/stale_while_revalidate/Makefile.inc $(srcdir)/experimental/stream_editor/Makefile.inc $(srcdir)/experimental/system_stats/Makefile.inc $(srcdir)/experimental/traffic_dump/Makefile.inc $(srcdir)/experimental/tls_bridge/Makefile.inc $(srcdir)/experimental/url_sig/Makefile.inc $(srcdir)/experimental/prefetch/Makefile.inc $(srcdir)/experimental/uri_signing/Makefile.inc $(srcdir)/experimental/memcached_remap/Makefile.inc $(srcdir)/experimental/remap_stats/Makefile.inc $(srcdir)/experimental/cache_key_genid/Makefile.inc $(srcdir)/experimental/webp_transform/Makefile.inc $(srcdir)/experimental/magick/Makefile.inc $(srcdir)/experimental/mysql_remap/Makefile.inc $(am__empty):
+$(top_srcdir)/build/plugins.mk $(top_srcdir)/build/tidy.mk $(srcdir)/authproxy/Makefile.inc $(srcdir)/background_fetch/Makefile.inc $(srcdir)/cachekey/Makefile.inc $(srcdir)/cache_promote/Makefile.inc $(srcdir)/conf_remap/Makefile.inc $(srcdir)/escalate/Makefile.inc $(srcdir)/esi/Makefile.inc $(srcdir)/generator/Makefile.inc $(srcdir)/compress/Makefile.inc $(srcdir)/header_rewrite/Makefile.inc $(srcdir)/healthchecks/Makefile.inc $(srcdir)/libloader/Makefile.inc $(srcdir)/lua/Makefile.inc $(srcdir)/regex_remap/Makefile.inc $(srcdir)/regex_revalidate/Makefile.inc $(srcdir)/s3_auth/Makefile.inc $(srcdir)/stats_over_http/Makefile.inc $(srcdir)/tcpinfo/Makefile.inc $(srcdir)/xdebug/Makefile.inc $(srcdir)/test_cppapi/Makefile.inc $(srcdir)/experimental/access_control/Makefile.inc $(srcdir)/experimental/acme/Makefile.inc $(srcdir)/experimental/balancer/Makefile.inc $(srcdir)/experimental/block_errors/Makefile.inc $(srcdir)/experimental/buffer_upload/Makefile.inc $(srcdir)/experimental/cache_range_requests/Makefile.inc $(srcdir)/experimental/certifier/Makefile.inc $(srcdir)/experimental/cache_fill/Makefile.inc $(srcdir)/experimental/collapsed_forwarding/Makefile.inc $(srcdir)/experimental/custom_redirect/Makefile.inc $(srcdir)/experimental/fq_pacing/Makefile.inc $(srcdir)/experimental/geoip_acl/Makefile.inc $(srcdir)/experimental/header_freq/Makefile.inc $(srcdir)/experimental/header_normalize/Makefile.inc $(srcdir)/experimental/hipes/Makefile.inc $(srcdir)/experimental/hook-trace/Makefile.inc $(srcdir)/experimental/inliner/Makefile.inc $(srcdir)/experimental/memcache/Makefile.inc $(srcdir)/experimental/metalink/Makefile.inc $(srcdir)/experimental/money_trace/Makefile.inc $(srcdir)/experimental/mp4/Makefile.inc $(srcdir)/experimental/multiplexer/Makefile.inc $(srcdir)/experimental/remap_purge/Makefile.inc $(srcdir)/experimental/server_push_preload/Makefile.inc $(srcdir)/experimental/slice/Makefile.inc $(srcdir)/experimental/ssl_cert_loader/Makefile.inc $(srcdir)/experimental/sslheaders/Makefile.inc $(srcdir)/experimental/stale_while_revalidate/Makefile.inc $(srcdir)/experimental/stream_editor/Makefile.inc $(srcdir)/experimental/system_stats/Makefile.inc $(srcdir)/experimental/traffic_dump/Makefile.inc $(srcdir)/experimental/tls_bridge/Makefile.inc $(srcdir)/experimental/url_sig/Makefile.inc $(srcdir)/experimental/prefetch/Makefile.inc $(srcdir)/experimental/uri_signing/Makefile.inc $(srcdir)/experimental/memcached_remap/Makefile.inc $(srcdir)/experimental/remap_stats/Makefile.inc $(srcdir)/experimental/cache_key_genid/Makefile.inc $(srcdir)/experimental/webp_transform/Makefile.inc $(srcdir)/experimental/magick/Makefile.inc $(srcdir)/experimental/mysql_remap/Makefile.inc $(am__empty):
 
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
@@ -3999,6 +4034,18 @@ experimental/balancer/hash.lo: experimental/balancer/$(am__dirstamp) \
 
 experimental/balancer/balancer.la: $(experimental_balancer_balancer_la_OBJECTS) $(experimental_balancer_balancer_la_DEPENDENCIES) $(EXTRA_experimental_balancer_balancer_la_DEPENDENCIES) experimental/balancer/$(am__dirstamp)
 	$(AM_V_CXXLD)$(CXXLINK) $(am_experimental_balancer_balancer_la_rpath) $(experimental_balancer_balancer_la_OBJECTS) $(experimental_balancer_balancer_la_LIBADD) $(LIBS)
+experimental/block_errors/$(am__dirstamp):
+	@$(MKDIR_P) experimental/block_errors
+	@: > experimental/block_errors/$(am__dirstamp)
+experimental/block_errors/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) experimental/block_errors/$(DEPDIR)
+	@: > experimental/block_errors/$(DEPDIR)/$(am__dirstamp)
+experimental/block_errors/block_errors.lo:  \
+	experimental/block_errors/$(am__dirstamp) \
+	experimental/block_errors/$(DEPDIR)/$(am__dirstamp)
+
+experimental/block_errors/block_errors.la: $(experimental_block_errors_block_errors_la_OBJECTS) $(experimental_block_errors_block_errors_la_DEPENDENCIES) $(EXTRA_experimental_block_errors_block_errors_la_DEPENDENCIES) experimental/block_errors/$(am__dirstamp)
+	$(AM_V_CXXLD)$(CXXLINK) $(am_experimental_block_errors_block_errors_la_rpath) $(experimental_block_errors_block_errors_la_OBJECTS) $(experimental_block_errors_block_errors_la_LIBADD) $(LIBS)
 experimental/buffer_upload/$(am__dirstamp):
 	@$(MKDIR_P) experimental/buffer_upload
 	@: > experimental/buffer_upload/$(am__dirstamp)
@@ -4665,6 +4712,8 @@ lua/tslua_la-ts_lua_context.lo: lua/$(am__dirstamp) \
 	lua/$(DEPDIR)/$(am__dirstamp)
 lua/tslua_la-ts_lua_hook.lo: lua/$(am__dirstamp) \
 	lua/$(DEPDIR)/$(am__dirstamp)
+lua/tslua_la-ts_lua_vconn.lo: lua/$(am__dirstamp) \
+	lua/$(DEPDIR)/$(am__dirstamp)
 lua/tslua_la-ts_lua_http.lo: lua/$(am__dirstamp) \
 	lua/$(DEPDIR)/$(am__dirstamp)
 lua/tslua_la-ts_lua_http_intercept.lo: lua/$(am__dirstamp) \
@@ -4985,6 +5034,8 @@ mostlyclean-compile:
 	-rm -f experimental/acme/*.lo
 	-rm -f experimental/balancer/*.$(OBJEXT)
 	-rm -f experimental/balancer/*.lo
+	-rm -f experimental/block_errors/*.$(OBJEXT)
+	-rm -f experimental/block_errors/*.lo
 	-rm -f experimental/buffer_upload/*.$(OBJEXT)
 	-rm -f experimental/buffer_upload/*.lo
 	-rm -f experimental/cache_fill/*.$(OBJEXT)
@@ -5157,6 +5208,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@experimental/balancer/$(DEPDIR)/balancer.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@experimental/balancer/$(DEPDIR)/hash.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@experimental/balancer/$(DEPDIR)/roundrobin.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@experimental/block_errors/$(DEPDIR)/block_errors.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@experimental/buffer_upload/$(DEPDIR)/buffer_upload.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@experimental/cache_fill/$(DEPDIR)/background_fetch.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@experimental/cache_fill/$(DEPDIR)/cache_fill.Plo@am__quote@ # am--include-marker
@@ -5301,6 +5353,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@lua/$(DEPDIR)/tslua_la-ts_lua_string.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@lua/$(DEPDIR)/tslua_la-ts_lua_transform.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@lua/$(DEPDIR)/tslua_la-ts_lua_util.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lua/$(DEPDIR)/tslua_la-ts_lua_vconn.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@regex_remap/$(DEPDIR)/regex_remap.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@regex_revalidate/$(DEPDIR)/regex_revalidate.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@s3_auth/$(DEPDIR)/aws_auth_v4.Plo@am__quote@ # am--include-marker
@@ -5383,6 +5436,13 @@ lua/tslua_la-ts_lua_hook.lo: lua/ts_lua_hook.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lua/ts_lua_hook.c' object='lua/tslua_la-ts_lua_hook.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(lua_tslua_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o lua/tslua_la-ts_lua_hook.lo `test -f 'lua/ts_lua_hook.c' || echo '$(srcdir)/'`lua/ts_lua_hook.c
+
+lua/tslua_la-ts_lua_vconn.lo: lua/ts_lua_vconn.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(lua_tslua_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT lua/tslua_la-ts_lua_vconn.lo -MD -MP -MF lua/$(DEPDIR)/tslua_la-ts_lua_vconn.Tpo -c -o lua/tslua_la-ts_lua_vconn.lo `test -f 'lua/ts_lua_vconn.c' || echo '$(srcdir)/'`lua/ts_lua_vconn.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lua/$(DEPDIR)/tslua_la-ts_lua_vconn.Tpo lua/$(DEPDIR)/tslua_la-ts_lua_vconn.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lua/ts_lua_vconn.c' object='lua/tslua_la-ts_lua_vconn.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(lua_tslua_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o lua/tslua_la-ts_lua_vconn.lo `test -f 'lua/ts_lua_vconn.c' || echo '$(srcdir)/'`lua/ts_lua_vconn.c
 
 lua/tslua_la-ts_lua_http.lo: lua/ts_lua_http.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(lua_tslua_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT lua/tslua_la-ts_lua_http.lo -MD -MP -MF lua/$(DEPDIR)/tslua_la-ts_lua_http.Tpo -c -o lua/tslua_la-ts_lua_http.lo `test -f 'lua/ts_lua_http.c' || echo '$(srcdir)/'`lua/ts_lua_http.c
@@ -6295,6 +6355,7 @@ clean-libtool:
 	-rm -rf experimental/access_control/.libs experimental/access_control/_libs
 	-rm -rf experimental/acme/.libs experimental/acme/_libs
 	-rm -rf experimental/balancer/.libs experimental/balancer/_libs
+	-rm -rf experimental/block_errors/.libs experimental/block_errors/_libs
 	-rm -rf experimental/buffer_upload/.libs experimental/buffer_upload/_libs
 	-rm -rf experimental/cache_fill/.libs experimental/cache_fill/_libs
 	-rm -rf experimental/cache_key_genid/.libs experimental/cache_key_genid/_libs
@@ -6827,6 +6888,8 @@ distclean-generic:
 	-rm -f experimental/acme/$(am__dirstamp)
 	-rm -f experimental/balancer/$(DEPDIR)/$(am__dirstamp)
 	-rm -f experimental/balancer/$(am__dirstamp)
+	-rm -f experimental/block_errors/$(DEPDIR)/$(am__dirstamp)
+	-rm -f experimental/block_errors/$(am__dirstamp)
 	-rm -f experimental/buffer_upload/$(DEPDIR)/$(am__dirstamp)
 	-rm -f experimental/buffer_upload/$(am__dirstamp)
 	-rm -f experimental/cache_fill/$(DEPDIR)/$(am__dirstamp)
@@ -7012,6 +7075,7 @@ distclean: distclean-recursive
 	-rm -f experimental/balancer/$(DEPDIR)/balancer.Plo
 	-rm -f experimental/balancer/$(DEPDIR)/hash.Plo
 	-rm -f experimental/balancer/$(DEPDIR)/roundrobin.Plo
+	-rm -f experimental/block_errors/$(DEPDIR)/block_errors.Plo
 	-rm -f experimental/buffer_upload/$(DEPDIR)/buffer_upload.Plo
 	-rm -f experimental/cache_fill/$(DEPDIR)/background_fetch.Plo
 	-rm -f experimental/cache_fill/$(DEPDIR)/cache_fill.Plo
@@ -7156,6 +7220,7 @@ distclean: distclean-recursive
 	-rm -f lua/$(DEPDIR)/tslua_la-ts_lua_string.Plo
 	-rm -f lua/$(DEPDIR)/tslua_la-ts_lua_transform.Plo
 	-rm -f lua/$(DEPDIR)/tslua_la-ts_lua_util.Plo
+	-rm -f lua/$(DEPDIR)/tslua_la-ts_lua_vconn.Plo
 	-rm -f regex_remap/$(DEPDIR)/regex_remap.Plo
 	-rm -f regex_revalidate/$(DEPDIR)/regex_revalidate.Plo
 	-rm -f s3_auth/$(DEPDIR)/aws_auth_v4.Plo
@@ -7276,6 +7341,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f experimental/balancer/$(DEPDIR)/balancer.Plo
 	-rm -f experimental/balancer/$(DEPDIR)/hash.Plo
 	-rm -f experimental/balancer/$(DEPDIR)/roundrobin.Plo
+	-rm -f experimental/block_errors/$(DEPDIR)/block_errors.Plo
 	-rm -f experimental/buffer_upload/$(DEPDIR)/buffer_upload.Plo
 	-rm -f experimental/cache_fill/$(DEPDIR)/background_fetch.Plo
 	-rm -f experimental/cache_fill/$(DEPDIR)/cache_fill.Plo
@@ -7420,6 +7486,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f lua/$(DEPDIR)/tslua_la-ts_lua_string.Plo
 	-rm -f lua/$(DEPDIR)/tslua_la-ts_lua_transform.Plo
 	-rm -f lua/$(DEPDIR)/tslua_la-ts_lua_util.Plo
+	-rm -f lua/$(DEPDIR)/tslua_la-ts_lua_vconn.Plo
 	-rm -f regex_remap/$(DEPDIR)/regex_remap.Plo
 	-rm -f regex_revalidate/$(DEPDIR)/regex_revalidate.Plo
 	-rm -f s3_auth/$(DEPDIR)/aws_auth_v4.Plo

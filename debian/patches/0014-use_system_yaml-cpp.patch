@@ -17,7 +17,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
          iocore/dns
 --- a/configure.ac
 +++ b/configure.ac
-@@ -2076,7 +2076,6 @@ AC_CONFIG_FILES([
+@@ -2074,7 +2074,6 @@ AC_CONFIG_FILES([
    include/tscore/ink_config.h
    lib/tsconfig/Makefile
    src/wccp/Makefile

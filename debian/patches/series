@@ -1,4 +1,3 @@
-0001-Use-mcx16-on-x86-platforms-only.patch
 0003-reproductible-build.patch
 0006-fix-doc-build.patch
 0008-fix-python-check-unused-dependencies.patch

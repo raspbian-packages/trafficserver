@@ -720,7 +720,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
  # --------------------------------------------------------------
 --- a/include/tscpp/util/TextView.h
 +++ b/include/tscpp/util/TextView.h
-@@ -264,7 +264,7 @@ public:
+@@ -265,7 +265,7 @@ public:
    self_type prefix(size_t n) const;
    /// Convenience overload to avoid ambiguity for literal numbers.
    self_type prefix(int n) const;
@@ -729,7 +729,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
  
        If @a c is not found the entire view is returned.
        The delimiter character is not included in the returned view.
-@@ -272,7 +272,7 @@ public:
+@@ -273,7 +273,7 @@ public:
        @return A view of the prefix.
    */
    self_type prefix(char c) const;
