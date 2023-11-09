@@ -11,3 +11,5 @@
 0001-Correctly-handle-encoding-for-cache-hash-generation-.patch
 0002-8.1.x-Fix-a-crash-triggered-by-invalid-range-header-.patch
 0003-Remove-duplicate-slashes-at-the-beginning-of-the-inc.patch
+0001-s3_auth-Fix-hash-calculation-10567.patch
+0002-Add-an-HTTP-2-related-rate-limiting-10565.patch

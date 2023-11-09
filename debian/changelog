@@ -1,9 +1,17 @@
-trafficserver (8.1.7-0+deb10u2+rpi1) buster-staging; urgency=medium
+trafficserver (8.1.7-0+deb10u3+rpi1) buster-staging; urgency=medium
 
   [changes brought forward from 8.0.1-4+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Sat, 19 Jan 2019 12:42:48 +0000]
   * Use -latomic on raspbian too.
 
- -- Raspbian forward porter <root@raspbian.org>  Mon, 02 Oct 2023 09:21:39 +0000
+ -- Raspbian forward porter <root@raspbian.org>  Thu, 09 Nov 2023 18:06:32 +0000
+
+trafficserver (8.1.7-0+deb10u3) buster-security; urgency=medium
+
+  * Non-maintainer upload by the LTS Security Team.
+  * CVE-2023-41752: s3_auth plugin exposes AWSAccessKeyId
+  * CVE-2023-44487: HTTP/2 Rapid Reset denial of service
+
+ -- Adrian Bunk <bunk@debian.org>  Sun, 05 Nov 2023 21:52:00 +0200
 
 trafficserver (8.1.7-0+deb10u2) buster-security; urgency=medium
 
