@@ -1,0 +1,13 @@
+``
+> GET /get HTTP/1.1
+> Host: localhost:``
+> User-Agent: curl/``
+``
+< HTTP/1.1 200 OK
+``
+< Date: ``
+``
+< Age: ``
+``
+< Server: ATS/``
+``
