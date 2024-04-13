@@ -99,7 +99,6 @@ Use Cases
 Implemented for use |ACIDPTR| interface in :class:`Extendible`. But could be used elsewhere without modification.
 
 .. uml::
-   :align: center
 
    title Read while Write
 
@@ -119,7 +118,6 @@ Implemented for use |ACIDPTR| interface in :class:`Extendible`. But could be use
 When the writer is done, :func:`~AcidCommitPtr::~AcidCommitPtr()` is called and its |AcidPtr| is updated to point at the written copy, so that future read requests will use it. Existing reader will continue to use the old data.
 
 .. uml::
-   :align: center
 
    title Write Finalize
 
@@ -135,7 +133,6 @@ When the writer is done, :func:`~AcidCommitPtr::~AcidCommitPtr()` is called and 
 
 
 .. uml::
-   :align: center
 
    title AcidPtr Reader/Reader Contention
    box "MemLock"
@@ -166,7 +163,6 @@ When the writer is done, :func:`~AcidCommitPtr::~AcidCommitPtr()` is called and 
 
 
 .. uml::
-   :align: center
 
    Title AcidPtr Writer/Reader Contention
    box "MemLock"
@@ -214,7 +210,6 @@ When the writer is done, :func:`~AcidCommitPtr::~AcidCommitPtr()` is called and 
 
 
 .. uml::
-   :align: center
 
    Title AcidPtr Writer/Writer Contention
    box "MemLock"

@@ -102,7 +102,6 @@ a chunk to be consumed. The local variable / parameter :code:`size` is raw input
 :code:`TSIOBufferBlock`. The "size states" are marked blue.
 
 .. uml::
-   :align: center
 
    @startuml
 

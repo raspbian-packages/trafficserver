@@ -82,7 +82,6 @@ To use this plugin, enable it in a :file:`plugin.config` rule, specifying certif
 One use case would be routing incoming CONNECT request to another port on |TS|. With the certifier generating a trusted certificate, other plugins can act with a similar behavior to Man-In-The-Middle (logging interesting data for example).
 
 .. uml::
-   :align: center
 
    actor User
    participant Traffic_Server
