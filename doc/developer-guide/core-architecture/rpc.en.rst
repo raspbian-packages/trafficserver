@@ -45,7 +45,6 @@ Runtime Structure
 =================
 
 .. uml::
-   :align: center
 
    hide empty members
 
@@ -232,7 +231,6 @@ RPC API for |TServer| and |TManager|
 ====================================
 
 .. figure:: ../../uml/images/RPC-states.svg
-   :align: center
 
 |LM| and |PM| follow similar workflows. A manager will poll the socket for any messages. If it is able to read a message, it will handle it based on the :arg:`msg_id` from the :class:`MgmtMessageHdr` and select a callback to run asynchoronously. The async callback will add a response, if any, to an outgoing event queue within the class. A manager will continue to poll and read on the socket as long as there are messages available. Two things can stop a manager from polling.
 

@@ -23,7 +23,6 @@ Data Structures
 ***************
 
 .. uml::
-   :align: center
 
    hide empty members
 
