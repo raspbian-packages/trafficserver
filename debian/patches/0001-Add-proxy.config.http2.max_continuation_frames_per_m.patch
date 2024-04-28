@@ -1,0 +1,272 @@
+From 16cebb3a95dd780da346e393c575baa0c6f7621a Mon Sep 17 00:00:00 2001
+From: Masakazu Kitajo <maskit@apache.org>
+Date: Wed, 3 Apr 2024 09:38:35 -0600
+Subject: Add proxy.config.http2.max_continuation_frames_per_minute  (#11207)
+
+* proxy.config.http2.max_continuation_frames_per_minute
+
+This adds the ability to rate limite HTTP/2 CONTINUATION frames per
+stream per minute.
+
+* Add a missing function
+
+* Clang-format
+
+---------
+
+Co-authored-by: Masaori Koshiba <masaori@apache.org>
+---
+ doc/admin-guide/files/records.config.en.rst   | 11 +++-
+ .../statistics/core/http-connection.en.rst    | 11 +++-
+ include/tscore/Ptr.h                          |  1 +
+ mgmt/RecordsConfig.cc                         |  2 +
+ proxy/http2/HTTP2.cc                          | 56 ++++++++++---------
+ proxy/http2/HTTP2.h                           |  2 +
+ proxy/http2/Http2ConnectionState.cc           | 23 ++++++++
+ proxy/http2/Http2ConnectionState.h            |  3 +
+ 8 files changed, 80 insertions(+), 29 deletions(-)
+
+diff --git a/doc/admin-guide/files/records.config.en.rst b/doc/admin-guide/files/records.config.en.rst
+index fc9aae122..67f930703 100644
+--- a/doc/admin-guide/files/records.config.en.rst
++++ b/doc/admin-guide/files/records.config.en.rst
+@@ -3689,8 +3689,15 @@ HTTP/2 Configuration
+ .. ts:cv:: CONFIG proxy.config.http2.max_rst_stream_frames_per_minute INT 14
+    :reloadable:
+ 
+-   Specifies how many RST_STREAM frames |TS| receives for a minute at maximum.
+-   Clients exceeded this limit will be immediately disconnected with an error
++   Specifies how many RST_STREAM frames |TS| receives per minute at maximum.
++   Clients exceeding this limit will be immediately disconnected with an error
++   code of ENHANCE_YOUR_CALM.
++
++.. ts:cv:: CONFIG proxy.config.http2.max_continuation_frames_per_minute INT 120
++   :reloadable:
++
++   Specifies how many CONTINUATION frames |TS| receives per minute at maximum.
++   Clients exceeding this limit will be immediately disconnected with an error
+    code of ENHANCE_YOUR_CALM.
+ 
+ .. ts:cv:: CONFIG proxy.config.http2.min_avg_window_update FLOAT 2560.0
+diff --git a/doc/admin-guide/monitoring/statistics/core/http-connection.en.rst b/doc/admin-guide/monitoring/statistics/core/http-connection.en.rst
+index b14e72bd7..d336c0080 100644
+--- a/doc/admin-guide/monitoring/statistics/core/http-connection.en.rst
++++ b/doc/admin-guide/monitoring/statistics/core/http-connection.en.rst
+@@ -241,10 +241,17 @@ HTTP/2
+ .. ts:stat:: global proxy.process.http2.max_rst_stream_frames_per_minute_exceeded integer
+    :type: counter
+ 
+-   Represents the total number of closed HTTP/2 connections for exceeding the
+-   maximum allowed number of rst_stream frames per minute limit which is configured by
++   Represents the total number of HTTP/2 connections closed for exceeding the
++   maximum allowed number of ``RST_STREAM`` frames per minute limit which is configured by
+    :ts:cv:`proxy.config.http2.max_rst_stream_frames_per_minute`.
+ 
++.. ts:stat:: global proxy.process.http2.max_continuation_frames_per_minute_exceeded integer
++   :type: counter
++
++   Represents the total number of HTTP/2 connections closed for exceeding the
++   maximum allowed number of ``CONTINUATION`` frames per minute limit which is
++   configured by :ts:cv:`proxy.config.http2.max_continuation_frames_per_minute`.
++
+ .. ts:stat:: global proxy.process.http2.insufficient_avg_window_update integer
+    :type: counter
+ 
+diff --git a/include/tscore/Ptr.h b/include/tscore/Ptr.h
+index d067604a9..750996ac6 100644
+--- a/include/tscore/Ptr.h
++++ b/include/tscore/Ptr.h
+@@ -24,6 +24,7 @@
+ #pragma once
+ 
+ #include "tscore/ink_atomic.h"
++#include <cstddef>
+ 
+ ////////////////////////////////////////////////////////////////////
+ ////////////////////////////////////////////////////////////////////
+diff --git a/mgmt/RecordsConfig.cc b/mgmt/RecordsConfig.cc
+index c2d84dc0e..fba9fd52c 100644
+--- a/mgmt/RecordsConfig.cc
++++ b/mgmt/RecordsConfig.cc
+@@ -1348,6 +1348,8 @@ static const RecordElement RecordsConfig[] =
+   ,
+   {RECT_CONFIG, "proxy.config.http2.max_rst_stream_frames_per_minute", RECD_INT, "200", RECU_DYNAMIC, RR_NULL, RECC_STR, "^[0-9]+$", RECA_NULL}
+   ,
++  {RECT_CONFIG, "proxy.config.http2.max_continuation_frames_per_minute", RECD_INT, "120", RECU_DYNAMIC, RR_NULL, RECC_STR, "^[0-9]+$", RECA_NULL}
++  ,
+   {RECT_CONFIG, "proxy.config.http2.min_avg_window_update", RECD_FLOAT, "2560.0", RECU_DYNAMIC, RR_NULL, RECC_NULL, nullptr, RECA_NULL}
+   ,
+   {RECT_CONFIG, "proxy.config.http2.header_table_size_limit", RECD_INT, "65536", RECU_DYNAMIC, RR_NULL, RECC_STR, "^[0-9]+$", RECA_NULL}
+diff --git a/proxy/http2/HTTP2.cc b/proxy/http2/HTTP2.cc
+index cc07c9a01..cdcd25b30 100644
+--- a/proxy/http2/HTTP2.cc
++++ b/proxy/http2/HTTP2.cc
+@@ -73,6 +73,8 @@ static const char *const HTTP2_STAT_MAX_PRIORITY_FRAMES_PER_MINUTE_EXCEEDED_NAME
+   "proxy.process.http2.max_priority_frames_per_minute_exceeded";
+ static const char *const HTTP2_STAT_MAX_RST_STREAM_FRAMES_PER_MINUTE_EXCEEDED_NAME =
+   "proxy.process.http2.max_rst_stream_frames_per_minute_exceeded";
++static const char *const HTTP2_STAT_MAX_CONTINUATION_FRAMES_PER_MINUTE_EXCEEDED_NAME =
++  "proxy.process.http2.max_continuation_frames_per_minute_exceeded";
+ static const char *const HTTP2_STAT_INSUFFICIENT_AVG_WINDOW_UPDATE_NAME = "proxy.process.http2.insufficient_avg_window_update";
+ 
+ union byte_pointer {
+@@ -728,31 +730,32 @@ http2_decode_header_blocks(HTTPHdr *hdr, const uint8_t *buf_start, const uint32_
+ }
+ 
+ // Initialize this subsystem with librecords configs (for now)
+-uint32_t Http2::max_concurrent_streams_in        = 100;
+-uint32_t Http2::min_concurrent_streams_in        = 10;
+-uint32_t Http2::max_active_streams_in            = 0;
+-bool Http2::throttling                           = false;
+-uint32_t Http2::stream_priority_enabled          = 0;
+-uint32_t Http2::initial_window_size              = 65535;
+-uint32_t Http2::max_frame_size                   = 16384;
+-uint32_t Http2::header_table_size                = 4096;
+-uint32_t Http2::max_header_list_size             = 4294967295;
+-uint32_t Http2::accept_no_activity_timeout       = 120;
+-uint32_t Http2::no_activity_timeout_in           = 120;
+-uint32_t Http2::active_timeout_in                = 0;
+-uint32_t Http2::push_diary_size                  = 256;
+-uint32_t Http2::zombie_timeout_in                = 0;
+-float Http2::stream_error_rate_threshold         = 0.1;
+-uint32_t Http2::max_settings_per_frame           = 7;
+-uint32_t Http2::max_settings_per_minute          = 14;
+-uint32_t Http2::max_settings_frames_per_minute   = 14;
+-uint32_t Http2::max_ping_frames_per_minute       = 60;
+-uint32_t Http2::max_priority_frames_per_minute   = 120;
+-uint32_t Http2::max_rst_stream_frames_per_minute = 200;
+-float Http2::min_avg_window_update               = 2560.0;
+-uint32_t Http2::con_slow_log_threshold           = 0;
+-uint32_t Http2::stream_slow_log_threshold        = 0;
+-uint32_t Http2::header_table_size_limit          = 65536;
++uint32_t Http2::max_concurrent_streams_in          = 100;
++uint32_t Http2::min_concurrent_streams_in          = 10;
++uint32_t Http2::max_active_streams_in              = 0;
++bool Http2::throttling                             = false;
++uint32_t Http2::stream_priority_enabled            = 0;
++uint32_t Http2::initial_window_size                = 65535;
++uint32_t Http2::max_frame_size                     = 16384;
++uint32_t Http2::header_table_size                  = 4096;
++uint32_t Http2::max_header_list_size               = 4294967295;
++uint32_t Http2::accept_no_activity_timeout         = 120;
++uint32_t Http2::no_activity_timeout_in             = 120;
++uint32_t Http2::active_timeout_in                  = 0;
++uint32_t Http2::push_diary_size                    = 256;
++uint32_t Http2::zombie_timeout_in                  = 0;
++float Http2::stream_error_rate_threshold           = 0.1;
++uint32_t Http2::max_settings_per_frame             = 7;
++uint32_t Http2::max_settings_per_minute            = 14;
++uint32_t Http2::max_settings_frames_per_minute     = 14;
++uint32_t Http2::max_ping_frames_per_minute         = 60;
++uint32_t Http2::max_priority_frames_per_minute     = 120;
++uint32_t Http2::max_rst_stream_frames_per_minute   = 200;
++uint32_t Http2::max_continuation_frames_per_minute = 120;
++float Http2::min_avg_window_update                 = 2560.0;
++uint32_t Http2::con_slow_log_threshold             = 0;
++uint32_t Http2::stream_slow_log_threshold          = 0;
++uint32_t Http2::header_table_size_limit            = 65536;
+ 
+ void
+ Http2::init()
+@@ -777,6 +780,7 @@ Http2::init()
+   REC_EstablishStaticConfigInt32U(max_ping_frames_per_minute, "proxy.config.http2.max_ping_frames_per_minute");
+   REC_EstablishStaticConfigInt32U(max_priority_frames_per_minute, "proxy.config.http2.max_priority_frames_per_minute");
+   REC_EstablishStaticConfigInt32U(max_rst_stream_frames_per_minute, "proxy.config.http2.max_rst_stream_frames_per_minute");
++  REC_EstablishStaticConfigInt32U(max_continuation_frames_per_minute, "proxy.config.http2.max_continuation_frames_per_minute");
+   REC_EstablishStaticConfigFloat(min_avg_window_update, "proxy.config.http2.min_avg_window_update");
+   REC_EstablishStaticConfigInt32U(con_slow_log_threshold, "proxy.config.http2.connection.slow.log.threshold");
+   REC_EstablishStaticConfigInt32U(stream_slow_log_threshold, "proxy.config.http2.stream.slow.log.threshold");
+@@ -845,6 +849,8 @@ Http2::init()
+                      static_cast<int>(HTTP2_STAT_MAX_PRIORITY_FRAMES_PER_MINUTE_EXCEEDED), RecRawStatSyncSum);
+   RecRegisterRawStat(http2_rsb, RECT_PROCESS, HTTP2_STAT_MAX_RST_STREAM_FRAMES_PER_MINUTE_EXCEEDED_NAME, RECD_INT, RECP_PERSISTENT,
+                      static_cast<int>(HTTP2_STAT_MAX_RST_STREAM_FRAMES_PER_MINUTE_EXCEEDED), RecRawStatSyncSum);
++  RecRegisterRawStat(http2_rsb, RECT_PROCESS, HTTP2_STAT_MAX_CONTINUATION_FRAMES_PER_MINUTE_EXCEEDED_NAME, RECD_INT,
++                     RECP_PERSISTENT, static_cast<int>(HTTP2_STAT_MAX_CONTINUATION_FRAMES_PER_MINUTE_EXCEEDED), RecRawStatSyncSum);
+   RecRegisterRawStat(http2_rsb, RECT_PROCESS, HTTP2_STAT_INSUFFICIENT_AVG_WINDOW_UPDATE_NAME, RECD_INT, RECP_PERSISTENT,
+                      static_cast<int>(HTTP2_STAT_INSUFFICIENT_AVG_WINDOW_UPDATE), RecRawStatSyncSum);
+ }
+diff --git a/proxy/http2/HTTP2.h b/proxy/http2/HTTP2.h
+index 7fe657e5d..8d8879340 100644
+--- a/proxy/http2/HTTP2.h
++++ b/proxy/http2/HTTP2.h
+@@ -93,6 +93,7 @@ enum {
+   HTTP2_STAT_MAX_PING_FRAMES_PER_MINUTE_EXCEEDED,
+   HTTP2_STAT_MAX_PRIORITY_FRAMES_PER_MINUTE_EXCEEDED,
+   HTTP2_STAT_MAX_RST_STREAM_FRAMES_PER_MINUTE_EXCEEDED,
++  HTTP2_STAT_MAX_CONTINUATION_FRAMES_PER_MINUTE_EXCEEDED,
+   HTTP2_STAT_INSUFFICIENT_AVG_WINDOW_UPDATE,
+ 
+   HTTP2_N_STATS // Terminal counter, NOT A STAT INDEX.
+@@ -390,6 +391,7 @@ public:
+   static uint32_t max_ping_frames_per_minute;
+   static uint32_t max_priority_frames_per_minute;
+   static uint32_t max_rst_stream_frames_per_minute;
++  static uint32_t max_continuation_frames_per_minute;
+   static float min_avg_window_update;
+   static uint32_t con_slow_log_threshold;
+   static uint32_t stream_slow_log_threshold;
+diff --git a/proxy/http2/Http2ConnectionState.cc b/proxy/http2/Http2ConnectionState.cc
+index ce66c31eb..eb58592f8 100644
+--- a/proxy/http2/Http2ConnectionState.cc
++++ b/proxy/http2/Http2ConnectionState.cc
+@@ -907,6 +907,17 @@ rcv_continuation_frame(Http2ConnectionState &cstate, const Http2Frame &frame)
+     }
+   }
+ 
++  // Update CONTINUATION frame count per minute.
++  cstate.increment_received_continuation_frame_count();
++  // Close this connection if its CONTINUATION frame count exceeds a limit.
++  if (cstate.get_received_continuation_frame_count() > Http2::max_continuation_frames_per_minute) {
++    HTTP2_INCREMENT_THREAD_DYN_STAT(HTTP2_STAT_MAX_CONTINUATION_FRAMES_PER_MINUTE_EXCEEDED, this_ethread());
++    Http2StreamDebug(cstate.ua_session, stream_id, "Observed too frequent CONTINUATION frames: %u frames within a last minute",
++                     cstate.get_received_continuation_frame_count());
++    return Http2Error(Http2ErrorClass::HTTP2_ERROR_CLASS_CONNECTION, Http2ErrorCode::HTTP2_ERROR_ENHANCE_YOUR_CALM,
++                      "reset too frequent CONTINUATION frames");
++  }
++
+   // keep track of how many bytes we get in the frame
+   stream->request_header_length += payload_length;
+   if (stream->request_header_length > Http2::max_header_list_size) {
+@@ -1976,6 +1987,18 @@ Http2ConnectionState::get_received_rst_stream_frame_count()
+   return this->_received_rst_stream_frame_counter.get_count();
+ }
+ 
++void
++Http2ConnectionState::increment_received_continuation_frame_count()
++{
++  this->_received_continuation_frame_counter.increment();
++}
++
++uint32_t
++Http2ConnectionState::get_received_continuation_frame_count()
++{
++  return this->_received_continuation_frame_counter.get_count();
++}
++
+ // Return min_concurrent_streams_in when current client streams number is larger than max_active_streams_in.
+ // Main purpose of this is preventing DDoS Attacks.
+ unsigned
+diff --git a/proxy/http2/Http2ConnectionState.h b/proxy/http2/Http2ConnectionState.h
+index ed4f5cd47..5268b8f1f 100644
+--- a/proxy/http2/Http2ConnectionState.h
++++ b/proxy/http2/Http2ConnectionState.h
+@@ -325,6 +325,8 @@ public:
+   uint32_t get_received_priority_frame_count();
+   void increment_received_rst_stream_frame_count();
+   uint32_t get_received_rst_stream_frame_count();
++  void increment_received_continuation_frame_count();
++  uint32_t get_received_continuation_frame_count();
+ 
+   ssize_t client_rwnd() const;
+   Http2ErrorCode increment_client_rwnd(size_t amount);
+@@ -371,6 +373,7 @@ private:
+   Http2FrequencyCounter _received_ping_frame_counter;
+   Http2FrequencyCounter _received_priority_frame_counter;
+   Http2FrequencyCounter _received_rst_stream_frame_counter;
++  Http2FrequencyCounter _received_continuation_frame_counter;
+ 
+   // NOTE: Id of stream which MUST receive CONTINUATION frame.
+   //   - [RFC 7540] 6.2 HEADERS
+-- 
+2.30.2
+
