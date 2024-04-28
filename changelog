@@ -1,0 +1,1005 @@
+trafficserver (8.1.7-0+deb10u4) buster-security; urgency=medium
+
+  * Non-maintainer upload by the LTS Team.
+  * CVE-2024-31309: HTTP/2 CONTINUATION DoS attack
+
+ -- Adrian Bunk <bunk@debian.org>  Sun, 28 Apr 2024 21:24:00 +0300
+
+trafficserver (8.1.7-0+deb10u3) buster-security; urgency=medium
+
+  * Non-maintainer upload by the LTS Security Team.
+  * CVE-2023-41752: s3_auth plugin exposes AWSAccessKeyId
+  * CVE-2023-44487: HTTP/2 Rapid Reset denial of service
+
+ -- Adrian Bunk <bunk@debian.org>  Sun, 05 Nov 2023 21:52:00 +0200
+
+trafficserver (8.1.7-0+deb10u2) buster-security; urgency=medium
+
+  * Non-maintainer upload by the LTS Security Team.
+  * CVE-2022-47185, CVE-2023-33934: Improper input validation
+
+ -- Adrian Bunk <bunk@debian.org>  Sat, 30 Sep 2023 17:35:12 +0300
+
+trafficserver (8.1.7-0+deb10u1) buster-security; urgency=medium
+
+  * Non-maintainer upload by the LTS Security Team.
+  * New upstream release.
+    - CVE-2022-47184: The TRACE method can be used to disclose
+      network information.
+    - CVE-2023-30631: Configuration option to block the PUSH method
+      in ATS didn't work.
+    - CVE-2023-33933: s3_auth plugin problem with hash calculation.
+
+ --  Adrian Bunk <bunk@debian.org>  Thu, 29 Jun 2023 18:41:23 +0300
+
+trafficserver (8.1.6+ds-1~deb10u1) buster-security; urgency=high
+
+  * Non-maintainer upload by the LTS team.
+  * Backport upstream version 8.1.6 to Buster.
+  * Fix CVE-2022-31778, CVE-2022-31779, CVE-2022-32749, CVE-2022-37392.
+    Several vulnerabilities were discovered in Apache Traffic Server, a reverse
+    and forward proxy server, which could result in HTTP request smuggling,
+    cache poisoning or information disclosure.
+
+ -- Markus Koschany <apo@debian.org>  Wed, 05 Apr 2023 22:24:05 +0200
+
+trafficserver (8.1.6+ds-1~deb11u1) bullseye-security; urgency=high
+
+  * Update d/u/signing-key for 8.1.x serie
+  * New upstream version 8.1.6+ds
+  * Multiple CVE fixes for 8.1.x
+    + CVE-2022-32749: Improper Check for Unusual or Exceptional Conditions vulnerability
+    + CVE-2022-37392: Improper Check for Unusual or Exceptional Conditions vulnerability
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Wed, 04 Jan 2023 09:22:58 +0100
+
+trafficserver (8.1.5+ds-1~deb11u1) bullseye-security; urgency=high
+
+  * Update d/watch to stick to 8.1.X serie
+  * Update upstream gpg keys
+  * UPdate d/salsa-ci.yaml
+  * New upstream version 8.1.5+ds
+  * Patches refresh for 8.1.5
+  * Update experimental plugins list
+  * Multiple CVE fixes for 8.1.x
+    + CVE-2021-37150: Protocol vs scheme mismatch
+    + CVE-2022-25763: Improper input validation on HTTP/2 headers
+    + CVE-2022-28129: Insufficient Validation of HTTP/1.x Headers
+    + CVE-2022-31778: Transfer-Encoding not treated as hop-by-hop
+    + CVE-2022-31779: Improper HTTP/2 scheme and method validation
+    + CVE-2022-31780: HTTP/2 framing vulnerabilities 
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Fri, 12 Aug 2022 09:16:08 +0200
+
+trafficserver (8.1.1+ds-1.1+deb11u1) bullseye-security; urgency=high
+
+  * Multiple CVE fixes for 8.1.x
+    + CVE-2021-37147: Improper input validation vulnerability
+    + CVE-2021-37148: Improper input validation vulnerability
+    + CVE-2021-37149: Improper Input Validation vulnerability
+    + CVE-2021-38161: Improper Authentication vulnerability in TLS origin verification
+    + CVE-2021-44040: Improper Input Validation vulnerability in request line parsing
+    + CVE-2021-44759: Improper Authentication vulnerability in TLS origin validation
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Sat, 21 May 2022 19:28:31 +0200
+
+trafficserver (8.1.1+ds-1.1) unstable; urgency=medium
+
+  * Non-maintainer upload.
+  * Address CVE-2021-27577, CVE-2021-32565, CVE-2021-32566, CVE-2021-32567 and
+    CVE-2021-35474.
+    - CVE-2021-27577: Incorrect handling of url fragment leads to cache
+      poisoning
+    - CVE-2021-32565: HTTP Request Smuggling, content length with invalid
+      charters
+    - CVE-2021-32566: Specific sequence of HTTP/2 frames can cause ATS to
+      crash
+    - CVE-2021-32567: Reading HTTP/2 frames too many times
+    - CVE-2021-35474: Dynamic stack buffer overflow in cachekey plugin
+    (Closes: #990303)
+
+ -- Salvatore Bonaccorso <carnil@debian.org>  Thu, 15 Jul 2021 21:48:17 +0200
+
+trafficserver (8.1.1+ds-1) unstable; urgency=medium
+
+  * New upstream version 8.1.0+ds
+  * Update d/watch
+  * Update d/upstream/signing-key.asc
+  * New upstream version 8.1.1+ds
+  * Update Debian Standards-Version
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Sun, 06 Dec 2020 16:26:39 +0100
+
+trafficserver (8.1.1+ds-1) unstable; urgency=medium
+
+  * New upstream version 8.1.0+ds
+  * Update d/watch
+  * Update d/upstream/signing-key.asc
+  * New upstream version 8.1.1+ds
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Sun, 06 Dec 2020 15:43:35 +0100
+
+trafficserver (8.1.0+ds-2) unstable; urgency=medium
+
+  * Remove autopkgtest (Closes: #974683)
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Sun, 22 Nov 2020 18:24:18 +0100
+
+trafficserver (8.1.0+ds-1) unstable; urgency=medium
+
+  * Remove lintian-overrides for trafficserver-experimental-plugins
+  * Fix Salsa CI
+  * Update d/upstream/signing-key.asc
+  * New upstream version 8.1.0+ds
+  * d/patches refresh for 8.1.0
+  * Update experimental plugins list
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Tue, 01 Sep 2020 19:55:21 +0200
+
+trafficserver (8.0.8+ds-3) UNRELEASED; urgency=low
+
+  * Fix day-of-week for changelog entry 2.1.5-unstable-1.
+
+ -- Debian Janitor <janitor@jelmer.uk>  Sat, 22 Aug 2020 17:48:33 -0000
+
+trafficserver (8.0.8+ds-2) unstable; urgency=medium
+
+  * Backport upstream patch to fix FTBFS with Sphinx >= 3.0 (Closes: #963664)
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Wed, 29 Jul 2020 08:40:43 +0200
+
+trafficserver (8.0.8+ds-1) unstable; urgency=medium
+
+  * New upstream version 8.0.8+ds
+  * Includes fix for CVE-2020-9494 (Closes: #963629)
+  * Update debhelper-compat version in d/control
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Thu, 25 Jun 2020 10:01:51 +0200
+
+trafficserver (8.0.7+ds-1) unstable; urgency=medium
+
+  * New upstream version 8.0.7+ds
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Thu, 16 Apr 2020 18:32:04 +0200
+
+trafficserver (8.0.6+ds-1) unstable; urgency=medium
+
+  * Update d/watch after upstream changes
+  * Update d/gbp.conf
+  * Update d/gbp.conf
+  * New upstream version 8.0.6+ds
+  * Patches refresh for 8.0.6
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Tue, 03 Mar 2020 09:06:18 +0100
+
+trafficserver (8.0.5+ds-3) unstable; urgency=medium
+
+  * Bump Standards-Version
+  * Add patch for Python 3.8 compatibility (Closes: #950245)
+  * Update build & test dependencies for Python 3.8
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Mon, 03 Feb 2020 11:45:17 +0100
+
+trafficserver (8.0.5+ds-2) unstable; urgency=medium
+
+  * Bump Debian Policy version
+  * Remove Build-Depends against python2 modules (Closes: #943248)
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Wed, 23 Oct 2019 10:07:42 +0200
+
+trafficserver (8.0.5+ds-1) unstable; urgency=medium
+
+  * New upstream release
+    - Changes introduced with 8.0.4 include fixes for CVE-2019-9512,
+      CVE-2019-9514, and CVE-2019-9515. (Closes: #934887)
+    - 8.0.5 fixes CVE-2019-9518 (Closes: #935314)
+
+ -- Emanuele Rocca <ema@debian.org>  Sat, 24 Aug 2019 09:00:22 +0200
+
+trafficserver (8.0.3+ds-4) unstable; urgency=medium
+
+  * Fix lintian warning 'skip-systemd-native-flag-missing-pre-depends'
+  * Use debhelper-compat instead of debian/compat
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Fri, 02 Aug 2019 09:07:31 +0200
+
+trafficserver (8.0.3+ds-3) unstable; urgency=medium
+
+  * Run upstream testsuite with autopkgtest.
+  * Enable CI tests on salsa (see debian/salsa-ci.yml).
+  * Set debhelper compatibility level to 12.
+  * Add myself to the Uploaders field.
+  * Set Standards-Version to 4.4.0.
+
+ -- Emanuele Rocca <ema@debian.org>  Wed, 31 Jul 2019 11:11:59 +0200
+
+trafficserver (8.0.3+ds-2) unstable; urgency=medium
+
+  * Fix hardeing updating 0015-as-needed-fix.patch from Ubuntu
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Tue, 26 Mar 2019 08:44:17 +0100
+
+trafficserver (8.0.3+ds-1) unstable; urgency=medium
+
+  * Use secure URI in Homepage field.
+  * Re-export upstream signing key without extra signatures.
+  * Drop unnecessary dependency on dh-autoconf.
+  * New upstream version 8.0.3+ds
+  * Patches update for 8.0.3
+  * Add as-needed patch from Ubuntu
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Mon, 25 Mar 2019 10:29:35 +0100
+
+trafficserver (8.0.2+ds-1) unstable; urgency=medium
+
+  * Disable testing build in d/gitlab-ci.yml
+  * Update d/copyright to remove unneeded files when importing upstream release
+  * Update upstream GPG keys list
+  * New upstream version 8.0.2+ds
+  * Patches refresh for 8.0.2
+  * Update patch. Add dep3 headers
+  * Update d/control. Mark trafficserver-dev architecture all
+  * Remove signature from upstream keys. Fix lintian info
+  * Move dpkg-maintscript-helper commands to d/trafficserver.maintscript
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Wed, 30 Jan 2019 14:45:09 +0100
+
+trafficserver (8.0.1-4) unstable; urgency=medium
+
+  * Add patch and update d/control, d/rules to use system provided yaml-cpp
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Fri, 11 Jan 2019 19:07:28 +0100
+
+trafficserver (8.0.1-3) unstable; urgency=medium
+
+  * Add missed experimental plugin certifier
+  * Add man pages paths to d/not-installed to avoid too verbose dh_missing list.
+    Manpages are compressed before being install. Non-compressed version is in
+    turn erroneously detected as not installed.
+  * Update patch which has been merged upstream
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Mon, 07 Jan 2019 15:24:38 +0100
+
+trafficserver (8.0.1-2) unstable; urgency=medium
+
+  * Update Standards Version in d/control. No other changes needed
+  * Update trafficserver-experimental-plugins package descriptions
+    in d/control to fix lintian warnings
+  * Add patch 0012-fix-spelling-checks to fix spellings. Forwarded upstream
+  * Update patch 0006-fix-doc-build to include missing manpages
+  * Remove d/trafficserver.lintian-overrides
+  * Add patch 0013-fix-perl-interpreter-path. Fix lintian error which used
+    to be overridden in d/trafficserver.lintian-overrides
+  * Update d/trafficserver-dev.lintian-overrides
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Thu, 03 Jan 2019 10:52:44 +0100
+
+trafficserver (8.0.1-1) unstable; urgency=medium
+
+  * New upstream version 8.0.1
+  * Patches refresh for 8.0.1
+  * Removed patches which have been merged upstream:
+    - 0002-add-mips64-support
+    - 0004-fix_arm_build
+    - 0005-fix_build_kfreebsd
+    - 0007-fix-uri_signing
+    - 0010-fix-32bits-build
+    - 0012-fix-traffic_via
+  * Fix lintian warning public-upstream-key-not-minimal
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Mon, 03 Dec 2018 14:15:07 +0100
+
+trafficserver (8.0.0-4) unstable; urgency=medium
+
+  [ Emanuele Rocca ]
+  * Update descriptions in d/control
+
+  [ Jean Baptiste Favre ]
+  * Update patch to fix kfreebsd FTBFS
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Mon, 05 Nov 2018 10:13:03 +0100
+
+trafficserver (8.0.0-3) unstable; urgency=medium
+
+  * Remove webptransform experimental plugin
+  * Update patch to fix kfreebsd FTBFS
+  * Update d/copyright to fix lintian error
+  * Update d/rules to fix FTBFS for mips & mipsel archs
+  * Update d/rules to spare call to dpkg-parsechangelog
+  * Update d/copyright after 8.0.0 file moves
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Fri, 02 Nov 2018 14:24:38 +0100
+
+trafficserver (8.0.0-2) unstable; urgency=medium
+
+  * Add a patch to fix FTBFS with MySQL 8 (LP: #1795362)
+  * Update 0009-fix-mysql-8-build.patch which has been merged upstream
+  * Bump Standards-Version in d/control
+  * Add patch to fix 32bits arm & mips arch build
+  * Backport upstream patch to fix segmentation fault
+  * Backport upstream patch to fix traffic_via
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Wed, 17 Oct 2018 20:40:51 +0200
+
+trafficserver (8.0.0-1) unstable; urgency=medium
+
+  [ Aron Xu ]
+  * Remove .vscode directory
+  * systemd: After=network-online.target
+
+  [ Jean Baptiste Favre ]
+  * Update d/changelog for 8.0.0
+  * Update init and service file after traffic_cop removal
+  * Update d/README.Debian to reflect configuration changes
+  * Add d/gitlab-ci.yml to use Salsa CI
+  * Update d/control
+      * Add build-deps against graphviz, python3-sphinxcontrib.plantuml
+        and plantuml to build documentation & manpages
+      * Add build-deps against libcrypto++-dev, libjansson-dev, libcjose-dev to
+        build uri_signing plugin
+      * Update Breaks to manage plugins transition from experimental to stable
+  * Update postinst maintainer script, add postrm & preinst scripts to remove
+    obsolete config files
+    - /etc/trafficserver/vaddrs.config,
+    - /etc/trafficserver/metrics.config,
+    - /etc/trafficserver/logging.config,
+    - /etc/trafficserver/log_hosts.config,
+    - /etc/trafficserver/congestion.config,
+    - /etc/trafficserver/cluster.config,
+    - /etc/trafficserver/body_factory/default/congestion#retryAfter
+  * Update d/trafficserver and d/trafficserver-experimental-plugins install
+    files
+    - Stable plugin gzip renamed to compress
+    - Promoted stable plugins:
+      - cachekey,
+      - cache_promote,
+      - escalate,
+      - test_cppapi,
+      - tslua
+    - Added new experimental plugins:
+      - access_control,
+      - fq_pacing,
+      - prefetch,
+      - server_push_preload,
+      - system_stats,
+      - tls_bridge,
+      - traffic_dump,
+      - uri_signing
+    - Remove deprecated plugins collapsed_connection, epic
+  * Remove obsolete config option --enable-system-luajit from d/rules
+  * Add --with-build-version option to d/rule to have a deterministic
+    build-version
+  * Update d/copyright to remove .vscode during import at repack stage
+  * Update patches for 8.0.0
+    - Refresh patches for 8.0.0
+    - Removed patches:
+      - 0004-force-use-luajit-system*, updated upstream
+      - 0005-fix_documentation_build_option, updated upstream
+      - 0008-fix_build_lua, updated upstream
+      - 0009-fix-doc-python3, update upstream
+      - 0010-Remove-custom-memory-barriers-from-header_rewrite-an patches,
+        updated upstream
+    - Renamed remaining patches:
+      - 0006-fix_arm_build -> 0004-fix_arm_build,
+      - 0007-fix_build_kfreebsd -> 0005-fix_build_kfreebsd,
+      - 0009-fix-doc-git -> 0006-fix-doc-build
+    - Add patch to fix uri_signing experimental plugin build
+    - Add patch to fix check-unused-dependencies
+  * New upstream version 8.0.0
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Sat, 06 Oct 2018 12:43:13 +0200
+
+trafficserver (7.1.4+ds-1) unstable; urgency=medium
+
+  [ Aron Xu ]
+  * Use libunwind for mips*
+
+  [ Jean Baptiste Favre ]
+  * Update Debian standards version
+  * New upstream version 7.1.4+ds
+  * Patches refresh for 7.1.4
+  * Add lintian override for trafficserver package
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Mon, 06 Aug 2018 10:56:14 +0200
+
+trafficserver (7.1.3+ds-4) unstable; urgency=medium
+
+  * Fix FTBS on armel (Closes: #902112)
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Fri, 22 Jun 2018 17:13:53 +0200
+
+trafficserver (7.1.3+ds-3) unstable; urgency=medium
+
+  * Add systemd tmpfile support (LP: #1756207)
+  * Update Build-Depends (Closes: #887503)
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Wed, 13 Jun 2018 22:39:58 +0200
+
+trafficserver (7.1.3+ds-2) unstable; urgency=medium
+
+  * Update build-deps to libncurses6
+  * Update patch to fix arm* builds
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Fri, 18 May 2018 17:25:22 +0200
+
+trafficserver (7.1.3+ds-1) unstable; urgency=medium
+
+  * Update Vcs URLs. Replace alioth with salsa
+  * Add patch to make documentation build with python3. Fix lintian warning
+  * New upstream version 7.1.3+ds
+  * Update d/gbp.conf
+  * Patches refresh for 7.1.3
+  * Add a patch to fix doc build outside of git repository
+  * Update standards version
+  * Remove chown command from postinst script. Fix lintian warning
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Tue, 24 Apr 2018 10:17:21 +0200
+
+trafficserver (7.1.2+ds-3) unstable; urgency=medium
+
+  * Add upstream changelog file to trafficserver package
+  * Add systemd units file
+  * Fix documentation. Update links
+  * Update d/rules to remove examples binary files from package
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Fri, 16 Feb 2018 15:05:07 +0100
+
+trafficserver (7.1.2+ds-2) unstable; urgency=medium
+
+  * Drop patch for lua source code removal (Handled with repack)
+  * Drop patch for documentation build (merged upstream)
+  * Add a patch to make man pages being built
+  * Update d/compat
+  * Fix lintian warnings
+  * Update d/rule to fix lintian warning.
+  * Disable auto_test (again)
+  * Install CHANGELOG file in /usr/share/doc
+  * Enable documentation built (if not, man pages aren't either)
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Thu, 25 Jan 2018 23:38:51 +0100
+
+trafficserver (7.1.2+ds-1) unstable; urgency=medium
+
+  * New upstream version 7.1.2+ds
+  * Update d/patches for 7.1.2+ds
+  * Update build dependencies
+  * Update compilation flags
+  * Enable experimental plugin cache_key_genid
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Tue, 16 Jan 2018 18:18:40 +0100
+
+trafficserver (7.1.1-1) unstable; urgency=medium
+
+  * Fix trafficserver-dev dependencies. (Closes: #877457)
+  * Fix d/gbp.conf. Remove duplicate filter option
+  * Update standards version in d/control
+  * Fix debian-rules-sets-dpkg-architecture-variable lintian warning
+  * Fix debian-watch-uses-insecure-uri lintian info
+  * Update d/patches
+  * Update d/rules to reflect healthcheck being managed as a stable plugin
+  * Add a patch to fix kfreebsd build
+  * Add a patch to fix arm build
+  * New upstream version 7.1.0
+  * Remove broken 0008-fix_build_armel patch
+  * Patches refresh for 7.1.0
+  * Add new patch to fix build with luajit 2.1 (Closes: #873328)
+  * Update experimental modules list
+  * Update Debian Standards-Version & d/compat
+  * Update Vcs-* fields to use secure communication
+  * Lintian fix for d/NEWS
+  * Add new build option to use system luajit
+  * Update build dependencies (Closes: #859750)
+  * Fix lintian warning in d/copyright
+  * New upstream version 7.1.1
+  * Patches refresh for 7.1.1
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Tue, 02 Jan 2018 13:30:43 +0100
+
+trafficserver (7.0.0-5) unstable; urgency=medium
+
+  * Add patch to fix arm* build. (Closes: #857389)
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Wed, 22 Mar 2017 09:31:14 +0100
+
+trafficserver (7.0.0-4) unstable; urgency=medium
+
+  * Add Conflicts for file overwrites (Closes: #850775)
+
+ -- Aron Xu <aron@debian.org>  Wed, 11 Jan 2017 14:49:15 +0800
+
+trafficserver (7.0.0-3) unstable; urgency=medium
+
+  * Fix documentation build for  docutils >= 0.13 (Closes: #848800)
+  * Update LuaJIT patches serie to fallback using Lua if LuaJIT not found
+  * Update luajit patch.
+    - Remove hardcoded value
+    - Add luajit dynamic detection
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Wed, 04 Jan 2017 15:13:43 +0100
+
+trafficserver (7.0.0-2) unstable; urgency=medium
+
+  * Add patches to use system luajit and not the internal one any more
+  * Update d/rules to remove luajit exception.
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Fri, 25 Nov 2016 17:51:25 +0100
+
+trafficserver (7.0.0-1) unstable; urgency=medium
+
+  [ Arno Töll ]
+  * Remove myself as maintainer. Thanks to Aron and Jean Baptiste for stepping
+    in on my place and keeping the package up to date. It makes the confident
+    the package is in good hands now.
+
+  [ Jean Baptiste Favre ]
+  * New upstream release 7.0.0
+  * Patches refresh for 7.0.0
+  * Update plugins list
+  * Update build dependencies
+  * Add pkgconfig .pc file in trafficserver-dev package
+  * Enable experimental plugins webp_transform
+  * Enable traffic_top build (Closes: #836126)
+  * Remove Linux AIO support (Closes: #803661, #836124)
+  * Fix FTBFS for mips64el (Closes: #830856)
+  * Add patch to make the build reproductible (Closes: #833176)
+
+  [ Aron Xu ]
+  * Set myself as Maintainer at the moment
+  * Build-Depends on default-libmysqlclient-dev
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Wed, 16 Nov 2016 09:48:10 +0100
+
+trafficserver (6.2.0-1) unstable; urgency=medium
+
+  * Add upstream gpg keys for uscan pgpsigurlmangle option
+  * Imported Upstream version 6.2.0
+  * Patch refresh for 6.2.0
+  * Update trafficserver manpages list
+  * Update trafficserver install list
+  * Update trafficserver-experimental-plugins install list
+  * Update build dependencies (Add libmariadbclient-dev in experimental)
+  * Bump standards version
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Sat, 23 Jul 2016 19:15:58 +0200
+
+trafficserver (6.1.1-1) unstable; urgency=medium
+
+  * Imported Upstream version 6.1.1
+  * Update d/watch for gpg signature check
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Sat, 06 Feb 2016 10:37:41 +0100
+
+trafficserver (6.1.0-1) unstable; urgency=medium
+
+  * New upstream release
+  * Use -mcx16 on x86 platforms only (Closes: #805124)
+
+ -- Aron Xu <aron@debian.org>  Tue, 02 Feb 2016 12:18:10 +0800
+
+trafficserver (6.0.0-3) unstable; urgency=medium
+
+  * Update d/NEWS & d/README.Debian with 32-bit upstream support drop
+
+ -- Jean Baptiste Favre <debian@jbfavre.org>  Mon, 14 Dec 2015 10:48:20 +0100
+
+trafficserver (6.0.0-2) unstable; urgency=medium
+
+  * Re-enable 32-bit builds
+  * Add some optional build dependencies
+  * Use -O3 by default
+
+ -- Aron Xu <aron@debian.org>  Sat, 31 Oct 2015 03:05:20 +0800
+
+trafficserver (6.0.0-1) unstable; urgency=medium
+
+  [ Aron Xu ]
+  * Avoid possible-missing-colon-in-closes
+
+  [ Jean Baptiste Favre ]
+  * Imported Upstream version 6.0.0
+  * Update experimental plugins list
+    - Remove channel_stats
+    - Add cache promote cache_promote.so
+    - Add cache ranage request cache_range_requests.so
+    - Add mp4 streaming media mp4.so
+    - Add Stream editor stream_editor.so
+
+ -- Aron Xu <aron@debian.org>  Sat, 10 Oct 2015 11:19:19 +0200
+
+trafficserver (5.3.1-1) unstable; urgency=medium
+
+  [ Arno Töll ]
+  * Add proxy.config.admin.user_id setting
+
+  [ Aron Xu ]
+  * Add myself back to Uploaders
+  * Use dh compat 9
+
+  [ Jean Baptiste Favre ]
+  * Imported Upstream version 5.3.1
+  * Removed patch for TS-3632 (merged upstream)
+  * Upstream changes allow ftbfs with GCC-5 (Closes: #778148)
+
+ --  Jean Baptiste Favre <debian@jbfavre.org>  Sat, 04 Jul 2015 23:20:49 +0200
+
+trafficserver (5.3.0-2) unstable; urgency=medium
+
+  * Avoid installing tslua.so on archs built without LuaJIT
+    (Closes: #770353)
+
+ -- Aron Xu <aron@debian.org>  Thu, 11 Jun 2015 15:28:39 +0800
+
+trafficserver (5.3.0-1) unstable; urgency=medium
+
+  * Imported Upstream version 5.3.0
+    - CVE-2014-10022: remote DoS
+  * Remove fix_TS3316_i386_build patch
+  * Fix traffic_wccp build, missing OpenSSL symbol
+  * Add experimental plugin generator
+  * Format patch for TS-3632
+  * Update Uploader field in d/control
+
+ -- Jean Baptiste Favre <jbfavre@debian.org>  Wed, 03 Jun 2015 20:06:13 +0200
+
+trafficserver (5.2.0-2) unstable; urgency=medium
+
+  * Disable LuaJIT for arm64
+
+ -- Aron Xu <aron@debian.org>  Sat, 28 Feb 2015 23:51:00 +0800
+
+trafficserver (5.2.0-1) unstable; urgency=medium
+
+  [ Jean Baptiste Favre ]
+  * New upstream release.
+  * Add support for following experimental modules:
+    - epic
+    - header_normalize
+    - mysql_remap
+    - ssl_cert_loader
+    - sslheaders
+  * Remove missing file related to removed traffic_shell
+  * Backport patch for TS-3316 to solve i386 build issue
+  * Fix misconfigured call to dh_makeshlibs (used system dir instead
+    of temporary build one)
+
+  [ Aron Xu ]
+  * Enable all hardening features.
+  * Update copyright file.
+
+ -- Aron Xu <aron@debian.org>  Thu, 12 Feb 2015 22:22:44 +0100
+
+trafficserver (5.1.1-1) unstable; urgency=medium
+
+  * New upstream release. This release includes fixes for these security
+    related vulnerabilities:
+    - CVE-2014-3566: Do not enable SSL3 by default
+    - CVE-2014-3624: Ensure remap requests are properly tunneled using CONNECT
+      requests to avoid an open relay
+  * Add support for ppc64el, patch merged upstream (Closes: #754134, #754808)
+  * Fix "ftbfs on kfreebsd" by conditionally building healthchecks.so on Linux
+    only. Patch supplied by Steven Chamberlain, thanks (Closes: #767287)
+
+ -- Arno Töll <arno@debian.org>  Sun, 02 Nov 2014 12:40:44 -1100
+
+trafficserver (5.1.0-1) unstable; urgency=medium
+
+  * New upstream release
+  * Bump standards version to 3.9.6 (no changes needed)
+
+  [Jean Baptiste Favre]
+  * Add a debug package with debug symbols for those who need it.
+  * Split out experimental trafficserver plugins into a separate package so
+    that users are aware of their experimental character before using them.
+  * Add a libhwloc b-d so that ATS has a better idea about the underlying
+    hardware it runs at to improve the runtime performance
+
+ -- Arno Töll <arno@debian.org>  Wed, 08 Oct 2014 23:50:49 -1100
+
+trafficserver (5.0.1-1) unstable; urgency=medium
+
+  * New upstream release including a fix for CVE-2014-3525 that allowed
+    attackers by special crafted packets to obtain privileges for services bound
+    to localhost
+
+ -- Arno Töll <arno@debian.org>  Wed, 23 Jul 2014 04:43:00 -1100
+
+trafficserver (5.0.0-1) unstable; urgency=medium
+
+  * Acknowledge previous NMUs, thanks to Anibal Monsalve Salazar for
+    coordination.
+  * New upstream version. Patch changes:
+    + drop 0001-TS-1821.patch: released upstream in 5.0.0
+    + drop 0001-TS-2454-Fix-undefined-reference-to-__sync_fetch_and_.patch:
+      released upstream in 4.2
+    + drop add-mips-support.patch: released upstream in 5.0.0
+    + drop pthread_setname_np.patch: This was a Debian specific issue which is
+      being worked around in eglibc's commit r5460.
+  * Add "support for mips64": merged upstream (Closes: #750807)
+  * Build with dh-autoreconf to avoid build time issues with Automake 1.13
+    which is not in Debian yet.
+
+ -- Arno Töll <arno@debian.org>  Sun, 06 Jul 2014 00:20:59 -1100
+
+trafficserver (4.1.2-1.2) unstable; urgency=medium
+
+  * Non-maintainer upload.
+  * Add missing prototype for pthread_setname_np()
+    Add pthread_setname_np.patch
+    Patch by Petr Salinger
+    Closes: #743584
+
+ -- Anibal Monsalve Salazar <anibal@debian.org>  Fri, 04 Apr 2014 08:59:48 +0100
+
+trafficserver (4.1.2-1.1) unstable; urgency=medium
+
+  * Non-maintainer upload.
+  * Fix undefined reference to `__sync_fetch_and_sub_8' on ARM 32bit
+    Add 0001-TS-2454-Fix-undefined-reference-to-__sync_fetch_and_.patch
+    from https://issues.apache.org/jira/browse/TS-2454
+    Patch by Yunkai Zhang
+  * Add support for MIPS
+    Add add-mips-support.patch
+    Submitted: https://issues.apache.org/jira/browse/TS-2687
+    Merged: https://git-wip-us.apache.org/repos/asf?p=trafficserver.git;h=2f81790
+    Patch by Dejan Latinovic
+    Closes: 743395
+  * Build-depend on libboost-dev
+    Patch by Dejan Latinovic
+    Closes: #737510
+
+ -- Anibal Monsalve Salazar <anibal@debian.org>  Thu, 03 Apr 2014 04:18:23 +0100
+
+trafficserver (4.1.2-1) unstable; urgency=medium
+
+  * Merge the experimental branch of trafficserver to unstable
+  * New upstram release (Closes: #711530, #733377)
+    + Refresh 0001-TS-1821.patch until it is fixed upstream
+    + Don't run autoreconf anymore, we do not need it anymore
+    + build depend on libaio-dev to support AIO on Linux systems
+  * Push standards version
+
+ -- Arno Töll <arno@debian.org>  Wed, 29 Jan 2014 03:01:12 -1100
+
+trafficserver (3.3.2-1) experimental; urgency=low
+
+  [ Arno Töll ]
+  * Drop --with-arg-max from configure
+  * Update changelog in view of the new upstream version
+
+  [ Aron Xu ]
+  * Imported Upstream version 3.3.2
+  * Drop patch for enabling experimental plugins
+  * Add liblua5.1-dev and liboost1.53-dev to B-D
+  * Try on all archs for experimental builds
+  * Permit parallel building
+  * Fix typo in dep5 copyright file
+  * Do not install staticly linked library
+  * Enable Linux native AIO support for linux-any
+  * Enable reclaimable freelist
+
+ -- Aron Xu <aron@debian.org>  Thu, 09 May 2013 01:00:04 +0800
+
+trafficserver (3.3.0+git20121208-0exp1) experimental; urgency=low
+
+  * Upstream git snapshot.
+  * Enable most of experimental plugins, install related libraries.
+  * Run dh_autoreconf.
+  * Make dh_auto_test errors non-fatal.
+
+ -- Aron Xu <aron@debian.org>  Thu, 06 Dec 2012 23:32:25 +0800
+
+trafficserver (3.3.0-1) experimental; urgency=low
+
+  * Upload upstream development release to experimental.
+
+ -- Aron Xu <aron@debian.org>  Thu, 29 Nov 2012 22:13:55 +0800
+
+trafficserver (3.2.5-1) unstable; urgency=low
+
+  * New upstream release
+    + Fix FTBFS on ARM (Closes: #691179)
+    + Fix FTBS with gcc 4.8 (Closes: #701427)
+  * Promote trafficserver to depend for trafficserver-dev to fix a broken
+    library symlink. The library is not required for all users, but those who
+    need it don't need to install it manually anymore (Closes: #715134)
+
+ -- Arno Töll <arno@debian.org>  Sun, 21 Jul 2013 11:55:38 +0200
+
+trafficserver (3.2.4-1) unstable; urgency=low
+
+  * New upstream release
+    + Delete upstream's .gitignore file in our source tree
+  * Switch packaging repository to Git.
+    + Add gbp.conf file for those using git-buildpackage
+  * Fix "Upgrade fails if purging of cache fails" by not dying in a fire when
+    the postinst fails to purge the cache (Closes: #687698)
+  * Drop --with-arg-max from ./configure, it's not needed anymore.
+
+ -- Arno Töll <arno@debian.org>  Tue, 29 Jan 2013 23:54:44 +0100
+
+trafficserver (3.2.0-1) unstable; urgency=low
+
+  * New upstream release
+    + If you are using SSL or HTTP filtering, please update your configuration.
+      proxy.config.http.quick_filter.mask  and
+      proxy.config.ssl.server.cert.filename is not recognized anymore. Please
+      use ip_allow.config and ssl_multicert.config respectively instead.
+      There is no automated migration for this in Debian, as this affects your
+      site-specific configuration files.
+    + See https://cwiki.apache.org/confluence/display/TS/Upgrading+to+3.2 for
+      full upgrade instructions.
+  * Upstream decided to ship more plug-ins with the trafficserver core
+    distribution. These are all bundled into the main package now. Therefore,
+    the trafficserver-plugin-conf-remap package is not provided anymore.
+  * Update the default configuration file to ship with more moderate values
+    for the log configuration.
+  * Now do start ATS by default for fresh installations. The default
+    out-of-the box configuration is much more secure than past defaults.
+  * Purge the host and data cache on upgrades
+  * Let's welcome Aron Xu to the Uploaders of Trafficserver. Hi Aron! :)
+
+ -- Arno Töll <arno@debian.org>  Fri, 14 Sep 2012 22:56:29 +0200
+
+trafficserver (3.0.5-1) unstable; urgency=low
+
+  * New upstream release.
+  * No kudos for the previous hostile NMU, but include the changelog to denote
+    this upload does not introduce a regression.
+  * Update my maintainer address
+  * Make the init script look much better when using fancy outputs.
+  * Fix "status" output of the init script
+  * Remove "DM-Upload-Allowed". I don't need that flag anymore.
+
+
+ -- Arno Töll <arno@debian.org>  Sat, 09 Jun 2012 18:48:23 +0200
+
+trafficserver (3.0.4-1.1) unstable; urgency=low
+
+   * Non maintainer upload
+   * Fix build failure with GCC 4.7. Closes: #667396.
+
+ -- Matthias Klose <doko@debian.org>  Wed, 30 May 2012 04:40:28 +0000
+
+trafficserver (3.0.4-1) unstable; urgency=high
+
+  * New upstream release
+    + Fix CVE-2012-0256: A request with a very large Host header caused ATS to
+      crash.
+  * Setting urgency to high because of security updates
+  * Push standards to 3.9.3 - no further changes
+  * Stilistic adaptions in debian/copyright, but not content changes
+  * Remove cluster interface warning from README.Configuration. ATS now binds on
+    lo by default
+
+ -- Arno Töll <debian@toell.net>  Wed, 21 Mar 2012 12:34:35 +0100
+
+trafficserver (3.0.2-1) unstable; urgency=low
+
+  * New upstream release
+    + Includes former Debian specific patch which makes sure the upstream
+      configure script does not override any -O flags passed by the user
+      anymore.
+  * Adapt to dpkg 1.16.1 API changes regarding build flags. This enables
+    hardening build flags. This means, trafficserver is now being built with
+    -fstack-protector and other security related build flags.
+  * Add dpkg-dev (>= 1.16.1~) to build-depends to make sure our buildflags are
+    properly supported. That's guaranteed for Testing, but might be helpful to
+    know for backporters.
+  * Fix several issues in the DEP-5 syntax. Unfortunately there is no way to
+    express that a file is subject to different license agreements so far.
+  * Do not install the upstream changelog twice anymore
+  * Finally run regression checks again, now as build failures are sorted out.
+
+ -- Arno Töll <debian@toell.net>  Sun, 11 Dec 2011 00:45:45 +0100
+
+trafficserver (3.0.1-2) unstable; urgency=low
+
+  * Fix "please add armhf to the arch list" - add armhf to the list of supported
+    architectures. Thanks Konstantinos Margaritis for the hint (Closes: #636338)
+  * Remove IA64 from the list of supported architectures. The upgrade to the gcc
+    4.6 toolchain disclosed portability issues with it, which caused the resul-
+    ting binary package to produce no-op code in some functions.
+
+ -- Arno Töll <debian@toell.net>  Tue, 02 Aug 2011 22:58:37 +0200
+
+trafficserver (3.0.1-1) unstable; urgency=low
+
+  * New upstream release. Fixes several important issues which caused
+    `traffic_cop' and `traffic_server' to crash.
+  * Fix "FTBFS with ld --as-needed" re-order libraries upon linkage, patch
+    committed upstream. Thanks Ilya Barygin (Closes: #632546)
+  * Fix "trafficserver: Getting rid of unneeded *.la / emptying
+    dependency_libs", remove *.la files from the installation target completely
+    (Closes: #633192)
+  * Set "DM-Upload-Allowed: yes" in agreement with Asheesh Laroia
+    <paulproteus{at}debian.org>
+
+ -- Arno Töll <debian@toell.net>  Mon, 01 Aug 2011 19:29:58 +0200
+
+trafficserver (3.0.0-1) unstable; urgency=low
+
+  * New upstream release. Major changes (since 2.1.9):
+    + `traffic_server' won't crash anymore when using non-existent plugin in
+      remap rule
+    + Don't cache HTTP 401, 303 and 407 error responses anymore, when negative
+      caching is enabled.
+  * Re-enable kfreebsd support, it was accidentally not available in
+    2.1.9-unstable-1 because of non installable dependencies, as libcap-dev is
+    installable (and required) on Linux only
+  * debian/rules:
+    + Simplify dh_auto_configure flags (upstream incorporated our build layout)
+    + Enable WCCP (Web Cache Communication Protocol; Linux only)
+  * debian/control:
+    + Add flex and bison to build dependencies, both are required for WCCP
+      (Linux only)
+
+ -- Arno Töll <debian@toell.net>  Wed, 15 Jun 2011 15:56:29 +0200
+
+trafficserver (2.1.9-unstable-1) unstable; urgency=low
+
+  * New upstream release. Major features (since 2.1.8):
+    + Bring back support for $DESTDIR and "make check" which makes Debian
+      patches obsolete
+    + Allow larger working sets than 512G
+    + Disable cluster autodiscovery when cluster mode is disabled
+    + Cleanup `records.config'
+    + Disable SSLv2 by default
+  * debian/control: Add build dependency to libcap-dev, because when running
+    traffic_server standalone, it is unable to bind restricted ports otherwise
+    (Upstream: TS-804)
+  * debian/rules:
+    + Remove override for dh_clean, but put options to debian/source/options
+      instead
+    + Remove DH_OPTIONS (unused anyway)
+  * Source package: Minor change to improving package quality and usability
+    (i.e. grammar, verbosity of comments)
+  * Make the init script more robust
+  * Base the origin of the package source on the untouched upstream tarball,
+    instead of the versioned SVN branch.
+  * Bring back IA64 support, this time actually working (upstream merged my
+    patch TS-783)
+  * Remove patch `build-quirks.patch'. Changes have been committed upstream
+    by now.
+
+ -- Arno Töll <debian@toell.net>  Tue, 31 May 2011 21:56:12 +0200
+
+trafficserver (2.1.8-unstable-1) unstable; urgency=low
+
+  * New upstream release. Major features (since 2.1.5):
+    + Many bug fixes (none reported in Debian's BTS)
+    + Set source address for origin Servers
+    + Major API changes for the SDK
+    + Provide traffic_logstats
+    + traffic_shell does not hang anymore on any command
+  * Fix "FTBFS on architectures not supported upstream": (Closes: #622800)
+    + Don't execute regression checks for now (fixes x86)
+    + Upstream merges a Debian patch originally for 2.1.7 which enables
+      kFreeBSD support (originally provided by myself)
+    + Restrict Architectures (drop S390, IA64, MIPS[EL], PPC, SPARC)
+  * Remove ts-ui-disable-conf.patch (applied upstream)
+  * Update `build-quirks.patch' to make TS handle $DESTDIR correctly
+    (upstream: TS-759)
+  * Remove .deps from SDK binary package examples (they were incidentally
+    included before).
+  * Fix permissions for /var/cache/trafficserver in postinst
+  * Bump standards to 3.9.2, depend on debhelper 8.0, adapt VCS links
+  * Simplify debian/rules
+
+ -- Arno Töll <debian@toell.net>  Thu, 05 May 2011 21:49:52 +0200
+
+trafficserver (2.1.5-unstable-1) unstable; urgency=low
+
+  * Initial release (Closes: #609285)
+  * Added some configuration and informational hints
+  * New upstream release. Major features:
+    + Better AMD64 support
+    + Override configuration per transaction
+    + IPv6
+    + Support ARM architectures
+    + SDK-API changes
+  * Differences to upstream version:
+    + Ship some documentation. Well, really a few hints
+    + Split source into three packages (core, plug-in, SDK)
+    + Ship our own init script
+
+ -- Arno Toell <debian@toell.net>  Thu, 13 Jan 2011 11:49:18 +0100

@@ -1,0 +1,50 @@
+From 0f433aafb01bb6f55628724482807a4fb798d278 Mon Sep 17 00:00:00 2001
+From: Masakazu Kitajo <maskit@apache.org>
+Date: Tue, 10 Oct 2023 00:33:39 +0900
+Subject: s3_auth: Fix hash calculation (#10567)
+
+---
+ plugins/s3_auth/aws_auth_v4.cc                 | 4 ++++
+ plugins/s3_auth/unit_tests/test_aws_auth_v4.cc | 4 ++--
+ 2 files changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/plugins/s3_auth/aws_auth_v4.cc b/plugins/s3_auth/aws_auth_v4.cc
+index 5df57151c..8adccc877 100644
+--- a/plugins/s3_auth/aws_auth_v4.cc
++++ b/plugins/s3_auth/aws_auth_v4.cc
+@@ -93,6 +93,10 @@ uriEncode(const String &in, bool isObjectName)
+     } else if (isObjectName && i == '/') {
+       /* Encode the forward slash character, '/', everywhere except in the object key name. */
+       result << "/";
++    } else if (i == '+') {
++      /* Only written in the example code, but a plus sign is treated as a space regardless of the position and it must be encoded
++       * as "%20" instead of "%2B" */
++      result << "%20";
+     } else {
+       /* Letters in the hexadecimal value must be upper-case, for example "%1A". */
+       result << "%" << std::uppercase << std::setfill('0') << std::setw(2) << std::hex << (int)i;
+diff --git a/plugins/s3_auth/unit_tests/test_aws_auth_v4.cc b/plugins/s3_auth/unit_tests/test_aws_auth_v4.cc
+index 8cf9b2948..d9974b5c7 100644
+--- a/plugins/s3_auth/unit_tests/test_aws_auth_v4.cc
++++ b/plugins/s3_auth/unit_tests/test_aws_auth_v4.cc
+@@ -57,7 +57,7 @@ TEST_CASE("uriEncode(): encode reserved chars in a name which is not object name
+   String encoded  = uriEncode(in, /* isObjectName */ false);
+ 
+   CHECK(3 * in.length() == encoded.length()); /* size of "%NN" = 3 */
+-  CHECK_FALSE(encoded.compare("%20%2F%21%22%23%24%25%26%27%28%29%2A%2B%2C%3A%3B%3C%3D%3E%3F%40%5B%5C%5D%5E%60%7B%7C%7D"));
++  CHECK_FALSE(encoded.compare("%20%2F%21%22%23%24%25%26%27%28%29%2A%20%2C%3A%3B%3C%3D%3E%3F%40%5B%5C%5D%5E%60%7B%7C%7D"));
+ }
+ 
+ TEST_CASE("uriEncode(): encode reserved chars in an object name", "[AWS][auth][utility]")
+@@ -66,7 +66,7 @@ TEST_CASE("uriEncode(): encode reserved chars in an object name", "[AWS][auth][u
+   String encoded  = uriEncode(in, /* isObjectName */ true);
+ 
+   CHECK(3 * in.length() - 2 == encoded.length()); /* size of "%NN" = 3, '/' is not encoded */
+-  CHECK_FALSE(encoded.compare("%20/%21%22%23%24%25%26%27%28%29%2A%2B%2C%3A%3B%3C%3D%3E%3F%40%5B%5C%5D%5E%60%7B%7C%7D"));
++  CHECK_FALSE(encoded.compare("%20/%21%22%23%24%25%26%27%28%29%2A%20%2C%3A%3B%3C%3D%3E%3F%40%5B%5C%5D%5E%60%7B%7C%7D"));
+ }
+ 
+ TEST_CASE("isUriEncoded(): check an empty input", "[AWS][auth][utility]")
+-- 
+2.30.2
+
