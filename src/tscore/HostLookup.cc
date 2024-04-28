@@ -50,7 +50,7 @@ domaincmp(const char *hostname, const char *domain)
   const char *host_cur   = hostname + strlen(hostname);
   const char *domain_cur = domain + strlen(domain);
 
-  // Check to see if were passed emtpy stings for either
+  // Check to see if were passed empty stings for either
   //  argument.  Empty strings do not match anything
   //
   if (domain_cur == domain || host_cur == hostname) {
@@ -380,7 +380,7 @@ charIndex::Insert(const char *match_data, HostBranch *toInsert)
 
     // Check to see if are at the level we supposed be at
     if (*(match_data + 1) == '\0') {
-      // The slot should always be emtpy, no duplicate
+      // The slot should always be empty, no duplicate
       //   keys are allowed
       ink_assert(cur->branch_array[index] == nullptr);
       cur->branch_array[index] = toInsert;
