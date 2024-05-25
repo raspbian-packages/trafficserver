@@ -1,9 +1,16 @@
-trafficserver (8.1.7-0+deb10u3+rpi1) buster-staging; urgency=medium
+trafficserver (8.1.7-0+deb10u4+rpi1) buster-staging; urgency=medium
 
   [changes brought forward from 8.0.1-4+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Sat, 19 Jan 2019 12:42:48 +0000]
   * Use -latomic on raspbian too.
 
- -- Raspbian forward porter <root@raspbian.org>  Thu, 09 Nov 2023 18:06:32 +0000
+ -- Raspbian forward porter <root@raspbian.org>  Sat, 25 May 2024 16:04:32 +0000
+
+trafficserver (8.1.7-0+deb10u4) buster-security; urgency=medium
+
+  * Non-maintainer upload by the LTS Team.
+  * CVE-2024-31309: HTTP/2 CONTINUATION DoS attack
+
+ -- Adrian Bunk <bunk@debian.org>  Sun, 28 Apr 2024 21:24:00 +0300
 
 trafficserver (8.1.7-0+deb10u3) buster-security; urgency=medium
 
