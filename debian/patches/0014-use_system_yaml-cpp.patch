@@ -1,0 +1,53 @@
+Description: Update compilation chain after embedded libyamlcpp removal
+Author: Jean Baptiste Favre <debian@jbfavre.org>
+Origin: other
+Reviewed-by: Jean Baptiste Favre <debian@jbfavre.org>
+Last-Update: 2019-01-30
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+Index: trafficserver/CMakeLists.txt
+===================================================================
+--- trafficserver.orig/CMakeLists.txt	2024-08-23 18:47:34.964080941 +0200
++++ trafficserver/CMakeLists.txt	2024-08-23 18:47:34.960080944 +0200
+@@ -32,7 +32,6 @@
+         include
+         tests/include
+         lib
+-        lib/yamlcpp/include
+         proxy
+         proxy/hdrs
+         proxy/http
+Index: trafficserver/configure.ac
+===================================================================
+--- trafficserver.orig/configure.ac	2024-08-23 18:47:34.964080941 +0200
++++ trafficserver/configure.ac	2024-08-23 18:47:34.964080941 +0200
+@@ -2341,7 +2341,6 @@
+   lib/records/Makefile
+   src/wccp/Makefile
+   lib/fastlz/Makefile
+-  lib/yamlcpp/Makefile
+   mgmt/Makefile
+   mgmt/api/Makefile
+   mgmt/api/include/Makefile
+Index: trafficserver/lib/Makefile.am
+===================================================================
+--- trafficserver.orig/lib/Makefile.am	2024-08-23 18:47:34.964080941 +0200
++++ trafficserver/lib/Makefile.am	2024-08-23 18:47:34.964080941 +0200
+@@ -25,17 +25,10 @@
+ # to prevent Clang Analyzer warning
+ LOCAL =
+ 
+-if BUILD_YAML_CPP
+-LOCAL += yamlcpp
+-endif
+-
+ all-local:	$(LOCAL)
+-	$(MAKE) -C yamlcpp
+ 
+ clean-local:
+-	$(MAKE) -C yamlcpp clean
+ 
+ if EXPORT_YAML_HEADERS
+ install-data-local:
+-	$(MAKE) -C yamlcpp install
+ endif

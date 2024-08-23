@@ -1,0 +1,19 @@
+Description: Force python3 usage, add libfakeroot-sysv and libeatmydata to blacklist
+Author: Jean Baptiste Favre <debian@jbfavre.org>
+Origin: other
+Last-Update: 2018-09-24
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+Index: trafficserver/tools/check-unused-dependencies
+===================================================================
+--- trafficserver.orig/tools/check-unused-dependencies	2024-08-23 18:47:34.800081036 +0200
++++ trafficserver/tools/check-unused-dependencies	2024-08-23 18:47:34.800081036 +0200
+@@ -54,6 +54,8 @@
+                     'libgcc_s.so.',
+                     'libm.so.',       # Why does Libtool call ld with -lm?
+                     'libpthread.so.', # Because we add -lpthread to LIBS
++                    'libfakeroot-sysv.so',
++                    'libeatmydata.so'
+                 ])):
+             continue
+ 

@@ -1,0 +1,16 @@
+Description: Fix Perl interpreter path
+Author: Jean Baptiste Favre <debian@jbfavre.org>
+Reviewed-by: Jean Baptiste Favre <debian@jbfavre.org>
+Last-Update: 2019-01-03
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+Index: trafficserver/tools/tspush
+===================================================================
+--- trafficserver.orig/tools/tspush	2024-08-23 18:47:34.884080987 +0200
++++ trafficserver/tools/tspush	2024-08-23 18:47:34.880080990 +0200
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env perl
++#!/usr/bin/perl
+ 
+ #
+ # Licensed to the Apache Software Foundation (ASF) under one
