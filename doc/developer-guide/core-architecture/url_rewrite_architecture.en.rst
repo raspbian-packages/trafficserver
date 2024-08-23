@@ -57,4 +57,3 @@ Implementation
       results can be efficiently assembled in to the output host name.
 
 .. figure:: /uml/images/url_rewrite.svg
-   :align: center

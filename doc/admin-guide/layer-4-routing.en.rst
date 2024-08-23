@@ -29,7 +29,6 @@ destination. The initial data is then sent to the destination and subsequently |
 data read on one connection to the other and vice versa.
 
 .. figure:: ../uml/images/l4-basic-sequence.svg
-   :align: center
 
 In this way it acts similarly to `nc <https://linux.die.net/man/1/nc>`__.
 
@@ -82,7 +81,6 @@ services.
 The basic set up is therefore
 
 .. figure:: ../uml/images/l4-example-cdn-layout.svg
-   :align: center
 
    A Client connects to an edge |TS| which forwards the connection to the internal Service.
    The Client then negotiates TLS with the Service.
@@ -119,7 +117,6 @@ In addition to this, in the :file:`records.config` file, edit ``connect_ports`` 
 The sequence of network activity for a Client connecting to ``service-2`` is
 
 .. figure:: ../uml/images/l4-sni-routing-seq.svg
-   :align: center
 
 Note the destination for the outbound TCP connection and the HTTP ``CONNECT`` is the same. If this
 is a problem (which it will be in general) a plugin is needed to change the URL in the ``CONNECT``.
@@ -139,7 +136,6 @@ Pre-warming TLS Tunnel reduces the latency of TLS connections (``forward_route``
 Routing). When this feature is enabled, each ET_NET thread makes TLS connections pool per routing type, SNI, and ALPN.
 
 .. figure:: ../uml/images/l4-pre-warming-overview.svg
-   :align: center
 
 Stats for connection pools are registered dynamically on start up. Details in :ref:`pre-warming-tls-tunnel-stats`.
 

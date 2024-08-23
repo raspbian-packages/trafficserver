@@ -81,7 +81,6 @@ The initial Prefetch plugin deployment graph below shows the per-POP cache-hit-r
 It is worth mentioning that a small percentage of the requests did not follow a predictable pattern and were not handled by the plugin.
 
 .. figure:: ../../static/images/admin/prefetch_plugin_deployment.png
-   :align: center
    :alt: prefetch plugin initial deployment
 
    Prefetch plugin initial deployment.
