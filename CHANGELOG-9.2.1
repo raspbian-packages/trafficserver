@@ -1,0 +1,54 @@
+Changes with Apache Traffic Server 9.2.1
+  #9184 - TSan: Make Thread::cur_time thread local
+  #9238 - Add slice config to strip Range header for HEAD requests
+  #9286 - Skip dns_host_down autest from 9.2.x branch
+  #9300 - Fixed issue with SDK_API_HttpParentProxySet_Fail regression test
+  #9303 - Issue 9274: read-while-writer readers can't find fragment inserted
+  #9306 - Updated warning message for adding duplicated remap entries
+  #9307 - AuTests: update to Proxy Verifier v2.6.0
+  #9316 - Update rtd-theme to the latest version
+  #9325 - glibc 2.37 requires additional explicit includes
+  #9326 - ppc64 stack grows down, so it can be re-enabled as a supported arch
+  #9328 - s3_auth: Schedule reloading config event on TASK thread
+  #9329 - s3_auth: Fix assertion failure of TSActionCancel
+  #9330 - Don't send response body on status 204 No Content
+  #9333 - Make 204 cacheable again
+  #9337 - s3_auth autest: convert from gold file to file contains
+  #9339 - Revert PRs 7667 and 7807
+  #9387 - Update h2disable tests for new curl output
+  #9430 - On arm64 macOS, do not use pagezero linker flag when using luajit
+  #9444 - Fix SSLSessionDup for old OpenSSL and BoringSSL
+  #9445 - Stabilize autest for traffic_dump
+  #9450 - Stabilize autest for tls_check_cert_selection_reload
+  #9453 - Fix parameter parser in ssl_hook_test plugin
+  #9454 - Stabilize autest tls_hook18
+  #9455 - Run autest tls_hooks17 and tls_hooks18 on BoringSSL build
+  #9464 - Adds a --enable-lto option (Link Time Optimization)
+  #9468 - Fixed documentation issue with xdebug plugin to be a literal block
+  #9473 - Use deprecated OpenSSL APIs for MD5 and SHA256 if available (#9469)
+  #9480 - Slight performance improvements before calling APIHooks::clear
+  #9491 - Adds a new percentage option, cleans up pressure calculations
+  #9494 - Properly support multiple instantiation in plugins.config
+  #9508 - 9.2.x: http2_flow_control.test.py: Correctly enable debug logs
+  #9525 - Fix compile warning on BoringSSL build
+  #9534 - (backport) Fixes silent header duplication and early loop termination that occurs upon successful revalidation when duplicate headers are present
+  #9544 - Docs: format typos in header_rewrite doc
+  #9546 - Fix a build issue with the latest BoringSSL
+  #9554 - Make magick plugin buildable with BoringSSL
+  #9579 - Enable loading invalid SSL configuration on first load.
+  #9626 - Doc: document IP allow filter for remap.
+  #9639 - HttpSM: fix no_dns_forward_to_parent for cache stale (92x)
+  #9640 - 9.2.x: Fix clang 16 92x warnings
+  #9641 - 9.2.x Stabilize 92x emergency and fatal autests
+  #9646 - (Backport)Fix debian symbol not found for test_HttpTransact
+  #9647 - 9.2.x: Fix an error on SSL config reload (plus some cleanup). (#9334)
+  #9653 - 9.2.x: Autest updates for recent versions of curl
+  #9660 - Try to do less work in hot function HttpHookState::getNext
+  #9671 - Stabilize autest tls_hooks17
+  #9691 - Check the calling thread of Ethread::schedule_local
+  #9699 - Reload hosting.config on TASK thread
+  #9722 - Fix ttmsh log field
+  #9764 - parent_select plugin: look in ats config dir for yaml config if path is relative
+  #9779 - s3_auth: Fix hash calculation
+  #9785 - 9.2.x: Add back push_method_enabled enforcement
+  #9788 - Deny the TRACE method by default

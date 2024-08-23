@@ -1,0 +1,14 @@
+``
+> GET /bytes/0 HTTP/2
+> Host: ``
+> User-Agent: curl/``
+> Accept: */*
+``
+< HTTP/2 200 ``
+``
+< content-length: 0
+< date: ``
+< age: ``
+< via: ``ApacheTrafficServer/``
+< server: ATS/``
+``
