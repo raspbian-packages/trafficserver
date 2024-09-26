@@ -133,7 +133,7 @@ Rollback::Rollback(const char *fileName_, bool root_access_needed_, Rollback *pa
           mgmt_log("[RollBack::Rollback] Automatic Rollback to prior version failed for %s : %s\n", fileName, strerror(errno));
           needZeroLength = true;
         } else {
-          mgmt_log("[RollBack::Rollback] Automatic Rollback to version succeded for %s\n", fileName, strerror(errno));
+          mgmt_log("[RollBack::Rollback] Automatic Rollback to version succeeded for %s\n", fileName, strerror(errno));
           needZeroLength = false;
           highestSeen--;
           // Since we've made the highestVersion active
