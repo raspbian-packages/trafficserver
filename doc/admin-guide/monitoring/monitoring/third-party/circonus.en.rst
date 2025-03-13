@@ -64,7 +64,6 @@ environment.
 
    .. figure:: ../../../../static/images/admin/monitor/circonus/new-check-button.png
       :alt: Circonus New Check button
-      :align: center
 
 #. For the check type, you should select *JSON* under the *Custom* list, and
    then choose the *Pull* type. The broker you choose to use is entirely up to
@@ -73,7 +72,6 @@ environment.
 
    .. figure:: ../../../../static/images/admin/monitor/circonus/check-config-1.png
       :alt: Choosing a check type
-      :align: center
 
 #. Click on *Configure Check* to proceed.
 
@@ -85,7 +83,6 @@ environment.
 
    .. figure:: ../../../../static/images/admin/monitor/circonus/check-config-2.png
       :alt: Advanced check configuration
-      :align: center
 
 #. Click on *Test Check* to proceed.
 
@@ -96,7 +93,6 @@ environment.
 
    .. figure:: ../../../../static/images/admin/monitor/circonus/check-config-3.png
       :alt: Check test
-      :align: center
 
 #. You may want to limit the metrics you actually track from |TS|, since so
    many are made available. If so, simply uncheck those you aren't interested
@@ -112,7 +108,6 @@ environment.
 
    .. figure:: ../../../../static/images/admin/monitor/circonus/metric-grid.png
       :alt: Circonus metric grid
-      :align: center
 
 Congratulations! You're now ready to begin setting up alerts, visualizations,
 and dashboards for your |TS| statistics. You can repeat the above steps for any
