@@ -101,6 +101,18 @@ BUILD_TABLE_INFO::reset()
   clear_xstr_array(this->argv, sizeof(this->argv) / sizeof(char *));
 }
 
+void
+BUILD_TABLE_INFO::clear_acl_rules_list()
+{
+  // clean up any leftover named filter rules
+  auto *rp = rules_list;
+  while (rp != nullptr) {
+    auto *tmp = rp->next;
+    delete rp;
+    rp = tmp;
+  }
+}
+
 static const char *
 process_filter_opt(url_mapping *mp, const BUILD_TABLE_INFO *bti, char *errStrBuf, int errStrBufSize)
 {
@@ -450,6 +462,7 @@ remap_validate_filter_args(acl_filter_rule **rule_pp, const char **argv, int arg
     Debug("url_rewrite", "[validate_filter_args] new acl_filter_rule class was created during remap rule processing");
   }
 
+  bool action_flag = false;
   for (i = 0; i < argc; i++) {
     unsigned long ul;
     bool hasarg;
@@ -572,6 +585,13 @@ remap_validate_filter_args(acl_filter_rule **rule_pp, const char **argv, int arg
     }
 
     if (ul & REMAP_OPTFLG_ACTION) { /* "action=" option */
+      if (action_flag) {
+        std::string_view err = "Only one @action= is allowed per remap ACL";
+        Debug("url_rewrite", "%s", err.data());
+        // For 9.2.x, making Warning instead of Error for compatibility
+        Warning("%s", err.data());
+      }
+      action_flag = true;
       if (is_inkeylist(argptr, "0", "off", "deny", "disable", nullptr)) {
         rule->allow_flag = 0;
       } else if (is_inkeylist(argptr, "1", "on", "allow", "enable", nullptr)) {
@@ -1364,6 +1384,8 @@ remap_parse_config(const char *path, UrlRewrite *rewrite)
   /* Now after we parsed the configuration and (re)loaded plugins and plugin instances
    * accordingly notify all plugins that we are done */
   rewrite->pluginFactory.indicatePostReload(status);
+
+  bti.clear_acl_rules_list();
 
   return status;
 }

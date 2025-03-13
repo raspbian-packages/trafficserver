@@ -58,8 +58,14 @@
 /* Define to 1 if you have '__atomic' functions. */
 #undef HAVE_ATOMIC
 
+/* Define to 1 if you have the `BIO_get_ex_data' function. */
+#undef HAVE_BIO_GET_EX_DATA
+
 /* Define to 1 if you have the `BIO_meth_new' function. */
 #undef HAVE_BIO_METH_NEW
+
+/* Define to 1 if you have the `BIO_set_ex_data' function. */
+#undef HAVE_BIO_SET_EX_DATA
 
 /* Define to 1 if you have the `BIO_sock_non_fatal_error' function. */
 #undef HAVE_BIO_SOCK_NON_FATAL_ERROR
@@ -228,6 +234,9 @@
 
 /* Define to 1 if you have the `MD5_Init' function. */
 #undef HAVE_MD5_INIT
+
+/* Define to 1 if you have the <memory.h> header file. */
+#undef HAVE_MEMORY_H
 
 /* Define to 1 if you have the <mimalloc.h> header file. */
 #undef HAVE_MIMALLOC_H
@@ -402,9 +411,6 @@
 /* Define to 1 if you have the <stdint.h> header file. */
 #undef HAVE_STDINT_H
 
-/* Define to 1 if you have the <stdio.h> header file. */
-#undef HAVE_STDIO_H
-
 /* Define to 1 if you have the <stdlib.h> header file. */
 #undef HAVE_STDLIB_H
 
@@ -576,9 +582,7 @@
 /* The size of `void*', as computed by sizeof. */
 #undef SIZEOF_VOIDP
 
-/* Define to 1 if all of the C90 standard headers exist (not just the ones
-   required in a freestanding environment). This macro is provided for
-   backward compatibility; new code need not use it. */
+/* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
 
 /* Version number of package */

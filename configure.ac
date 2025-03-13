@@ -32,8 +32,8 @@
 # Version number is calculated as MAJOR * 1000000 + MINOR * 1000 + MICRO
 # Version string is in the form of MAJOR.MINOR.MICRO[sufix]
 #
-m4_define([TS_VERSION_S],[9.2.5])
-m4_define([TS_VERSION_N],[9002005])
+m4_define([TS_VERSION_S],[9.2.9])
+m4_define([TS_VERSION_N],[9002009])
 
 AC_INIT([Apache Traffic Server],[TS_VERSION_S()],[dev@trafficserver.apache.org],[trafficserver],[https://trafficserver.apache.org])
 AC_PREREQ([2.69])
@@ -1354,7 +1354,11 @@ AC_CHECK_FUNCS([ \
   SHA256_Init \
   MD5_Init \
   SSL_SESSION_dup \
+  BIO_get_ex_data \
+  BIO_set_ex_data \
 ])
+
+TS_CHECK_BIO_GET_EX_NEW_INDEX
 
 AC_CHECK_FUNC([ASN1_STRING_get0_data], [],
               [AC_DEFINE([ASN1_STRING_get0_data], [ASN1_STRING_data], [Added in OpenSSL 1.1])])

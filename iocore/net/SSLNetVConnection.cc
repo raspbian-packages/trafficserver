@@ -162,9 +162,8 @@ SSLNetVConnection::_make_ssl_connection(SSL_CTX *ctx)
       BIO *bio = BIO_new(const_cast<BIO_METHOD *>(BIO_s_fastopen()));
       BIO_set_fd(bio, this->get_socket(), BIO_NOCLOSE);
 
-      if (this->options.f_tcp_fastopen) {
-        BIO_set_conn_address(bio, this->get_remote_addr());
-      }
+      BIO_fastopen_set_dest_addr(bio,
+                                 this->options.f_tcp_fastopen ? this->get_remote_addr() : static_cast<const sockaddr *>(nullptr));
 
       SSL_set_bio(ssl, bio, bio);
     } else {
@@ -2031,6 +2030,7 @@ SSLNetVConnection::_ssl_accept()
           }
           block->fill(nread);
           this->early_data_buf->append_block(block);
+          this->read_from_early_data += nread;
           SSL_INCREMENT_DYN_STAT(ssl_early_data_received_count);
 
           if (is_debug_tag_set("ssl_early_data_show_received")) {
