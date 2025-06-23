@@ -19,7 +19,7 @@
 if BUILD_DOCS
 images := $(patsubst %.uml,images/%.svg,$(wildcard *.uml))
 images += $(patsubst %.plantuml,images/%.svg,$(wildcard *.plantuml))
-PLANTUML_JAR := $(shell $(srcdir)/../ext/plantuml_fetch.sh | tail -1)
+PLANTUML_JAR := /usr/share/plantuml/plantuml.jar
 
 all-am: jar-check $(images)
 endif
