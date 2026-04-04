@@ -135,9 +135,9 @@ class MalformedChunkHeaderTest:
         self.server.Streams.stdout += Testers.ContainsExpression(
             "Unexpected chunked content for key 3: too small", "Verify that writing the third response failed.")
 
-        # ATS should close the connection before any body gets through. "abc"
+        # ATS should close the connection before any body gets through. "abcwxyz"
         # is the body sent by the client for each of these chunked cases.
-        self.server.Streams.stdout += Testers.ExcludesExpression("abc", "Verify that the body never got through.")
+        self.server.Streams.stdout += Testers.ExcludesExpression("abcwxyz", "Verify that the body never got through.")
 
     def setupTS(self):
         self.ts = Test.MakeATSProcess("ts3", enable_tls=True, enable_cache=False)
@@ -172,13 +172,13 @@ class MalformedChunkHeaderTest:
         # code from the verifier client.
         tr.Processes.Default.ReturnCode = 1
         tr.Processes.Default.Streams.stdout += Testers.ContainsExpression(
-            r"(Unexpected chunked content for key 4: too small|Failed HTTP/1 transaction with key: 4)",
+            r"(Unexpected chunked content for key 101: too small|Failed HTTP/1 transaction with key: 101)",
             "Verify that ATS closed the forth transaction.")
         tr.Processes.Default.Streams.stdout += Testers.ContainsExpression(
-            r"(Unexpected chunked content for key 5: too small|Failed HTTP/1 transaction with key: 5)",
+            r"(Unexpected chunked content for key 102: too small|Failed HTTP/1 transaction with key: 102)",
             "Verify that ATS closed the fifth transaction.")
         tr.Processes.Default.Streams.stdout += Testers.ContainsExpression(
-            r"(Unexpected chunked content for key 6: too small|Failed HTTP/1 transaction with key: 6)",
+            r"(Unexpected chunked content for key 103: too small|Failed HTTP/1 transaction with key: 103)",
             "Verify that ATS closed the sixth transaction.")
 
         # ATS should close the connection before any body gets through. "def"
