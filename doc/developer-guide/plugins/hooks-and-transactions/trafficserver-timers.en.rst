@@ -30,7 +30,6 @@ The picture only depicts the HTTP transaction level timers and does not include 
 states and other more detailed/internal timers in each individual state.
 
 .. figure:: ../../../static/images/admin/transaction_states_timers.svg
-   :align: center
    :alt: Transaction Timers in various states
 
    Transaction Timers in various states
