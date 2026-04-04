@@ -385,7 +385,7 @@ with open(CONFIGURE_AC, 'r') as f:
 
 # get the current branch the local repository is on
 REPO_GIT_DIR = os.path.join(REPO_ROOT, ".git")
-git_branch = subprocess.check_output(['git', '--git-dir', REPO_GIT_DIR, 'rev-parse', '--abbrev-ref', 'HEAD'])
+git_branch = "master"
 
 
 def make_github_link(name, rawtext, text, lineno, inliner, options=None, content=None):
