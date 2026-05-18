@@ -1,0 +1,4 @@
+Test-Command: make check
+Depends: @builddeps@
+Restrictions: build-needed, rw-build-tree, allow-stderr, needs-root
+Features: test-name=check
