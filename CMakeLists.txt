@@ -41,7 +41,6 @@ include_directories(lib
         proxy/shared
         lib/records
         include/wccp
-        lib/yamlcpp/include
         iocore/eventsystem
         iocore/net
         iocore/dns
